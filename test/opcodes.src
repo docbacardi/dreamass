@@ -1,0 +1,676 @@
+
+; 6502 testfile from as (c) by Alfred Arnold
+; slightly modded for dreamass
+
+
+	*=$8000
+
+	.cpu "6510"
+
+	adc	#$12
+	adc	$12
+	adc	$12,x
+	adc	$12,y
+	adc	$1234
+	adc	$1234,x
+	adc	$1234,y
+	adc	($12,x)
+	adc	($12),y
+
+	and	#$12
+	and	$12
+	and	$12,x
+	and	$12,y
+	and	$1234
+	and	$1234,x
+	and	$1234,y
+	and	($12,x)
+	and	($12),y
+
+	asl
+	asl	$12
+	asl	$12,x
+	asl	$1234
+	asl	$1234,x
+
+	bcc	*+2
+	bcs	*+3
+	beq	*+4
+
+	bit	$12
+	bit	$1234
+
+	bmi	*+5
+	bne	*+6
+	bpl	*+7
+
+	brk
+	brk	#$12
+
+	bvc	*+9
+	bvs	*+10
+
+	clc
+	cld
+	cli
+	clv
+
+	cmp	#$12
+	cmp	$12
+	cmp	$12,x
+	cmp	$12,y
+	cmp	$1234
+	cmp	$1234,x
+	cmp	$1234,y
+	cmp	($12,x)
+	cmp	($12),y
+
+	cpx	#$12
+	cpx	$12
+	cpx	$1234
+
+	cpy	#$12
+	cpy	$12
+	cpy	$1234
+
+	dec	$12
+	dec	$12,x
+	dec	$1234
+	dec	$1234,x
+
+	dex
+	dey
+
+	eor	#$12
+	eor	$12
+	eor	$12,x
+	eor	$12,y
+	eor	$1234
+	eor	$1234,x
+	eor	$1234,y
+	eor	($12,x)
+	eor	($12),y
+
+	inc	$12
+	inc	$12,x
+	inc	$1234
+	inc	$1234,x
+
+	inx
+	iny
+
+	jmp	$1234
+	jmp	($12)
+	jmp	($1234)
+
+	jsr	$1234
+
+	lda	#$12
+	lda	$12
+	lda	$12,x
+	lda	$12,y
+	lda	$1234
+	lda	$1234,x
+	lda	$1234,y
+	lda	($12,x)
+	lda	($12),y
+
+	ldx	#$12
+	ldx	$12
+	ldx	$12,y
+	ldx	$1234
+	ldx	$1234,y
+
+	ldy	#$12
+	ldy	$12
+	ldy	$12,x
+	ldy	$1234
+	ldy	$1234,x
+
+	lsr
+	lsr	$12
+	lsr	$12,x
+	lsr	$1234
+	lsr	$1234,x
+
+	nop
+
+	ora	#$12
+	ora	$12
+	ora	$12,x
+	ora	$12,y
+	ora	$1234
+	ora	$1234,x
+	ora	$1234,y
+	ora	($12,x)
+	ora	($12),y
+
+	pha
+	php
+	pla
+	plp
+
+	rol
+	rol	$12
+	rol	$12,x
+	rol	$1234
+	rol	$1234,x
+
+	ror
+	ror	$12
+	ror	$12,x
+	ror	$1234
+	ror	$1234,x
+
+	rti
+	rts
+
+	sbc	#$12
+	sbc	$12
+	sbc	$12,x
+	sbc	$12,y
+	sbc	$1234
+	sbc	$1234,x
+	sbc	$1234,y
+	sbc	($12,x)
+	sbc	($12),y
+
+	sec
+	sed
+	sei
+
+	sta	$12
+	sta	$12,x
+	sta	$12,y
+	sta	$1234
+	sta	$1234,x
+	sta	$1234,y
+	sta	($12,x)
+	sta	($12),y
+
+	stx	$12
+	stx	$12,y
+	stx	$1234
+
+	sty	$12
+	sty	$12,x
+	sty	$1234
+
+	tax
+	tay
+
+	tsx
+	txa
+	txs
+	tya
+
+
+#print "testing 6510 illegal"
+
+	.cpu "6510ill"
+
+	acn #$12
+
+	ahx $12,y
+	ahx $1234,y
+	ahx ($12),y
+
+	alr #$12
+
+	anc #$12
+
+	arr #$12
+
+	axs #$12
+
+	dcp $12
+	dcp $12,x
+	dcp $12,y
+	dcp $1234
+	dcp $1234,x
+	dcp $1234,y
+	dcp ($12,x)
+	dcp ($12),y
+
+	isc $12
+	isc $12,x
+	isc $12,y
+	isc $1234
+	isc $1234,x
+	isc $1234,y
+	isc ($12,x)
+	isc ($12),y
+
+	ki0
+	ki1
+	ki2
+	ki3
+	ki4
+	ki5
+	ki6
+	ki7
+	ki9
+	kib
+	kid
+	kif
+
+	las $12,y
+	las $1234,y
+
+	lax #$12
+	lax $12
+	lax $12,y
+	lax $1234
+	lax $1234,y
+	lax ($12,x)
+	lax ($12),y
+
+	no0
+	no0 $12
+	no0 $12,x
+	no0 $1234
+	no0 $1234,x
+
+	no2
+	no2 $12,x
+	no2 $1234,x
+
+	no4
+	no4 $12
+	no4 $12,x
+	no4 $1234,x
+
+	no6
+	no6 $12
+	no6 $12,x
+	no6 $1234,x
+
+	no8 #$12
+	no8 $12,x
+	no8 $1234,x
+
+	noc
+	noc #$12
+	noc $12,x
+	noc $1234,x
+
+	noe
+	noe #$12
+	noe $12,x
+	noe $1234,x
+
+	nox #$12
+
+	noy #$12
+
+	rla $12
+	rla $12,x
+	rla $12,y
+	rla $1234
+	rla $1234,x
+	rla $1234,y
+	rla ($12,x)
+	rla ($12),y
+
+	rra $12
+	rra $12,x
+	rra $12,y
+	rra $1234
+	rra $1234,x
+	rra $1234,y
+	rra ($12,x)
+	rra ($12),y
+
+	sax $12
+	sax $12,y
+	sax $1234
+	sax ($12,x)
+
+	sbi #$12
+
+	shx $12,y
+	shx $1234,y
+
+	slo $12
+	slo $12,x
+	slo $12,y
+	slo $1234
+	slo $1234,x
+	slo $1234,y
+	slo ($12,x)
+	slo ($12),y
+
+	sre $12
+	sre $12,x
+	sre $12,y
+	sre $1234
+	sre $1234,x
+	sre $1234,y
+	sre ($12,x)
+	sre ($12),y
+
+	tas $12,y
+	tas $1234,y
+
+	xaa #$12
+
+
+#print "testing 65816"
+
+	.cpu "65816"
+
+	brk
+	brk #$12
+
+	jsr $12
+	jsr $1234
+
+	rti
+
+	rts
+
+	bra *-1
+
+	ldy #$12
+	cpy #$12
+	cpx #$12
+
+	ora ($12,x)
+	and ($12,x)
+	eor ($12,x)
+	adc ($12,x)
+	sta ($12,x)
+	lda ($12,x)
+	cmp ($12,x)
+	sbc ($12,x)
+
+	cop #$12
+	jsl $12
+	jsl $1234
+	jsl $123456
+	wdm
+	per *-2
+	brl *-3
+	ldx #$12
+	rep #$12
+	sep #$12
+
+	ora $12,s
+	and $12,s
+	eor $12,s
+	adc $12,s
+	sta $12,s
+	lda $12,s
+	cmp $12,s
+	sbc $12,s
+
+	tsb $12
+	bit $12
+	mvp $12,$34
+	stz $12
+	sty $12
+	ldy $12
+	cpy $12
+	cpx $12
+
+	ora $12
+	and $12
+	eor $12
+	adc $12
+	sta $12
+	lda $12
+	cmp $12
+	sbc $12
+
+	asl $12
+	rol $12
+	lsr $12
+	ror $12
+	stx $12
+	ldx $12
+	dec $12
+	inc $12
+
+	ora [$12]
+	and [$12]
+	eor [$12]
+	adc [$12]
+	sta [$12]
+	lda [$12]
+	cmp [$12]
+	sbc [$12]
+
+	php
+	plp
+	pha
+	pla
+	dey
+	tay
+	iny
+	inx
+
+	ora #$12
+	and #$12
+	eor #$12
+	adc #$12
+	bit #$12
+	lda #$12
+	cmp #$12
+	sbc #$12
+
+	asl
+	rol
+	lsr
+	ror
+	txa
+	tax
+	dex
+	nop
+
+	phd
+	pld
+	phk
+	rtl
+	phb
+	plb
+	wai
+	xba
+
+	tsb $1234
+	bit $1234
+	jmp $1234
+	jmp ($1234)
+	sty $1234
+	ldy $1234
+	cpy $1234
+	cpx $1234
+
+	ora $1234
+	and $1234
+	eor $1234
+	adc $1234
+	sta $1234
+	lda $1234
+	cmp $1234
+	sbc $1234
+
+	asl $1234
+	rol $1234
+	lsr $1234
+	ror $1234
+	stx $1234
+	ldx $1234
+	dec $1234
+	inc $1234
+
+	ora $123456
+	and $123456
+	eor $123456
+	adc $123456
+	sta $123456
+	lda $123456
+	cmp $123456
+	sbc $123456
+
+	bpl *-4
+	bmi *-5
+	bvc *-6
+	bvs *-7
+	bcc *-8
+	bcs *-9
+	bne *-10
+	beq *-11
+
+	ora ($12),y
+	and ($12),y
+	eor ($12),y
+	adc ($12),y
+	sta ($12),y
+	lda ($12),y
+	cmp ($12),y
+	sbc ($12),y
+
+	ora ($12)
+	and ($12)
+	eor ($12)
+	adc ($12)
+	sta ($12)
+	lda ($12)
+	cmp ($12)
+	sbc ($12)
+
+	ora ($12,s),y
+	and ($12,s),y
+	eor ($12,s),y
+	adc ($12,s),y
+	sta ($12,s),y
+	lda ($12,s),y
+	cmp ($12,s),y
+	sbc ($12,s),y
+
+	trb $12
+	bit $12,x
+	mvn $12,$34
+	stz $12,x
+	sty $12,x
+	ldy $12,x
+	pei ($12)
+	pea #$1234
+
+	ora $12,x
+	and $12,x
+	eor $12,x
+	adc $12,x
+	sta $12,x
+	lda $12,x
+	cmp $12,x
+	sbc $12,x
+
+	asl $12,x
+	rol $12,x
+	lsr $12,x
+	ror $12,x
+	stx $12,y
+	ldx $12,y
+	dec $12,x
+	inc $12,x
+
+	ora [$12],y
+	and [$12],y
+	eor [$12],y
+	adc [$12],y
+	sta [$12],y
+	lda [$12],y
+	cmp [$12],y
+	sbc [$12],y
+
+	clc
+	sec
+	cli
+	sei
+	tya
+	clv
+	cld
+	sed
+
+	ora $1234,y
+	and $1234,y
+	eor $1234,y
+	adc $1234,y
+	sta $1234,y
+	lda $1234,y
+	cmp $1234,y
+	sbc $1234,y
+
+	inc
+	dec
+	phy
+	ply
+	txs
+	tsx
+	phx
+	plx
+
+	tcs
+	tsc
+	tcd
+	tdc
+	txy
+	tyx
+	stp
+	xce
+
+	trb $1234
+	bit $1234,x
+	jmp $123456
+	jmp ($1234,x)
+	stz $1234
+	ldy $1234,x
+	jml ($1234)
+	jsr ($1234,x)
+
+	ora $1234,x
+	and $1234,x
+	eor $1234,x
+	adc $1234,x
+	sta $1234,x
+	lda $1234,x
+	cmp $1234,x
+	sbc $1234,x
+
+	asl $1234,x
+	rol $1234,x
+	lsr $1234,x
+	ror $1234,x
+	stz $1234,x
+	ldx $1234,y
+	dec $1234,x
+	inc $1234,x
+
+	ora $123456,x
+	and $123456,x
+	eor $123456,x
+	adc $123456,x
+	sta $123456,x
+	lda $123456,x
+	cmp $123456,x
+	sbc $123456,x
+
+	.xysize 16
+
+	ldy #$1234
+	cpy #$1234
+	cpx #$1234
+	ldx #$1234
+
+	.asize 16
+
+	ora #$1234
+	and #$1234
+	eor #$1234
+	adc #$1234
+	bit #$1234
+	lda #$1234
+	cmp #$1234
+	sbc #$1234
+

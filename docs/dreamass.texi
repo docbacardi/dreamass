@@ -1,0 +1,2207 @@
+\input texinfo.tex    @c -*-texinfo-*-
+
+@setfilename dreamass
+@setchapternewpage off
+@paragraphindent none
+
+@syncodeindex vr cp
+@syncodeindex pg cp
+
+
+@settitle DreamAss @value{VERSION}
+
+@paragraphindent 0
+
+
+@copying
+This manual is for DreamAss (version @value{VERSION}, @value{UPDATED}),
+a crossassembler for 6510, 65816 and compatible CPUs.
+
+Copyright (C)  2002, 2003, 2004, 2005, 2006  Christoph Thelen.
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts.  A copy of the license is included in the section entitled ``GNU
+Free Documentation License''.
+@end quotation
+@end copying
+
+
+@dircategory Development
+@direntry
+* DreamAss: (dreamass).                 DreamAss, a portable crossassembler for 6510, 65816 and compatible CPUs.
+@end direntry
+
+@set EMAIL DocBacardi@@the-dreams.de
+@set DISTRIB_SITE http://people.freenet.de/LittleDreamLand
+
+@shorttitlepage DreamAss
+
+@titlepage
+@title DreamAss
+@subtitle Usermanual and coding style fairytale
+@subtitle for DreamAss version @value{VERSION}, @value{UPDATED}
+
+@author Christoph Thelen
+
+@c Include the Distribution inside the titlepage so
+@c that headings are turned off.
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+
+@end titlepage
+
+@summarycontents
+@contents
+
+
+
+@node Top
+@top DreamAss
+
+@insertcopying
+
+@menu
+
+* Preface::
+* Installation::
+* Command Line Options::
+* Command Reference::
+* General Usage::
+* History::
+* Copying This Manual::           The GNU Free Documentation License.
+* Tables::
+* Index::
+
+@end menu
+
+
+@node Preface
+@chapter Preface
+@cindex Preface
+
+@dfn{DreamAss}@footnote{The name ``DreamAss'' is the short form of ``The Dreams Assembler''.
+@dfn{The Dreams} is a C64 group, visit @uref{http://www.the-dreams.de} for more info.}
+is a crossassembler. It produces binaries for 6510, 65816 and compatible CPUs.
+The 'illegal' opcodes of the 6510 are also supported.
+
+These are the tools I used to develop this programm:
+@itemize
+@item @uref{http://directory.fsf.org/GNU/gcc.html, gcc} and
+ @uref{http://directory.fsf.org/GNU/gdb.html, gdb}
+@item @uref{http://valgrind.org, valgrind}, an excellent debugger
+@item the development environment @uref{http://www.kdevelop.org, KDevelop}
+@end itemize
+@sp 1
+Doc Bacardi/DRM
+@sp 1
+
+@include dreamslogo.texi
+
+
+@node Installation
+@chapter Installation
+@cindex Installation
+
+@menu
+* How to obtain DreamAss::
+* Requirements::
+* Porting::
+* Compilation::
+* Debugging::
+@end menu
+
+
+@node How to obtain DreamAss
+@section How to obtain DreamAss
+@cindex How to obtain DreamAss
+
+The sourcecode of the latest DreamAss version can be downloaded from:
+@uref{@value{DISTRIB_SITE}}. The site also provides pre-build documentation
+and binaries for a selection of operating systems.
+
+
+@node Requirements
+@section Requirements
+@cindex Requirements
+
+You'll need a C compiler like gcc or icc to build the binary. I'm trying to
+keep the code type size independent, i.e. I don't assume that an int is 32 bit
+wide. Instead I rely on the types defined in 'stdint.h'.
+
+The docs are Texinfo. You'll need 'makeinfo' to convert them to plain ascii,
+html or the info format. The download site provides pre-build docs.
+
+
+@node Porting
+@section Porting DreamAss
+@cindex Porting DreamAss
+
+If you are compiling DreamAss for a small computer with few ressources you
+might want to edit 'sizes.h'. There you can define the maximum sizes for all
+dynamic arrays. Smaller maximum sizes have several advantages:
+
+@itemize
+@item Indices to listentries get smaller. As they are used a lot you might need
+some KBytes of ram less for assembling big sources.
+@item Using the cpu's register size (or less) saves a lot of code on smaller
+machines. Example: Operations on 16 bit indices have to be split up into 2
+parts on an 8 bit cpu.
+@end itemize
+
+Options found in 'sizes.h':
+
+@itemize
+@item ARRAYSIZE_IncludePaths Maximum number of include paths which can be
+passed via commandline.
+@item ARRAYSIZE_SourceFiles Maximum number of source files which can be
+passed via commandline.
+@item ARRAYSIZE_Files Maximum number of files
+@item ARRAYSIZE_Lines Maximum number of lines for one file
+@item ARRAYSIZE_LineChars Maximum number of chars per line
+@item ARRAYSIZE_Macros Maximum number of macros
+@item ARRAYSIZE_MacroParameters Maximum number of parameters for one macro
+@item ARRAYSIZE_Term Maximum number of elements in one term. An element is a
+number or an operator like '+', '>>' or 'segmentof'.
+@end itemize
+
+
+
+@node Compilation
+@section Compilation of the source distribution
+@cindex Compilation of the source distribution
+
+DreamAss is a simple tool with no use for autoconfig. I'm using no libs so far,
+just type 'make' and there should be a binary. If you're compiling on strange
+systems (i.e. != Linux ;) you may need to adjust the C compiler and Flags in
+the 'Makefile'.
+
+Without 'make' or a similar tool, just replace the @var{cc} in the following
+command with your C compiler:
+@example
+@var{cc} -o dreamass *.c
+@end example
+Please note that this is just a quick solution to get an executable. The
+resulting file does not have a version number and is not optimized.
+
+If you run into trouble building the binary feel free to contact me:
+@email{@value{EMAIL}}
+
+
+@node Debugging
+@section Debugging DreamAss
+@cindex Debugging DreamAss
+
+I'm using valgrind to debug DreamAss. It's easy to use, non-intrusive and
+needs no special libs to be linked with the code. This chapter gives a brief
+description how to get valgrind running with dreamass. It's no substitute for
+the docs.
+
+Start 'valgrind-listener' on a console. It prints a short message and waits for
+a debugging-session.
+
+@example
+baccy@@Yakumo:~$ valgrind-listener
+valgrind-listener started at Tue Feb 10 13:39:36 2004
+@end example
+
+Go to a new colsole. Prepend valgrind before the command to debug:
+
+valgrind @minus{}@minus{}leak-check=yes @minus{}@minus{}log@minus{}socket=127.0.0.1:1500 @minus{}@minus{}show-reachable=yes @minus{}v @{command@}
+
+Example for dreamass:
+
+@example
+valgrind@/ --leak-check=yes@/ --log-socket=127.0.0.1:1500@/ --show-reachable=yes@/ -v@/ dreamass@/ -v@/ -o@/ test.prg@/ test.src
+@end example
+
+Don't worry if the execution time increases significantly. Valgrind emulates a
+complete cpu/mem environment for the debugging session, this takes some time.
+Now switch back to the console showing the 'valgrind-listener'. There is a lot
+of output. Look for a line containing the words "ERROR SUMMARY". It shows the
+number of memory errors like accessing not allocated memory, double frees, etc.
+The next line indicates memory leaks.
+
+@example
+(1) ==732== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+(1) ==732== malloc/free: in use at exit: 0 bytes in 0 blocks.
+@end example
+
+The example shows the result for a run without errors and leaks. Unfortunately
+this is not always the case with dreamass. If there are errors or leaks, please
+copy the complete output to a mail and send it to @email{@value{EMAIL}}.
+I'm also very grateful for bug-fixes. :)
+
+
+@node Command Line Options
+@chapter Command Line Options
+@cindex Command Line Options, Overview
+
+
+@float Table,table:all commandline options
+@caption{all commandline options}
+@multitable @columnfractions .15 .30 .45 .10
+@headitem short form @tab long form @tab function @tab default
+@item @option{-d} @var{file}
+@tab @option{--debug} @var{file}
+@tab @ref{Set Debug Mode}
+@tab off
+@item @option{-D}@var{var}=@var{value}
+@tab
+@tab @ref{Define variable}
+@tab
+@item @option{-e} @var{file}
+@tab @option{--error-log} @var{file}
+@tab @ref{Set Error Logging}
+@tab none
+@item @option{-h}
+@tab @option{--help}
+@tab @ref{Show Help}
+@tab off
+@item @option{-I}@var{path}
+@tab 
+@tab @ref{Add Include path}
+@tab
+@item @option{-l} @var{file}
+@tab @option{--label-log} @var{file}
+@tab @ref{Set Label Logging}
+@tab none
+@item @option{-me} @var{number}
+@tab @option{--max-errors} @var{number}
+@tab @ref{Set the maximum number of errors}
+@tab 20
+@item @option{-mw} @var{number}
+@tab @option{--max-warnings} @var{number}
+@tab @ref{Set the maximum number of warnings}
+@tab 20
+@item @option{-o} @var{file}
+@tab @option{--output} @var{file}
+@tab @ref{Select Output File}
+@tab "a.out"
+@item @option{-r}
+@tab @option{--simple-redefine}
+@tab @ref{Simple Redefines}
+@tab off
+@item @option{-v}
+@tab @option{--verbose}
+@tab @ref{Set Verbose Mode}
+@tab off
+@item @option{-W}@var{tag}
+@tab
+@tab @ref{Modify Warning Level}
+@tab
+@end multitable
+@end float
+
+
+@menu
+* Set Debug Mode::
+* Define variable::
+* Set Verbose Mode::
+* Set Error Logging::
+* Set Label Logging::
+* Set the maximum number of errors::
+* Set the maximum number of warnings::
+* Select Output File::
+* Add Include path::
+* Modify Warning Level::
+* Simple Redefines::
+* Show Help::
+@end menu
+
+
+@node Set Debug Mode
+@section Set Debug Mode
+@cindex Command Line Options, Set Debug Mode
+
+The debug mode is primarily made for people developing and modifying DreamAss.
+It writes a lot of info on how things were parsed, syntax trees were built and
+so on. This sounds rather boring for the user, but it proved it's use also for
+them: 
+
+@itemize
+@item the debug listing shows the expansions of macros in detail
+@item terms@dots{}
+@item labelsizes@dots{}
+@end itemize
+
+Short syntax: 
+@example
+-d file 
+@end example
+
+Long syntax: 
+@example
+--debug file
+@end example
+
+
+@node Define variable
+@section Define variable
+@cindex Command Line Options, Define variable
+
+Define a variable globally.
+
+Short syntax: 
+@example
+-Dvar=value
+@end example
+
+Example:
+@example
+% dreamass -Duse_lightpen=1 decathlon.src
+@end example
+This defines the variable 'use_lightpen' to the value '1'.
+
+
+@node Set Verbose Mode
+@section Set Verbose Mode
+@cindex Command Line Options, Set Verbose Mode
+
+In verbose mode dreamass prints information on the assembling process. This is 
+
+@itemize
+@item the number of the current pass
+@item a summary of the produced objects
+@item and finally a hello and bye message
+@end itemize
+
+Short syntax: 
+@example
+-v 
+@end example
+
+Long syntsx: 
+@example
+--verbose 
+@end example
+
+Example: 
+@example
+% dreamass -v emacs.src
+@end example
+This assembles the source 'emacs.src' in verbose mode.
+
+
+@node Set Error Logging
+@section Set Error Logging
+@cindex Command Line Options, Set Error Logging
+
+The default behavior is to print all errors and warnings to 'stderr'. With this
+option it will also be written to a file.
+
+@example
+-e file 
+
+--error-log file 
+@end example
+
+Examples: 
+@example
+% dreamass -e pingpong.errors pingpong.src
+@end example
+or
+@example
+% dreamass --error-log pingpong.errors pingpong.src
+@end example
+
+Both examples log the errors and warnings from assembling 'pingpong.src' to the
+file 'pingpong.errors'.
+
+
+@node Set Label Logging
+@section Set Label Logging
+@cindex Command Line Options, Set Label Logging
+
+Dump all used lables to a file. This has the format 
+@example
+Labelname = Value
+ ...
+@end example
+
+Short syntax: 
+@example
+-l file 
+@end example
+
+Long syntax: 
+@example
+--label-log file 
+@end example
+
+Example: 
+@example
+% dreamass -l CooSaysTheMow.labels CooSaysTheMow.src
+@end example
+This dumps the global labels to the file 'CooSaysTheMow.labels'.
+
+
+@node Set the maximum number of errors
+@section Set the maximum number of errors
+@cindex Command Line Options, Set the maximum number of errors
+
+Set the maximum number of errors before aborting assembly. If the argument is 0
+or negativ, all errors will be shown. If no '-me' or '--max_errors' option is
+present, the default value of 20 is used. Please note that the limit is only
+checked _after_ a complete line is parsed. If one line of sourcecode produces
+more than one error, this can break the desired maximum. This 'relaxed'
+checking is necessary as some errors do not make much sense alone.
+
+
+Short syntax: 
+@example
+-me number
+@end example
+
+Long syntax: 
+@example
+--max-errors number
+@end example
+
+Examples: 
+@example
+% dreamass -me 100 debugger.src
+@end example
+@tie{}@dots{}stop assembling after 100 errors.
+
+@example
+% dreamass -me -1 bugger.src
+@end example
+@tie{}@dots{}do not stop assembling after errors.
+
+
+@node Set the maximum number of warnings
+@section Set the maximum number of warnings
+@cindex Command Line Options, Set the maximum number of warnings
+
+Set the maximum number of warnings to show. More warnings will not be shown,
+but counted. If the argument is 0 or negativ, all warnings will be shown. If no
+'-mw' or '--max_warnings' option is present, the default value of 20 is used.
+
+Short syntax: 
+@example
+-mw number 
+@end example
+
+Long syntax: 
+@example
+--max-warnings number 
+@end example
+
+Examples: 
+@example
+% dreamass -mw 100 debugger.src
+@end example
+@tie{}@dots{}show only the first 100 warnings. All further warnings will be suppressed. 
+
+@example
+% dreamass -mw -1 bugger.src
+@end example
+@tie{}@dots{}show all warnings.
+
+@node Select Output File
+@section Select Output File
+@cindex Command Line Options, Select Output File
+
+Specify the default filename for the assembled binary. If no '-o' option and
+no '#outfile' is present the file @file{a.out} is used.
+
+Short syntax: 
+@example
+-o file
+@end example
+
+Long syntax: 
+@example
+--output file
+@end example
+
+Examples: 
+@example
+% dreamass meow.src
+@end example
+@tie{}@dots{}dumps the object to @file{a.out}.
+
+@example
+% dreamass -o BananaBoat.c64 BananaBoat.src
+@end example
+@tie{}@dots{}dumps the object to @file{BananaBoat.c64}.
+
+
+@node Add Include path
+@section Add Include path
+@cindex Command Line Options, Add Include path
+
+Add a path to search files in. The include path is used to open 
+@itemize
+@item sourcefiles from the commandline
+@item '#include'd sourcefiles
+@item binaries included with '#binclude'
+@end itemize
+
+Syntax: 
+@example
+-Ipath 
+@end example
+
+The path does not have to end with a '/'. DreamAss adds one automatically if
+it is missing.
+
+Example: 
+@example
+% dreamass -I/home/baccy/ -I/usr/include/dreamass readpilot.src
+@end example
+This defines the include paths '/home/baccy/' and '/usr/include/dreamass/'
+(note the added '/'). The file 'readpilot.src' will be searched in the current
+path, then in '/home/baccy/' and finally in '/usr/include/dreamass/'. The same
+goes for every '#include' and '#binclude' in the source. 
+
+@quotation Note
+The current path while calling dreamass is always searched before the include
+paths.
+@end quotation
+
+@quotation Note
+The include paths are searched after the current path in the order of their
+appearence in the commandline. If the file in question is found in one path
+the search is stopped even if a file with the same name appears in a later
+include path.
+@end quotation
+
+
+@node Modify Warning Level
+@section Modify Warning Level
+@cindex Command Line Options, Modify Warning Level
+
+Select which warnings will be shown (and counted) during assembly.
+
+Syntax: 
+@example
+-Wtag 
+@end example
+The 'tag' is an identifier for the warning which should be enabled 
+
+@float Table,table:the basic warning tags
+@caption{the basic warning tags}
+@multitable @columnfractions .20 .80
+@headitem tag @tab meanings
+@item @code{user}
+@tab User warnings generated with the #warning command
+@item @code{preuse}
+@tab An undefined label is used in a context which allows only one size (e.g.
+'lda #label')
+@item @code{adrmode}
+@tab A 1 byte label is used for absolute addressing. It has to be expanded to
+2 bytes.
+@item @code{bincludes}
+@tab An included binary exceeds the 64K border. The extra data will be ignored.
+@item @code{segdef}
+@tab One argument of the #segdef command is set more than once. Only the last value
+will be used.
+@item @code{outfile}
+@tab One argument of the #outfile command is set more than once. Only the last value
+will be used.
+@item @code{jmpind}
+@tab The destination address of an indirect jump is at the end of a page ($??FF).
+@item @code{pcblock}
+@tab The PC was shifted with .pseudopc and is still not back to normal at end of
+file.
+@item @code{localblock}
+@tab A local block was opened but is still not closed at end of file.
+@end multitable
+@end float
+
+Some special tags are defined to make life easier: 
+
+@float Table,table:the special warning tags
+@caption{the special warning tags}
+@multitable @columnfractions .20 .80
+@headitem tag @tab meaning
+@item @code{all}
+@tab show all warnings
+@item @code{none}
+@tab show no warnings
+@item @code{normal}
+@tab show the default selection of warnings. this is the same as '-Wuser -Wbincludes -Wsegdef -Woutfile -Wjmpind -Wpcblock -Wlocalblock'
+@end multitable
+@end float
+
+If no '-W' option is present, dreamass falls back to '-Wnormal'. If one or more
+'-W' options are present, no internal defaults are used. Only the specified warnings are listed. 
+@example
+% dreamass mover.src
+@end example
+no '-W' present. fallback to '-Wnormal'.
+
+@example
+% dreamass -Wadrmode mover.src
+@end example
+only show the 'adrmode' warnings
+
+Multiple '-W' options can be used to enable several warnings: 
+
+@example
+% dreamass -Wuser -Wjmpind mover.src
+@end example
+@tie{}@dots{}show user and indirect jump warnings.
+
+
+@node Simple Redefines
+@section Simple Redefines
+@cindex Command Line Options, Simple Redefines
+
+Allow simple redefines. Simple means a redefinition with the '=' operator does not result in an error as usual. It will be accepted as if the ':=' operator was used.
+
+Please note that the idea behind bitching about a redefinition is to prevent errors. Especially at big projects labelnames are reused unintentionally sometimes, which can produce quite strange results. So only use simple redefines if you really need it.
+
+
+Short syntax: 
+@example
+-r 
+@end example
+
+Long syntax: 
+@example
+--simple-redefine 
+@end example
+
+Example: 
+@example
+% dreamass -r sloppy.src
+@end example
+This assembles the source 'sloppy.src' without caring about redefinitions with the '=' operator.
+
+
+@node Show Help
+@section Show Help
+@cindex Command Line Options, Show Help
+
+Show all commandline options. This is a summary of this chapter.
+
+Short syntax: 
+@example
+-h 
+@end example
+
+Long syntax: 
+@example
+--help 
+@end example
+
+Example: 
+@example
+% dreamass --help
+@end example
+
+
+@quotation Note
+All other commandline options are silently ignored.
+@end quotation
+
+
+@node Command Reference
+@chapter Command Reference
+@cindex Command Reference, Overview
+
+@menu
+* Pseudo Opcodes::
+* Preprocessor Directives::
+@end menu
+
+
+@node Pseudo Opcodes
+@section Pseudo Opcodes
+@cindex Pseudo Opcodes, Overview
+
+
+@float Table,table:all pseudo opcodes
+@caption{all pseudo opcodes}
+@multitable @columnfractions .60 .40
+@headitem syntax @tab command
+@item @code{.binclude @var{filename} [,@var{offset} [,@var{max_length}]]}
+ @tab @ref{Binary Include}
+@item @code{.byte @var{term} [,@var{term}@dots{}]}
+ @tab @ref{Dump Bytes} (alias for '.db').
+@item @code{.db @var{term} [,@var{term}@dots{}]}
+ @tab @ref{Dump Bytes}
+@item @code{.dw @var{term} [,@var{term}@dots{}]}
+ @tab @ref{Dump Words}
+@item @code{.text [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Text}
+@item @code{.dt [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Text} (alias for .text).
+@item @code{.pet [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Petascii}
+@item @code{.dp [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Petascii} (alias for .pet).
+@item @code{.scr [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Screencode}
+@item @code{.ds [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Screencode} (alias for .scr).
+@item @code{.segment @var{name}}
+ @tab @ref{Switch Segment}
+@item @code{.setpet}
+ @tab @ref{Set Petascii Mode}
+@item @code{.setscr}
+ @tab @ref{Set Screencode Mode}
+@item @code{.word @var{term} [,@var{term}@dots{}]}
+ @tab @ref{Dump Words}
+@item @code{.dsb @var{size} [,@var{fillyte}]}
+ @tab @ref{Fill Area}
+@item @code{.align @var{base} [,@var{fillyte}]}
+ @tab @ref{Align}
+@item @code{.(}
+ @tab @ref{Open Local Block}
+@item @code{.)}
+ @tab @ref{Close Local Block}
+@item @code{.pseudopc @var{address}}
+ @tab @ref{Pseudo PC}
+@item @code{.realpc}
+ @tab @ref{Real PC}
+@end multitable
+@end float
+
+@menu
+* Binary Include::
+* Dump Bytes::
+* Dump Words::
+* Dump Text::
+* Dump Petascii::
+* Dump Screencode::
+* Switch Segment::
+* Set Petascii Mode::
+* Set Screencode Mode::
+* Fill Area::
+* Align::
+* Open Local Block::
+* Close Local Block::
+* Pseudo PC::
+* Real PC::
+@end menu
+
+
+@node Binary Include
+@subsection Binary Include
+@cindex Pseudo Opcodes, Binary Include
+
+Includes a file 'as it is'.
+
+Syntax: 
+@example
+@code{.binclude @var{filename} [,@var{offset} [,@var{max_length}]]}
+@end example
+
+Examples: 
+@example
+.binclude "gfx/bitmap01.koa"
+@end example
+This includes the complete file @file{gfx/bitmap01.koa}.
+
+@example
+.binclude "sfx/sound01.prg",2
+@end example
+The offset is used to skip bytes at the beginning of the file. This example
+ignores the first 2 bytes of the file.
+
+@example
+.binclude "gfx/bitmap02.koa",2,8000
+@end example
+The third parameter is the maximum number of bytes to include. If @var{max_length}
+is omitted, the maximum possible length is used.
+This example reads from file @file{gfx/bitmap02.koala}. The first 2 bytes are skipped,
+then 8000 bytes are included. The file may contain more data, but it is ignored.
+For a picture in koala format this example would extract the bitmap.
+
+@quotation Note
+If the file is not found in the current path, the includepaths are serached.
+@end quotation
+
+
+
+@node Dump Bytes
+@subsection Dump Bytes
+@cindex Pseudo Opcodes, Dump Bytes
+
+Dump a sequence of 8 bit values. The values are seperated with a comma.
+
+Syntax: 
+@example
+@code{.db @var{term} [,@var{term}@dots{}]}
+@end example
+
+Examples: 
+@example
+.DB 0
+.DB $ab, 'd', 4, 6*(%10110+&711)
+@end example
+
+Wrong example: 
+@example
+.DB $123        ;*** DOES NOT WORK ***
+@end example
+This will produce an 'overflow error' as $123 does not fit in one byte
+
+
+@node Dump Words
+@subsection Dump Words
+@cindex Pseudo Opcodes, Dump Words
+
+Produces a sequence of 16 bit values. The byteorder is big endian. Two and
+more values are seperated with a comma. Bytevalues will be expanded to word
+values.
+
+Syntax: 
+@example
+@code{.dw @var{term} [,@var{term}@dots{}]}
+@end example
+
+Examples: 
+@example
+.DW 0
+.dw $abcd, 'd', 1024, $6*(%10110+&711)
+@end example
+
+Wrong example: 
+@example
+.DW $12345      ;*** DOES NOT WORK ***
+@end example
+This will produce an @samp{overflow error} as $12345 does not fit in a word.
+
+
+
+@node Dump Text
+@subsection Dump Text
+@cindex Pseudo Opcodes, Dump Text
+
+Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
+converted according to the actual pet/screen mode.
+
+Syntax: 
+@example
+@code{.text [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+@end example
+
+Examples: 
+@example
+.text "poop",0
+@end example
+produces @samp{$50,$4F,$4F,$50,$00} in pet mode or @samp{$10,$0F,$0F,$10,$00} in screencode
+mode
+
+@example
+.text $12,$1234,$123456,$12345678
+@end example
+produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
+
+
+@node Dump Petascii
+@subsection Dump Petascii
+@cindex Pseudo Opcodes, Dump Petascii
+
+Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
+converted to petascii.
+
+Syntax: 
+
+@example
+@code{.pet [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+@end example
+
+Examples: 
+@example
+.pet "poop",0
+@end example
+produces @samp{$50,$4F,$4F,$50,$00}
+
+@example
+.pet $12,$1234,$123456,$12345678
+@end example
+produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
+
+
+@node Dump Screencode
+@subsection Dump Screencode
+@cindex Pseudo Opcodes, Dump Screencode
+
+Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
+converted to screencode.
+
+Syntax: 
+
+@example
+@code{.scr [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+@end example
+
+Examples: 
+@example
+.scr "poop",0
+@end example
+produces @samp{$10,$0F,$0F,$10,$00}
+
+@example
+.scr $12,$1234,$123456,$12345678
+@end example
+produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
+
+
+@node Switch Segment
+@subsection Switch Segment
+@cindex Pseudo Opcodes, Switch Segment
+
+Switch to a segment. Take a look at the chapter Segments for detailed info on
+defining and using segments.
+
+Syntax: 
+@example
+@code{.segment @var{name}}
+@end example
+
+Examples: 
+@example
+.segment "gamecode"
+@end example
+Switch to the segment @samp{gamecode}.
+
+@example
+disksegment = "bank3"
+
+.segment disksegment
+@end example
+Switch to the segment @samp{bank3}.
+
+
+@node Set Petascii Mode
+@subsection Set Petascii Mode
+@cindex Pseudo Opcodes, Set Petascii Mode
+
+Set petascii as the default text format. This affects the conversion of and
+string arguments for the .text opcode text converted to numbers using the
+'@dots{}' syntax
+
+Syntax: 
+@example
+@code{.setpet}
+@end example
+
+Examples: 
+@example
+.setpet
+        lda #'a'
+@end example
+produces @samp{$a9, $41}
+
+@example
+.setpet
+        .text "mooh"
+        .db 'a'
+@end example
+produces @samp{$4d, $4f, $4f, $48, $41}
+
+
+@node Set Screencode Mode
+@subsection Set Screencode Mode
+@cindex Pseudo Opcodes, Set Screencode Mode
+
+Set screencode as the default text format. This affects the conversion of and
+string arguments for the .text opcode text converted to numbers using the
+'@dots{}' syntax
+
+Syntax: 
+@example
+@code{.setscr}
+@end example
+
+Examples: 
+@example
+.setscr
+        lda #'a'
+@end example
+produces @samp{$a9, $01}
+
+@example
+.setscr
+        .text "mooh"
+        .db 'a'
+@end example
+produces @samp{$0d, $0f, $0f, $08, $01}
+
+
+@node Fill Area
+@subsection Fill Area
+@cindex Pseudo Opcodes, Fill Area
+
+Fill an area with a value.
+
+Syntax: 
+@example
+@code{.dsb @var{size} [,@var{fillyte}]}
+@end example
+
+Examples: 
+@example
+.dsb 4
+@end example
+produces @samp{$00, $00, $00, $00}
+
+@example
+.dsb 4,$ab
+@end example
+produces @samp{$ab, $ab, $ab, $ab}
+
+@example
+.dsb 0
+@end example
+produces nothing
+
+
+@node Align
+@subsection Align
+@cindex Pseudo Opcodes, Align
+
+Align the PC to a base by inserting a fillbyte. Aligning means after the
+.align command the PC will be divisible by base without remainder.
+
+Syntax: 
+@example
+@code{.align @var{base} [,@var{fillyte}]}
+@end example
+
+Examples: 
+@example
+.align $100
+CriticalTiming:
+        lda #shiftcol
+        bit $ea
+        sta $d011
+        ...
+@end example
+This aligns the PC to $100, so the routine @samp{CriticalTiming} will start at the
+beginning of a page.
+
+@example
+        .align $40
+sprite:
+.binclude "sprite.bin"
+
+        ...
+
+        lda #sprite/$40
+        sta $07f8
+@end example
+This inserts sprite data at the next possible sprite block.
+
+
+@node Open Local Block
+@subsection Open Local Block
+@cindex Pseudo Opcodes, Open Local Block
+
+Open a local block. A local block capsules the variables defined inside. All
+variables defined inside a local block can not be accessed from outside. The
+outer variables can be used like usual. See also the chapter Local Blocks
+for details.
+
+Syntax: 
+@example
+@code{.(}
+@end example
+
+Examples: 
+@example
+a=4
+
+    .(                  ;open a new local block
+        #print a        ;'4' -> a is visible inside the local block
+        b=3
+    .)                  ;close the local block
+
+#print b                ;'undefined' -> b is not visible outside
+@end example
+
+@quotation Note
+Every @code{.(} must have a matching @code{.)} to close the local block.
+@end quotation
+
+@quotation Note
+Local blocks can be nested, i.e. a local block can contain one or more local blocks.
+@end quotation
+
+
+@node Close Local Block
+@subsection Close Local Block
+@cindex Pseudo Opcodes, Close Local Block
+
+Close a local block.
+
+Syntax: 
+@example
+@code{.)}
+@end example
+
+Please see Open Local Block for examples.
+
+
+@node Pseudo PC
+@subsection Pseudo PC
+@cindex Pseudo Opcodes, Pseudo PC
+
+Produce code for a diferent location.
+
+Syntax: 
+@example
+@code{.pseudopc @var{address}}
+@end example
+
+
+Examples: 
+@example
+        *=$c000
+
+        sei
+        ldx #ClearCodeEnd-ClearCode-1
+copyloop:
+        lda ClearCode,x
+        sta $0140,x
+        dex
+        bpl copyloop
+        lda #$34
+        sta 1
+        jmp $0140
+
+ClearCode:
+    .pseudopc $0140
+        lda #0
+        tax
+selfmod:
+        sta $0200,x
+        inx
+        bne selfmod
+        inc selfmod+2
+        bne selfmod
+        lda #$37
+        sta 1
+        jmp $fce2
+    .realpc
+ClearCodeEnd:
+@end example
+The @code{.pseudopc $0140} assembles the following code to run at $0140, but it is still put to $c013.
+
+
+@quotation Note
+Every .pseudopc must have a matching .realpc.
+@end quotation
+
+@quotation Note
+.pseudopc can be nested.
+@end quotation
+
+
+@node Real PC
+@subsection Real PC
+@cindex Pseudo Opcodes, Real PC
+
+Stop producing code for a different location.
+
+Syntax: 
+@example
+@code{.realpc}
+@end example
+
+Please see Pseudo PC for examples.
+
+
+@node Preprocessor Directives
+@section Preprocessor Directives
+@cindex Preprocessor Directives, Overview
+
+
+@float Table,table:all preprocessor directives
+@caption{all preprocessor directives}
+@multitable @columnfractions .60 .40
+@headitem syntax @tab command
+@item #error [term | text] [,term | ,text]@dots{}
+ @tab Error
+@item #if condition 
+ @tab If
+@item #ifdef variable
+ @tab If Defined
+@item #ifndef variable
+ @tab If Not Defined
+@item #elsif condition
+ @tab Else If
+@item #elsifdef variable
+ @tab Else If Defined
+@item #elsifndef variable
+ @tab Else If Not Defined
+@item #else
+ @tab Else
+@item #endif
+ @tab End If
+@item #include "filename"
+ @tab Include
+@item #macro name [( [parameter [, parameter@dots{}]] )]
+ @{ [macrotext | @{parameter@}]@dots{} @}
+ @tab Macro
+@item #outfile @{"filename" | @} [, sort | startadr | fillbyte | "segmentname"]@dots{}
+ @tab Outfile
+@item #print [term | text] [,term | ,text]@dots{}
+ @tab Print
+@item #segdef "name" , start-end [, fillup | force | fillbyte | typ | "segmentname"]@dots{}
+ @tab Segdef
+@item #warning [term | text] [,term | ,text]@dots{}
+ @tab Warning
+@end multitable
+@end float
+
+@menu
+* Error::
+* If::
+* If Defined::
+* If Not Defined::
+* Else If::
+* Else If Defined::
+* Else If Not Defined::
+* Else::
+* End If::
+* Include::
+* Macro::
+* Outfile::
+* Print::
+* Segdef::
+* Warning::
+@end menu
+
+
+
+@node Error
+@subsection Error
+@cindex Preprocessor Directives, Error
+
+Generate an error and print a sequence of arguments just like the Print
+command. Use in conclusion with If to check vital parameters.
+
+Syntax: 
+@example
+#error [term | text] [,term | ,text]...
+@end example
+
+Examples: 
+@example
+#error
+@end example
+Generate an error with no message
+
+@example
+#if Divisor==0
+#error "The divisor must not be zero!"
+#endif
+@end example
+another way of 'division by zero'
+
+@example
+        *=$0100
+StackDepack:
+        ...
+        rts
+
+#if *>$01f8
+#error "StackDepack routine is too long. It ends here: ", *
+#endif
+@end example
+Test if a routine on the stack gets too big.
+
+
+@node If
+@subsection If
+@cindex Preprocessor Directives, If
+
+Only assemble the next lines if the condition is true (i.e. it evaluates to a
+number not equal to 0). See Conditional Assembly for details and examples.
+
+Syntax: 
+@example
+#if condition
+@end example
+
+
+@node If Defined
+@subsection If Defined
+@cindex Preprocessor Directives, If Defined
+
+Only assemble the next lines if the variable is defined. See Conditional
+Assembly for details and examples.
+
+Syntax: 
+@example
+#ifdef variable
+@end example
+
+
+@node If Not Defined
+@subsection If Not Defined
+@cindex Preprocessor Directives, If Not Defined
+
+Only assemble the next lines if the variable is not defined. See
+Conditional Assembly for details and examples.
+
+Syntax: 
+@example
+#ifndef variable
+@end example
+
+
+@node Else If
+@subsection Else If
+@cindex Preprocessor Directives, Else If
+
+Only assemble the next lines if the condition is true (i.e. it evaluates to
+a number not equal to 0) and no prior condition was true. See Conditional
+Assembly for details and examples.
+
+Syntax: 
+@example
+#elsif condition
+@end example
+
+
+@node Else If Defined
+@subsection Else If Defined
+@cindex Preprocessor Directives, Else If Defined
+
+Only assemble the next lines if the variable is defined and no prior
+condition was true. See Conditional Assembly for details and examples.
+
+Syntax: 
+@example
+#elsifdef variable
+@end example
+
+
+@node Else If Not Defined
+@subsection Else If Not Defined
+@cindex Preprocessor Directives, Else If Not Defined
+
+Only assemble the next lines if the variable is not defined and no prior
+condition was true. See Conditional Assembly for details and examples.
+
+Syntax: 
+@example
+#elsifndef variable
+@end example
+
+
+@node Else
+@subsection Else
+@cindex Preprocessor Directives, Else
+
+Only assemble the next lines no prior condition was true. See Conditional
+Assembly for details and examples.
+
+Syntax: 
+@example
+#else
+@end example
+
+
+@node End If
+@subsection End If
+@cindex Preprocessor Directives, End If
+
+Concludes a block of conditionals. See Conditional Assembly for details and
+examples.
+
+Syntax: 
+@example
+#endif
+@end example
+
+
+@node Include
+@subsection Include
+@cindex Preprocessor Directives, Include
+
+Include a file at this position and process the inclosed text. It is like the
+file was pasted into the sourcecode.
+
+Syntax: 
+@example
+#include "filename"
+@end example
+
+@quotation Note
+If the file is not found in the current path, the includepaths are serached.
+@end quotation
+
+
+@node Macro
+@subsection Macro
+@cindex Preprocessor Directives, Macro
+
+Define a macro.
+
+Syntax: 
+@example
+#macro name [( [parameter [, parameter...]] )]
+ @{ [macrotext | @{parameter@}]... @}
+@end example
+
+For more details and examples take a look at the Macros chapter.
+
+
+@node Outfile
+@subsection Outfile
+@cindex Preprocessor Directives, Outfile
+
+Define an output file.
+
+Syntax: 
+@example
+#outfile @{"filename" | @@@} [, sort | startadr | fillbyte | "segmentname"]...
+@end example
+
+For more details and examples take a look at the Outfiles chapter.
+
+
+@node Print
+@subsection Print
+@cindex Preprocessor Directives, Print
+
+Print a sequence of arguments. Arguments are seperated with a comma.
+
+Syntax: 
+@example
+#print [term | text] [,term | ,text]...
+@end example
+
+Examples: 
+@example
+a=4
+cnt_b = 10
+cnt_c = 20
+
+#print "a is now: ", a
+
+#print 100-cnt_b," bottles left. ",50-cnt_c," carrots left."
+@end example
+produces an output like this:
+@example
+test.src:5: print:"a is now: ", $4
+test.src:7: print:$5a, " bottles left. ", $1e, " carrots left."
+@end example
+
+
+@node Segdef
+@subsection Segdef
+@cindex Preprocessor Directives, Segdef
+
+Define a segment.
+
+Syntax: 
+@example
+#segdef "name" , start-end [, fillup | force | fillbyte | typ | "segmentname"]...
+@end example
+For more details and examples take a look at the Segments chapter.
+
+
+@node Warning
+@subsection Warning
+@cindex Preprocessor Directives, Warning
+
+Generate a warning. This is intended for non critical errors. A warning
+prints a sequence of arguments to stdout just like the #print command.
+
+Syntax: 
+@example
+#warning [term | text] [,term | ,text]...
+@end example
+
+Examples: 
+@example
+        ...
+EndOfLongRoutine:
+        rts
+
+#if $8000-*<16
+#warning "space between LongRoutine and AnotherBigOne is running out!"
+#warning "Only ", $8000-* ," bytes left!"
+#endif
+
+        * = $8000
+AnotherBigOne:
+        ...
+@end example
+How much space is left between two routines? This will print a warning if they are getting too close.
+
+
+@node General Usage
+@chapter General Usage
+@cindex General Usage
+
+@menu
+* Macros::
+* Conditional Assembly::
+* Segments::
+* Outfiles::
+* Terms::
+* Local Blocks::
+@end menu
+
+@node Macros
+@section Macros
+@cindex Macros
+
+Macros are used like 'cut and paste' textsegments with parameters. Just think of a program using word sized data alot. It would come in very handy to have an opcode like 'copy_w' which copies the 2 bytes found at one adress to another. In plain assembler you would use
+
+@example
+lda from
+sta to
+lda from+1
+sta to+1
+@end example
+everytime you want to copy a word. A macro can hide the 4 needed lines behind one litte name, the identifier.
+
+Definition syntax:
+@example
+#macro name [( [parameter [, parameter...]] )]
+@{ [macrotext | @{parameter@}]... @}
+@end example
+
+Call Syntax:
+@example
+.name [( [parameter [, parameter...]] )]
+@end example
+
+Definition:
+@example
+#macro copy_word (from, to)
+@{
+        lda @{from@}
+        sta @{to@}
+        lda @{from@}+1
+        sta @{to@}+1
+@}
+@end example
+
+Call:
+@example
+.copy_word (cols, $d020)
+@end example
+Expands to:
+@example
+        lda cols
+        sta $d020
+        lda cols+1
+        sta $d020+1
+@end example
+
+Note the lines at the start and end of the macro which only contain the curled
+bracket. As everything between the enclosing brackets is used as macro text,
+the newlines after the opening and before the closing bracket are also
+included. This gets important if you intend to use a macro in the middle of a
+line. Take a look at this two examples: The macro 'func' is used with a 2
+dimensional table with 4 rows and 4 columns to calculate the offset of an
+element.
+
+Definition:
+@example
+#macro func(row, col)
+@{
+        @{row@}+4*@{col@}       ;*** This won't work ***
+@}
+@end example
+Call:
+@example
+        ldx #.func(2,1)         ;*** This won't work ***
+        lda table,x
+@end example
+This will not work as the macro includes newlines inside the brackets again. This piece of code expands to:
+
+@example
+        ldx #
+2+4*1
+
+        lda table,x
+@end example
+To get rid of these newlines simply place the whole macro in one line:
+
+@example
+#macro func(row, col)
+@{ @{row@}+4*@{col@} @}
+@end example
+or
+@example
+#macro func(row, col) @{@{row@}+4*@{col@}@}
+@end example
+Both will expand to
+@example
+        ldx #2+4*1
+        lda table,x
+@end example
+So you might ask why macros have these nasty trapdoors, but it's a feature. It allows you to define macros for a lot of special situations with a minimum of limitation.
+
+
+@node Conditional Assembly
+@section Conditional Assembly
+@cindex Conditional Assembly
+
+Conditional assembly is used to adapt a sourcecode to different situations.
+Imagine you have a lot of debug output in your code but don't want it in public
+releases. One solution is to comment every single line with debug output out
+and after the release back in. That's quite annoying, but with conditional
+assembly you can change from debug to release in no time.
+
+Overview:
+@example
+#if condition_0
+        text_0
+#elsif condition_1
+        text_1
+#elsif condition_2
+        text_2
+
+ ...
+
+#else
+        text_n
+#endif
+@end example
+
+If condition0 is true, i.e. if it evaluates to a number different from 0, text_0 is assembled.
+
+If condition0 is false, i.e. if it evaluates to 0, text_0 is completely ignored. The syntax is even not checked, so it could be complete nonsense.
+
+The #elsif's are in general like the first #if, but they are only evaluated if no previous condition was true.
+
+The #else does not have a condition. It's like a 'if everything else was false' branch.
+
+Examples:
+@example
+#if DEBUG
+        lda LittleBugger
+        jsr Print
+#endif
+@end example
+This will only be assembled if the variable 'DEBUG' has a value different from 0. So 'DEBUG=0' turns it off and 'DEBUG=1' on again.
+
+@example
+/* uncomment one of the next 2 lines to switch safety
+ * questions on (safety) or off (risky)
+ */
+VERSION="risky"
+;VERSION="safety"
+
+ ...
+
+#if VERSION=="safety"
+        jsr AskYesNo
+        bcs Abort
+#endif
+        jsr FormatDisk
+@end example
+
+Not all people like safety questions while others can't do without (like me).
+With conditional assembly it is easy to build two different versions
+
+@example
+#if 3*3==6
+        #error "Am I Pipi Langstrumpf?"
+#elsif 1+1=1
+        #error "I don't feel so well today..."
+#else
+        #print "Phew, I'm still up to it!"
+#endif
+@end example
+A little selftest.
+
+
+
+@node Segments
+@section Segments
+@cindex Segments
+
+By default DreamAss has no memory restrictions. The code can be assembled to any place from $0000 to $ffff. Several situations make it necessary to change this:
+@itemize
+@item You are developing a cartridge. Let's say it has 1 bank from $8000 to $c000. It would be fatal if your code exceeds these boundaries. A segment can limit the useable memory to the cartridge's range.
+@item A carefully planned project splits the memory in an area for code, one for constant data and one for working space. Segments reflect this concept very closely and make it easy to switch between the differen output locations.
+@end itemize
+
+Definition syntax:
+@example
+#segdef "name" , start-end [, fillup | force | fillbyte | typ | "segmentname"]...
+@end example
+
+"name" is an identifier for the segment. It is used to switch to the segment (see .segment).
+
+start-end defines the addressrange of this segment. start is the startaddress.
+end is the last address of the segment + 1. To define a segment which can use
+the addresses 3,4 and 5 the addressrange is 3-6 .
+
+fillup enforces the specified addressrange even if the segment is not
+completely filled. If fillup is not present the segment's size depends on it's
+contents. If fillup is present the segment is always filled up to the complete
+addressrange. The default is no fillup.
+
+If a segment is empty, it is not written to a file, even if fillup is present.
+If force is present, empty segments are filled up with the fillbyte and written
+to a file. The default is no force.
+
+fillbyte is used to fill up gaps between the segment's contents. The default
+fillbyte is $00.
+
+typ specifies the typ of the segment. It can be one of the following:
+@itemize
+@item abs is a segment with no special attributes
+@item zp is a zeropage segment. Start and End can only be between $00 and $100.
+@item bss is a non-initialized segment. This means only addresses are defined.
+@end itemize
+The default is abs.
+
+Switch syntax:
+@example
+        .segment name
+@end example
+
+Examples:
+@example
+#segdef "code",$0800-$1000
+#segdef "gfx",$4000-$8000
+
+.segment "code"                 ;enter the code segment
+        *=$0801
+;basicstart
+        .word bas_end
+        .word 2003
+        .byte $9e               ;sys
+        .pet "2061"
+        .byte 0
+bas_end:
+        .word 0
+
+        lda #2
+        sta $dd00
+        lda #$3b
+        sta $d011
+        lda #$18
+        sta $d016
+        lda #$80
+        sta $d018
+
+        ldx #0
+copyd8:
+        lda pic_d8,x
+        sta $d800,x
+        lda pic_d8+$100,x
+        sta $d900,x
+        lda pic_d8+$200,x
+        sta $da00,x
+        lda pic_d8+$300,x
+        sta $db00,x
+        inx
+        bne copyd8
+
+stop:
+        jmp stop
+
+;--------------------------------------
+
+.segment "gfx"                          ;enter the gfx segment
+
+        *=$4000
+.binclude "koalapic.prg",2,8000         ;include the bitmap
+
+        *=$6000
+.binclude "koalapic.prg",8002,1000      ;include the screenram
+
+        *=$6400
+pic_d8:
+.binclude "koalapic.prg",9002,1000      ;include the colorram
+@end example
+
+   A little koala viewer.
+
+
+@node Outfiles
+@section Outfiles
+@cindex Outfiles
+
+The normal behavior of dreamass is to write all object code to the file specified with the -o commandline option. If no -o was present, the file "a.out" is used instead. All segments are sorted
+and gaps between them are filled with $00, just like a simple linker. A startaddress is prepended to the file.
+
+This works great for most situations, but in some special cases the defaults need to be changed. Some examples:
+
+@itemize
+@item The source for a cartridge consists of several banks. All of them have the same startaddress. The linker would detect an overlap of all segments and refuse to process them.
+@item A complex tool has 2 separate subsections which should stay packed in the memory until they are used. Both sections and the main part are written to one file each. Then the two subsections are packed and linked to the main binary.
+@item The binary should not have a start address.
+@end itemize
+
+To define output files, the #outfile command is used.
+
+Syntax:
+
+@example
+#outfile @{"filename" | @@ @} [, sort | startadr | fillbyte | "segmentname"]...
+@end example
+
+"filename" is the name for the object file. For some philosophic reasons
+variables can not be used here, only plain strings.
+
+@@ can be used as an alternative to "filename". It represents the filename
+specified with the -o commandline option or "a.out" if no -o was present.
+
+Every file must have a name, so every #outfile must start with "filename" or @@.
+
+sort enables sorting of the segments in this outfile. If sort is present in the
+outfile definition, all included segments are sorted by their startaddress and
+gaps between the segments are filled with the fillbyte (see below). This works
+very much like a simple linker. If two or more segments overlap, i.e. they use
+(partially or completely) the same address range, assembly stops with an error.
+If there is no sort, all segments are just written to the outfile in the order
+of their appearence in the definition. No checking is done so segments can
+overlap as they like. By default sorting is off.
+
+If startadr is present, the address of the first segment is prepended to the
+file. This is exactly the same as the startaddress in C64 prg files. The
+default is no startaddress.
+
+The fillbyte is used only if sorting is enabled. If two adjacent segments have
+a gap between them, it is filled with this byte. For some philosophic reasons
+variables can not be used here, only plain numbers. The default fillbyte is $00.
+
+"segmentname" is a segment to write to this file. If sorting is disabled, it is
+possible to use the same segment more than once in a file (sounds stupid, but
+is very handy sometimes).
+
+Examples:
+
+@example
+#outfile "bank0.bin", "bank0"
+#outfile "bank1.bin", "bank1"
+@end example
+Write the segment "bank0" to the file "bank0.bin" and "bank1" to the file
+"bank1.bin". No startaddress is written for both files.
+
+@example
+#outfile "toki-o.bin", "bank0", "common", "bank1", "common"
+@end example
+Write the segments "bank0", "common", "bank1" and again "common" to the file
+"toki-o.bin". No startaddress is written.
+
+@example
+#outfile @@, sort, startadr, $bd, "code", "bitmap", "color", "d8", "sfx"
+@end example
+Write the segments "code", "bitmap", "color", "d8" and "sfx" to the file
+specified with the -o commandline switch (or "a.out"). 'sort' is present so the
+segments are sorted by their startaddress. $bd is the fillbyte to fill gaps
+between the segments. A startaddress is prepended to the file.
+
+
+
+@node Terms
+@section Terms
+@cindex Terms
+
+Whenever a command expects a number or a text it can be specified by a term. The following arithmetics may be used:
+
+@float Table,table:symbols for all operands
+@caption{symbols for all operands}
+@multitable @columnfractions .20 .80
+@headitem symbol @tab function
+@item @code{isdef}
+ @tab test if a variable is defined
+@item @code{segmentof}
+ @tab get the name of the segment where a variable was defined or modified
+@item @code{~}
+ @tab bit not
+@item @code{++}
+ @tab increment, pre or post
+@item @code{--}
+ @tab decrement, pre or post
+@item @code{+}
+ @tab positive sign or addition
+@item @code{-}
+ @tab negative sign or subtraction
+@item @code{*}
+ @tab multiply or PC
+@item @code{/}
+ @tab divide
+@item @code{mod}
+ @tab modulo
+@item @code{>>}
+ @tab shift right
+@item @code{<<}
+ @tab shift left
+@item @code{>}
+ @tab greater or high byte
+@item @code{>=}
+ @tab greater or equal
+@item @code{<}
+ @tab smaller or low byte
+@item @code{<=}
+ @tab smaller or equal
+@item @code{==}
+ @tab equal
+@item @code{!=}
+ @tab not equal
+@item @code{&}
+ @tab bit and
+@item @code{^}
+ @tab bit eor
+@item @code{|}
+ @tab bit or
+@item @code{&&}
+ @tab boolean and
+@item @code{||}
+ @tab boolean or
+@item @code{=}
+ @tab assign
+@item @code{:=}
+ @tab reassign
+@item @code{*=}
+ @tab multiply and assign
+@item @code{/=}
+ @tab divide and assign
+@item @code{mod=}
+ @tab modulo and assign
+@item @code{+=}
+ @tab add and assign
+@item @code{-=}
+ @tab subtract and assign
+@item @code{>>=}
+ @tab shift right and assign
+@item @code{<<=}
+ @tab shift left and assign
+@item @code{&=}
+ @tab bit and and assign
+@item @code{^=}
+ @tab bit eor and assign
+@item @code{|=}
+ @tab bit or and assign
+@end multitable
+@end float
+
+@float Table,table:priority of the operands
+@caption{priority of the operands}
+@multitable @columnfractions .10 .90
+@headitem priority @tab symbols
+@item 13
+ @tab @command{isdef},
+ @command{segmentof}
+@item 12
+ @tab @command{~},
+ @command{++} (postunary),
+ @command{++} (preunary),
+ @command{--} (postunary),
+ @command{--} (preunary),
+ @command{+} (sign),
+ @command{-} (sign)
+@item 11
+ @tab @command{*},
+ @command{/},
+ @command{mod}
+@item 10
+ @tab @command{+} (addition),
+ @command{-} (subtraction)
+@item 9
+ @tab @command{<<},
+ @command{>>}
+@item 8
+ @tab @command{<} (binary: less than),
+ @command{<=},
+ @command{>=},
+ @command{>}  (binary: greater than)
+@item 7
+ @tab @command{==},
+ @command{!=}
+@item 6
+ @tab @command{&},
+ @command{>} (unary: high byte),
+ @command{<} (unary: low byte)
+@item 5
+ @tab @command{^}
+@item 4
+ @tab @command{|}
+@item 3
+ @tab @command{&&}
+@item 2
+ @tab @command{||}
+@item 1
+ @tab @command{=},
+ @command{:=},
+ @command{*=},
+ @command{/=},
+ @command{mod=},
+ @command{+=},
+ @command{-=},
+ @command{<<=},
+ @command{>>=},
+ @command{&=},
+ @command{^=},
+ @command{|=}
+@end multitable
+@end float
+
+The priority determines the order in which operators are evaluated. The
+operator with the highest priority is evaluated first. 2 + 3 * 4 is the
+same as 2 + (3*4) The priority of a multiplication is 11, for an addition
+it's 10. Thus the multiplication is evaluated first.
+
+Operators with the same priority are executed from left to right.
+3 - 2 + 1 is the same as (3-2) + 1
+
+Example: All lines produce the same output
+@example
+.dw c002
+.dw 49152+8>>2
+.dw (8+4)*$1000 + 2
+@end example
+
+
+@node Local Blocks
+@section Local Blocks
+@cindex Local Blocks
+
+The '.(' and '.)' operators create a local block. It capsules the variables defined inside. They can not be reached outside.
+
+@example
+   .(          ; local block start
+        a=5
+   .)          ; local block end
+
+#print a       ; will show "undefined"
+@end example
+This example defines the variable 'a' with the value 5 inside a local block. It can not be accessed outside the block, the '#print' statement will show 'undefined'.
+
+Local blocks can be nested, which is shown in the next example. Each block has a level-number which indicates how deep the nesting is. 
+@example
+;here is level 0
+   .(
+        ;here is level 1
+           .(
+                ;here is level 2
+                   .(
+                        ;here is level 3
+                   .)
+                ;here is level 2
+                   .(
+                        ;another level 3
+                   .)
+                ;here is level 2
+           .)
+        ;here is level 1
+   .)
+;here is level 0
+@end example
+
+Variables are visible in all subjacent local blocks, but not in lower levels: 
+@example
+   .(
+           .(
+                a=7
+                   .(
+                        ;a is visible
+                   .)
+                ;a is visible
+                   .(
+                        ;a is visible
+                   .)
+                ;a is visible
+           .)
+        ;a is not visible
+   .)
+;a is not visible
+@end example
+
+The '@@' operator changes the local block to operate in for a variable. The syntax is: 
+
+@example
+@@ [level] @{labelname@}
+@end example
+
+If 'level' is omitted, the current level is used.
+
+Examples: 
+@example
+   .(
+           .(
+                a=6
+                @@0b=7
+                @@1c=8
+                @@d=9
+           .)
+   .)
+@end example
+'a' is defined without modification of the level.This means: either a definition of lower blocks is modified or a new local definition is assigned. 'b' is defined in level 0, so it's a global variable which is visible in every local block. 'c' is defined in level 1. This is 1 level above the current one. 'd' is defined without any levelnumber. This means it's defined in the current level, even if the variabel was already defined in lower levels. This syntax is useful to force a label to be local.
+
+The '@@' operator is also useful to force a new local definition of a label. The next example starts with a definition of the variable 'a' in level 0. This means it's visible in all local blocks. Therefore the statement 'a=6' inside the local block does not create a new instance of 'a'. The global variable is modified instead. 
+@example
+a=5
+   .(
+        a=6    ;modification of the variable level 0
+   .)
+#print a       ;this is 6
+@end example
+
+To avoid this behaviour, the '@@' operator is used to force a new, local instance of 'a'. 
+@example
+a=5
+   .(
+        @@a=6   ;now the definition is forced to local
+   .)
+#print a       ;5
+@end example
+
+The '@@' operator can not only be used at definition time. In the next example it is used to select local instances of the variable a. 
+@example
+a=5
+   .(
+        @@a=6
+           .(
+                @@a=7
+
+                #print @@0a    ;shows level 0 value of a: 5
+                #print @@1a    ;shows level 1 value of a: 6
+                #print @@2a    ;shows level 2 value of a: 7
+           .)
+   .)
+@end example
+
+
+@node History
+@appendix History
+
+@include history.texi
+
+
+@node Copying This Manual
+@appendix Copying This Manual
+
+@menu
+* GNU Free Documentation License::  License for copying this manual.
+@end menu
+
+@include fdl.texi
+
+
+@node Tables
+@unnumbered List of Tables
+@listoffloats Table
+
+
+@c @node Examples
+@c @unnumbered List of Examples
+@c @listoffloats Example
+
+
+@node Index
+@unnumbered Concept Index
+@cindex Index
+
+@printindex cp
+
+@bye
+

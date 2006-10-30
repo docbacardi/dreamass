@@ -1,0 +1,80 @@
+
+/*
+ * Local Block test
+ */
+	*= $1000
+
+	a = 0
+	#print "Outside the block: a=", a
+
+	.(
+		#print "Now we're inside a local block"
+		#print "'a' can be reached here (a=",a,") as it in an upper level"
+		a := 2
+		#print "'a' can be redefined from inside the local block, now its a=",a
+	.)
+	#print "Now we're outside the local block again"
+	#print "The change is also visible here: a=",a
+
+	#print
+	.(
+		b = 1
+		#print "'b' is only visible in this local block: b=",b
+	.)
+	#print "but not outside: b=", b
+
+
+	#print
+	.(
+		c = $1a
+		#print "'c' has different values inside (", c,") and"
+	.)
+
+	c=$1b
+	#print "outside (", c,") of the local block"
+
+	#print
+	#print "Next is the direct selection of local blocks with the '@' operator"
+
+	; *** Level 0 ***
+	d=$10
+	.(
+		; *** Level 1 ***
+		@d=$11
+		.(
+			; *** Level 2 ***
+			@2d=$12 ;That's the same as @d as we're in level 2
+
+			.(
+				; *** Level 3 ***
+				@d=$13
+
+				#print "*** Here is level 3 ***"
+				#print "d at level 0:", @0d
+				#print "d at level 1:", @1d
+				#print "d at level 2:", @2d
+				#print "d at level 3:", @3d
+
+				#print "Now we'll add $10 to all d variables"
+				@0d:=$20
+				@1d:=$21
+				@2d:=$22
+			.)
+
+			#print "*** Here is level 2 ***"
+			#print "d at level 0:", @0d
+			#print "d at level 1:", @1d
+			#print "d at level 2:", @2d
+
+			#print "Again $10 more..."
+			@0d:=$30
+			@1d:=$31
+			@2d:=$32
+
+		.)
+
+		#print "*** Here is level 1 ***"
+		#print "d at level 0:", @0d
+		#print "d at level 1:", @1d
+	.)
+

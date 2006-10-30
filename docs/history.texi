@@ -1,0 +1,193 @@
+
+@heading 26.03.2006
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item @code{--version} command
+	@item man page
+	@item More than one sourcefile
+	@item rule for Debian packet in Makefile (try 'make deb')
+	@item changed crosscompiler to djgpp, now dreamass runs from plain dos
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item rewrote output from @code{--help} to match help2man's requrements
+	@item tricky use of unedfined variabled produced endless assemble passes
+	@item @code{.text} with an undefined variable resulted in a crash if this var turned out to be numeric later
+	@item use of undefined macro shows strange error, but not something like "macro undefined"
+	@item Macro redefinition now results in an errormessage
+	@item a single @code{jsr} was accepted
+	@item Undef variable in @code{.DP} caused endless passes too, but only if @code{-d} was not set.
+	@item Printing a string with @code{#print} freed the memory
+	@end itemize
+@end itemize
+
+
+@heading 27.02.2005
+@itemize @w
+@item Fixed:
+	@itemize @bullet
+	@item Unmatched @code{.)} resulted in an assertion instead of an error
+	@end itemize
+@end itemize
+
+
+@heading 19.02.2005
+@itemize @w
+@item Fixed:
+	@itemize @bullet
+	@item @code{.text} did not respect forced sizes of numeric arguments
+	@end itemize
+@end itemize
+
+
+@heading 30.01.2005
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item new opcodes: 65816 and 6510Illegals
+	@item new pseudo opcodes: @code{.asize}, @code{.xysize}, @code{.cpu}
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item fixed small bug in errormessage for undefined segments
+	@item by default (no @code{#outfile} directive) zp and bss segments are not written to the output file.
+	@end itemize
+@end itemize
+
+
+@heading 21.08.2004
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item operator for terms: '.' forces the size of a numeric value.
+		example : $50.2 forces a word, this is useful to prevent warnings in situations like @code{sta $50,y}
+	@item operator: @code{sizeof}
+		gets the size of it's argument in bytes. the pc is fixed to 2 bytes.
+		examples:
+@example
+	a=$12 : #print sizeof a   ; 1
+	b=$1234 : #print sizeof b ; 2
+	#print sizeof *           ; 2
+	#print sizeof "abcdef"    ; 6
+@end example
+	@item set length of values in the label dump to a multiple of 2.
+		e.g 2 will be printed as $02
+	@end itemize
+@end itemize
+
+
+@heading 29.04.2004
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item @code{@@} operator docs
+	@item warning if .PSEUDOPC block level at start of file is not equal to end
+	@item Macros must start with the identifier '.' . This prevents strange errors if macros are not defined but used
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item Missing Endline at end of file crashed
+	@item Unmatched @code{.PSEUDOPC} or @code{.REALPC} produced no error
+	@item macro without parameter did not work
+	@end itemize
+@end itemize
+
+
+@heading 2004.02.22
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item Old historyfile was out of date, no hope to catch up. :(
+	This is a new start. Maybe it will last a bit longer.
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item 'sort' option for the @code{#outfile} command crashed
+	@item again some memory leaks
+	@end itemize
+@end itemize
+
+
+@heading 2004.02.10
+@itemize @w
+@item Fixed:
+	@itemize @bullet
+	@item memory leak in term generation
+	@item @code{#outfile} with 'sort' option for only 1 segment while more segments defined failed
+	@item Parse order of included files
+	@end itemize
+@end itemize
+
+
+@heading 2003.09.27
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item ':' concats several assembler statements in one line
+	example:
+@example
+	ldx #0 : label : stx $d020 : inx : bne label
+@end example
+	@item @code{--help} command for the commandline
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item pet and scr mode was not saved over several passes
+	@end itemize
+@end itemize
+
+
+@heading 2003.08.20
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item isdef Operator docs
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item PC definition with @code{* =} did not work, only @code{*=}
+	@end itemize
+@end itemize
+
+
+@heading 2003.07.02
+@itemize @w
+@item Fixed:
+	@itemize @bullet
+	@item segment and segelem overlaps were not recognized properly
+	@end itemize
+@end itemize
+
+
+@heading 2003.06.19
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item check if indirect jmp argument starts at last byte of a page
+	Thanks to Groepaz for the idea!
+	@end itemize
+@end itemize
+
+
+@heading 2003.05.11
+@itemize @w
+@item Fixed:
+	@itemize @bullet
+	@item Better errorhandling in Opcode parser
+	@end itemize
+@end itemize
+
+
+@heading 2003.05.07
+@itemize @w
+@item Fixed:
+	@itemize @bullet
+	@item some nasty bugs in scanner
+	@end itemize
+@item New:
+	@itemize @bullet
+	@item variables can be strings now
+	@item new number format: 'xy', up to 4 chars are converted to a number
+	@end itemize
+@end itemize

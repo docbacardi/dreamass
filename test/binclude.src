@@ -1,0 +1,14 @@
+/*
+ * Binary include
+ *
+ */
+
+
+	*= $1000
+
+	.binclude "binctest.bin"
+
+	.binclude "binctest.bin",63
+
+	.binclude "binctest.bin",63,1
+

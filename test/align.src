@@ -1,0 +1,35 @@
+/*
+ * Align
+ *
+ */
+
+
+	*= $1000
+
+	; $1000 / 2 has no remainder, nothing happens here
+	.align 2
+
+	nop
+	/*
+	 * now we're at $1001, the next address which can be
+	 * divided by 4 without remainder is $1004. So this
+	 * .ALIGN produces 3 bytes of '0' (the default fill
+	 * value)
+	 */
+	.align 4
+	#print *
+
+	/*
+	 * other fill values can be specified after the align divisor.
+	 * this fills 4 bytes of the memory from $1004 up to $1008 with $ea.
+	 */
+	.align 8, $bd
+
+	/*
+	 * The align divisor is not restricted to sane values like 2, 4 and 8.
+	 * Use anything you like.
+	 */
+	#print start=*
+	.align 7,'.'
+	#print "filled ", *-start, " bytes"
+

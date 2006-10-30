@@ -1,0 +1,13 @@
+Source: dreamass
+Section: devel
+Priority: optional
+Maintainer: Doc Bacardi <docbacardi@the-dreams.de>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.1
+
+Package: dreamass
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: crossassembler for 6510, 65816 and compatible CPUs
+ DreamAss is a crossassembler. It produces binaries for 6510, 65816 and
+ compatible cpus. The 'illegal' opcodes of the 6510 are also supported.

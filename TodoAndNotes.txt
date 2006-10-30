@@ -1,0 +1,130 @@
+
+----------------------------------------
+*** General Info ***
+----------------------------------------
+
+Building a debian package
+-------------------------
+
+The debian system needs the version number to be part of the source directory name,
+i.e. the directory containing 'main.c' must have a name of this form:
+dreamass-<MajorVersion>.<MinorVersion>
+Example: v0.9 is in the directory 'dreamass-0.9'
+
+Get root and run 'dpkg-buildpackage' in the source directory.
+
+Assuming v0.9 these files will be build in the parent directory:
+
+ dreamass_0.9-1.dsc
+ dreamass_0.9-1.tar.gz
+ dreamass_0.9-1_i386.changes
+ dreamass_0.9-1_i386.deb
+
+TODO: look at the tvision package, there's also no version info in the directory, though it
+works. But this includes all crap into the source archive. :(
+
+
+----------------------------------------
+*** IMPORTANT BUGS ***
+----------------------------------------
+
+* Macroparameters compare error
+  2 macroparameters starting with the same string can not be distinguished,
+  e.g. bank and bankval
+
+* a = *-b with b undefined just results in 'a is undefined'. It does not mention the real cause 'b'.
+
+
+* Problem with the 'dreamass_undef_error.tar.gz' example:
+    .(
+      lda xyz
+    .)
+    xyz = 2
+  will not work as xyz is allocated in the local block and marked as undefined. The definition
+  below will never be seen from inside the block. Maybe more specific flag in the variable tree could
+  solve this. A 'not found' flag besides the 'undefined' should work. This would also allow more
+  detailed error reports. VARIDX looks like a good place. VARIABLE is not so nice, it's used in many
+  other places, where a 'not found' would make no sense.
+
+
+* a label can not start with 'mod', like 'mode_something'. This will become an operand and a string.
+
+* variable to value replacement in macros
+  Currently there is no way to replace a variable with it's value in the macro parameters. Maybe
+  the parameters should all be evaluated. Plain parameters could be passed in strings.
+
+----------------------------------------
+*** ToDo ***
+----------------------------------------
+
+* command line parser needs better handling for path separators
+
+* rewrite term functions
+
+* upgrade the chapter 'debugging with valgrind' in the docs
+
+* Was passiert mit dem PetMode bzw. soll passieren, wenn folgender code ausgefuehrt wird:
+
+    .setpet
+    .(
+      .setscr
+    .)
+ 
+  oder
+  
+    .setpet
+    .text "blah"
+    #include "this_changes_the_petmode.src"
+  
+  Soll der Petmode also gerettet werden, sobald ein block / sourcefile / segment betreten wird?
+
+Nein, da ansonsten sowas nicht mehr geht:
+	#include "my_config.src"	; hier wird pet/screen gesetzt
+
+
+* .PSEUDOPC with undefined variable enters not the relocation, so the next
+.REALPC throws a "without matching '.pseudopc'" error.
+
+Soll hier reloc mit non-final oder undefined aktiviert werden?
+
+
+* Plaintext wird momentan nur nach dem ersten Pass im Dump ausgegeben. Das sollte in jedem pass so sein, damit
+  der User weiss, welcher Code dort bearbeitet wird.
+
+
+* print more information in labeldump (segment, constant, etc.)
+
+
+* .sizeof and force-size doku
+
+
+* structs
+
+
+* enums
+
+
+* read only pseudo vars: linenumber, current filename, segment stuff, pet/screen state...
+
+
+* Sort the labellist for dump by: name or adress
+
+
+* Just because of 'vardef' the size of 'lineelement_t' increased by 6! Can't this be done different?
+
+
+----------------------------------------
+*** Done ***
+----------------------------------------
+
+* (undefined variable results in 'nuber too large: 0', see 'dload_error_number_too_large.tar.gz'
+  seems to be only a problem for undefined variables in .DB parameters)
+  the var structure was not completely filled for undefined vars
+
+
+* (strange preprocs do not trigger an error, like '#endf')
+  '#endf' was parsed as operand(#) string(endf) and thus handed over to the term eval function. It
+  throws an 'number without operand' and 'assignment without right side' error. From this point of view
+  the message ok. Now the 'pass_line' function checks for single '#'.
+
+

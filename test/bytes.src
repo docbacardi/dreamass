@@ -1,0 +1,52 @@
+
+	*= $1000
+
+	; fill 8 bytes with the default fill-value '0'
+	.DSB 8
+
+	; fill 8 bytes with $5a
+	.DSB 8, $5a
+
+	; some bytes
+	.DB 1, $2, %11, 'a'
+
+	; words...
+	.DW 1, $12, $123, $1234, 'ab'
+
+	; and text
+	.TEXT "hallo!"
+
+/*
+ * .TEXT can be used to dump numbers. It takes the
+ * smallest possible size for a number.
+ */
+	; this produces some bytes as all numbers are <= $FF
+	.TEXT 0,1,2,3
+
+	; now we use numbers from 1 byte up to 4 bytes
+	.TEXT $12, $1234, $123456, $12345678
+
+	;text and numbers can be mixed
+	.TEXT "the menu:",13,13,"1) beer",13,"2) leave",0
+
+/*
+ * .TEXT converts strings from PC ascii to petscii or screencode,
+ * depending on the current mode. Use .PET or .SCR to select one
+ * mode explicitly.
+ */
+
+	; set petscii (this is the default at the start of a source, so it's quite senseless here
+	.SETPET
+	.TEXT "abcABC"		;dump some text in petscii
+	.DB 'd','D'		;chars in single apostrophes are also converted
+
+	.SETSCR
+	.TEXT "abcABC"
+	lda #'d'		;this 'd' will also become screencode
+
+	; now we'll force the mode with the .PET and .SCR operator
+	.PET "abcABC"
+	.SCR "abcABC"
+
+	; the current mode is not lost over a '.PET' or '.SCR'. This will be converted to screencode
+	.DB 'd'

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="DreamAss" version="1.0" author="Doc Bacardi (DocBacardi@the-dreams.de)" section="Sources" extensions="*.src" mimetype="text/x-dreamass" casesensitive="false" license="GPL">
+	<highlighting>
+		<list name="opcodes">
+			<item> acn </item>
+			<item> adc </item>
+			<item> ahx </item>
+			<item> alr </item>
+			<item> anc </item>
+			<item> and </item>
+			<item> arr </item>
+			<item> asl </item>
+			<item> axs </item>
+
+			<item> bcc </item>
+			<item> bcs </item>
+			<item> beq </item>
+			<item> bit </item>
+			<item> bmi </item>
+			<item> bne </item>
+			<item> bpl </item>
+			<item> bra </item>
+			<item> brk </item>
+			<item> brl </item>
+			<item> bvc </item>
+			<item> bvs </item>
+
+			<item> clc </item>
+			<item> cld </item>
+			<item> cli </item>
+			<item> clv </item>
+			<item> cmp </item>
+			<item> cop </item>
+			<item> cpx </item>
+			<item> cpy </item>
+
+			<item> dcp </item>
+			<item> dec </item>
+			<item> dex </item>
+			<item> dey </item>
+
+			<item> eor </item>
+
+			<item> inc </item>
+			<item> inx </item>
+			<item> iny </item>
+			<item> isc </item>
+
+			<item> jml </item>
+			<item> jmp </item>
+			<item> jsl </item>
+			<item> jsr </item>
+
+			<item> ki0 </item>
+			<item> ki1 </item>
+			<item> ki2 </item>
+			<item> ki3 </item>
+			<item> ki4 </item>
+			<item> ki5 </item>
+			<item> ki6 </item>
+			<item> ki7 </item>
+			<item> ki9 </item>
+			<item> kib </item>
+			<item> kid </item>
+			<item> kif </item>
+
+			<item> las </item>
+			<item> lax </item>
+			<item> lda </item>
+			<item> ldx </item>
+			<item> ldy </item>
+			<item> lsr </item>
+
+			<item> mvn </item>
+			<item> mvp </item>
+
+			<item> no0 </item>
+			<item> no2 </item>
+			<item> no4 </item>
+			<item> no6 </item>
+			<item> no8 </item>
+			<item> noc </item>
+			<item> noe </item>
+			<item> nop </item>
+			<item> nox </item>
+			<item> noy </item>
+
+			<item> ora </item>
+
+			<item> pea </item>
+			<item> pei </item>
+			<item> per </item>
+			<item> pha </item>
+			<item> phb </item>
+			<item> phd </item>
+			<item> phk </item>
+			<item> php </item>
+			<item> phx </item>
+			<item> phy </item>
+			<item> pla </item>
+			<item> plb </item>
+			<item> pld </item>
+			<item> plp </item>
+			<item> plx </item>
+			<item> ply </item>
+
+			<item> rep </item>
+			<item> rla </item>
+			<item> rol </item>
+			<item> ror </item>
+			<item> rra </item>
+			<item> rti </item>
+			<item> rtl </item>
+			<item> rts </item>
+
+			<item> sax </item>
+			<item> sbc </item>
+			<item> sbi </item>
+			<item> sec </item>
+			<item> sed </item>
+			<item> sei </item>
+			<item> sep </item>
+			<item> shx </item>
+			<item> slo </item>
+			<item> sre </item>
+			<item> sta </item>
+			<item> stp </item>
+			<item> stx </item>
+			<item> sty </item>
+			<item> stz </item>
+
+			<item> tas </item>
+			<item> tax </item>
+			<item> tay </item>
+			<item> tcd </item>
+			<item> tcs </item>
+			<item> tdc </item>
+			<item> trb </item>
+			<item> tsb </item>
+			<item> tsc </item>
+			<item> tsx </item>
+			<item> txa </item>
+			<item> txs </item>
+			<item> txy </item>
+			<item> tya </item>
+			<item> tyx </item>
+
+			<item> wai </item>
+			<item> wdm </item>
+
+			<item> xaa </item>
+			<item> xba </item>
+			<item> xce </item>
+                </list>
+
+		<list name="preproccmds">
+			<item> #error </item>
+			<item> #if </item>
+			<item> #ifdef </item>
+			<item> #ifndef </item>
+			<item> #elsif </item>
+			<item> #elsifdef </item>
+			<item> #elsifndef </item>
+			<item> #else </item>
+			<item> #endif </item>
+			<item> #include </item>
+			<item> #macro </item>
+			<item> #outfile </item>
+			<item> #print </item>
+			<item> #warning </item>
+			<item> #segdef </item>
+		</list>
+
+		<list name="psyopcodes">
+			<item> .binclude </item>
+			<item> .byte </item>
+			<item> .db </item>
+			<item> .dw </item>
+			<item> .text </item>
+			<item> .dt </item>
+			<item> .pet </item>
+			<item> .dp </item>
+			<item> .scr </item>
+			<item> .ds </item>
+			<item> .segment </item>
+			<item> .setpet </item>
+			<item> .setscr </item>
+			<item> .word </item>
+			<item> .dsb </item>
+			<item> .align </item>
+			<item> .pseudopc </item>
+			<item> .realpc </item>
+		</list>
+
+		<list name="operands">
+			<item> isdef </item>
+			<item> segmentof </item>
+			<item> mod </item>
+			<item> mod= </item>
+		</list>
+
+		<list name="attention">
+			<item> FIXME </item>
+			<item> HACK </item>
+			<item> NOTE </item>
+			<item> NOTICE </item>
+			<item> TODO </item>
+			<item> WARNING </item>
+		</list> 
+          
+		<contexts>
+			<context attribute="Normal Text" lineEndContext="#stay" name="Normal">
+				<keyword String="preproccmds" attribute="Preprocessor" context="#stay" insensitive="true"/>
+				<keyword String="psyopcodes" attribute="Pseudoopcode" context="#stay" insensitive="true"/>
+				<keyword String="opcodes" attribute="Opcode" context="#stay" insensitive="true"/>
+				<keyword String="operands" attribute="Operator" context="#stay" insensitive="true"/>
+
+				<RegExpr String="\%[01]+" attribute="Binary" context="#stay"/>
+				<DetectChar attribute="Char" context="Char" char="'"/>
+				<RegExpr String="\$[A-Fa-f0-9]+" attribute="Hex" context="#stay"/>
+				<Int attribute="Decimal" context="#stay"/>
+				<RegExpr String="#[0-9]+" attribute="Decimal" context="#stay"/>
+				<DetectChar attribute="String" context="String" char="&quot;"/>
+
+				<Detect2Chars attribute="Opcode" context="#stay" char="," char1="x"/>
+				<Detect2Chars attribute="Opcode" context="#stay" char="," char1="y"/>
+				<Detect2Chars attribute="Pseudoopcode" context="#stay" char="." char1="(" beginRegion="Brace1" />
+				<Detect2Chars attribute="Pseudoopcode" context="#stay" char="." char1=")" endRegion="Brace1" />
+
+				<DetectChar attribute="Comment" context="Commentar 1" char=";" char1="/"/>
+				<Detect2Chars attribute="Comment" context="Commentar 2" char="/" char1="*" beginRegion="Comment"/>
+
+				<RegExpr String="\.[0-9]+" attribute="Operator" context="#stay"/>
+				<RegExpr String="@[0-9]+" attribute="Operator" context="#stay"/>
+				<StringDetect String="~"		attribute="Operator" context="#stay"/>
+				<StringDetect String="++"		attribute="Operator" context="#stay"/>
+				<StringDetect String="--"		attribute="Operator" context="#stay"/>
+				<StringDetect String="+"		attribute="Operator" context="#stay"/>
+				<StringDetect String="-"		attribute="Operator" context="#stay"/>
+				<StringDetect String="*"		attribute="Operator" context="#stay"/>
+				<StringDetect String="/"		attribute="Operator" context="#stay"/>
+				<StringDetect String="&gt;&gt;"		attribute="Operator" context="#stay"/>
+				<StringDetect String="&lt;&lt;"		attribute="Operator" context="#stay"/>
+				<StringDetect String="&gt;"		attribute="Operator" context="#stay"/>
+				<StringDetect String="&gt;="		attribute="Operator" context="#stay"/>
+				<StringDetect String="&lt;"		attribute="Operator" context="#stay"/>
+				<StringDetect String="&lt;="		attribute="Operator" context="#stay"/>
+				<StringDetect String="=="		attribute="Operator" context="#stay"/>
+				<StringDetect String="!="		attribute="Operator" context="#stay"/>
+				<StringDetect String="&amp;"		attribute="Operator" context="#stay"/>
+				<StringDetect String="^"		attribute="Operator" context="#stay"/>
+				<StringDetect String="|"		attribute="Operator" context="#stay"/>
+				<StringDetect String="&amp;&amp;"	attribute="Operator" context="#stay"/>
+				<StringDetect String="||"		attribute="Operator" context="#stay"/>
+				<StringDetect String="="		attribute="Operator" context="#stay"/>
+				<StringDetect String=":="		attribute="Operator" context="#stay"/>
+				<StringDetect String="*="		attribute="Operator" context="#stay"/>
+				<StringDetect String="/="		attribute="Operator" context="#stay"/>
+				<StringDetect String="+="		attribute="Operator" context="#stay"/>
+				<StringDetect String="-="		attribute="Operator" context="#stay"/>
+				<StringDetect String="&gt;&gt;="	attribute="Operator" context="#stay"/>
+				<StringDetect String="&lt;&lt;="	attribute="Operator" context="#stay"/>
+				<StringDetect String="&amp;="		attribute="Operator" context="#stay"/>
+				<StringDetect String="^="		attribute="Operator" context="#stay"/>
+				<StringDetect String="|="		attribute="Operator" context="#stay"/>
+				<StringDetect String="("		attribute="Operator" context="#stay"/>
+				<StringDetect String=")"		attribute="Operator" context="#stay"/>
+				<DetectChar attribute="Operator" context="#stay" char="#"/>
+
+			</context>
+      
+			<context attribute="Char" lineEndContext="#pop" name="Char">
+				<HlCStringChar attribute="Char" context="#stay"/>
+				<DetectChar attribute="Char" context="#pop" char="'"/>
+			</context>
+
+			<context attribute="String" lineEndContext="#pop" name="String">
+				<HlCStringChar attribute="String Char" context="#stay"/>
+				<DetectChar attribute="String" context="#pop" char="&quot;"/>
+			</context>
+      
+			<context attribute="Comment" lineEndContext="#pop" name="Commentar 1">
+				<keyword attribute="Alert" context="#stay" String="attention" />
+			</context>
+			<context attribute="Comment" lineEndContext="#stay" name="Commentar 2">
+				<Detect2Chars attribute="Comment" context="#pop" char="*" char1="/" endRegion="Comment"/>
+				<keyword attribute="Alert" context="#stay" String="attention" />
+			</context>
+
+                </contexts>
+
+		<itemDatas>
+			<itemData name="Normal Text"	defStyleNum="dsNormal"/>
+			
+			<itemData name="Opcode"		defStyleNum="dsKeyword"/>
+			<itemData name="Preprocessor"	defStyleNum="dsOthers"/>
+			<itemData name="Pseudoopcode"	defStyleNum="dsOthers"/>
+
+			<itemData name="Binary"		defStyleNum="dsBaseN"/>
+			<itemData name="Char"		defStyleNum="dsChar"/>
+			<itemData name="Decimal"	defStyleNum="dsDecVal"/>
+			<itemData name="Hex"		defStyleNum="dsBaseN"/>
+			<itemData name="String"		defStyleNum="dsString"/>
+			<itemData name="String Char"	defStyleNum="dsChar"/>
+
+			<itemData name="Operator"	defStyleNum="dsOthers"/>
+			<itemData name="Comment"	defStyleNum="dsComment"/>
+			<itemData name="Alert"		defStyleNum="dsAlert" />
+		</itemDatas>
+	</highlighting>
+
+	<general>
+		<comments>
+			<comment name="singleLine" start=";"/>
+			<comment name="multiLine" start="/*" end="*/"/>
+		</comments>
+		<keywords casesensitive="0" weakDeliminator="_.$"/>
+	</general>
+</language>
+

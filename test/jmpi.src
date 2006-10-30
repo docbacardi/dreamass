@@ -1,0 +1,20 @@
+
+	*=$c000
+
+	lda #'*'
+	jmp (poop)
+
+	*=$c080
+dst0:
+	sta $0400
+	rts
+
+	*=$c0a9
+dst1:
+	sta $0401
+	rts
+
+	*=$c0ff
+poop:
+	.DW dst0
+

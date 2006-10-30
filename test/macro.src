@@ -1,0 +1,81 @@
+
+/*
+ * Macro test
+ */
+
+	*=$8000
+
+/*
+ * first some regular stuff
+ * a macro with 2 parameters
+ */
+
+#macro copy_word (from, to)
+{
+	lda {from}
+	sta {to}
+	lda {from}+1
+	sta {to}+1
+}
+
+	;Set the Screencolors (ok, it's a stupid example)
+	.copy_word(Colors,$d020)
+
+Colors:
+	.DB $06,$0e
+
+
+;--------------------------------------
+
+/*
+ * macros can also be used right in the middle of a line
+ * this little example calculates the index for a 7*x table
+ */
+
+#macro index(row, col) {7*{row}+{col}}
+
+	ldx #.index(2,1)
+	lda Table,x
+
+Table:
+	.DB 0,0,0,0,0,0,0
+	.DB 0,0,0,0,0,0,0
+	.DB 0,1,0,0,0,0,0
+	.DB 0,0,0,0,0,0,0
+
+;--------------------------------------
+
+/*
+ * now for something weird: 'mage' is a Macro Generator
+ * note the '\}' inside the definition. This
+ * quite sick, but shows the possibilities of macros
+ */
+
+#macro mage(name, args, text)
+{
+	#macro {name}({args})
+	\{
+		{text}
+	\}
+}
+
+/*
+ * ok, now we use mage to create this macro:
+ *
+ * #macro incword(adr)
+ * {
+ *         inc {adr}
+ *         bne L0
+ *         inc {adr}+1
+ *  L0:
+ * }
+ *
+ * this gets a bit ugly as all the special chars like newline
+ * have to be escaped
+ */
+
+.mage( incword, adr, \	inc\ {adr}\n\	bne\ L0\n\	inc\ {adr}+1\n\	L0:)
+
+.incword($d020)
+
+

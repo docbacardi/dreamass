@@ -1,0 +1,47 @@
+
+	*= $1000
+
+	a=0
+	b=2
+
+#print "*** Test 1 ***"
+; first a simple if clause
+#if a==0
+	#print "a==0"
+#endif
+
+
+#print "*** Test 2 ***"
+/*
+ * After a true condition no more elseif's are evaluated.
+ * Thus only "a<1" is printed and not "b==2" though both
+ * conditions are true
+ */
+#if a<1
+	#print "a<1"
+#elsif b==2
+	#print "b==2"
+#endif
+
+
+#print "*** Test 3 ***"
+/*
+ * An else clause will be processed if all other conditions
+ * failed.
+ */
+#if a>0
+	#print "a>0"
+#elsif b<2
+	#print "b<2"
+#else
+	#print "nothing was true"
+#endif
+
+
+#print "*** Test 4 ***"
+#ifndef var
+	#print "var is not defined"
+#else
+	#print "var is defined. Strange!"
+#endif
+

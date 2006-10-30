@@ -1,0 +1,30 @@
+
+	*=$1000
+
+	;that's nothing special
+	.DB 2+3*4
+
+	;convert a number to ascii, good for version numbers :)
+	z=436
+	.DB '0' + z/100, '0' + (z mod 100)/10, '0' + z mod 10
+
+	;you can not only use variables, but also define them in terms
+	.DB a=1
+
+	;post and pre inc/dec is possible
+	.DB b=++a
+#print "b is now:", b
+
+	;with the help of boolean operators there is a simple method of multiple select
+	.DB (a==2)*7+(a==3)*4
+
+	.DB a+=2
+	#print a
+
+	.DW *+=$100
+	nop
+	nop
+
+	; some segment tests
+here:
+	#print segmentof *
