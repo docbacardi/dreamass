@@ -621,15 +621,8 @@ bool resolvedSomething(void)
 
 uint8_t makeHash(const char* name, const stringsize_t namelen)
 {
-	uint8_t hash;
-	char c1, c2;
-
-
-	c1 = *name;
-	c2 = (namelen>1)?*(name+1):0;
-	hash = ( (c1>>1)&0x0f ) | ( (c2>>1)&0x0f )<<4;
-
-	return hash;
+	/* no good hash function, but keeps all labels in sorted order -> no need to sort at label dump time */
+	return *name;
 }
 
 
