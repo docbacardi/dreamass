@@ -1543,14 +1543,9 @@ bool existFile(const stringsize_t *filename)
 
 	infile = -1;
 
-	fprintf(stderr, "looking for '");
-	printString(stderr, filename);
-	fprintf(stderr, "'\n");
-
 	/* open and stat file */
 	infile = filelist_ropen(filename);
 	fFileExists = (infile!=-1) ? true : false;
-	fprintf(stderr, "result: %d\n", fFileExists);
 
 	if( infile!=-1 )
 	{
