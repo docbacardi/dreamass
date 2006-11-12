@@ -1536,19 +1536,29 @@ VARERR fn_segmentOf(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn
 		if( tri->typ==TT_VARIABLE )
 		{
 			if( (ve=readVariable(tri->data.varname)).err )
+			{
 				return ve;
+			}
 			if( ve.var.segidx!=(seglistsize_t)-1 )
+			{
 				name = segment_getNameOf(ve.var.segidx);
+			}
 			else
+			{
 				name = NULL;
+			}
 		}
 		else
+		{
 			name = segment_getName();
+		}
 
 		ve.err = false;
 		ve.var.used = false;
+		ve.var.final = true;
 		ve.var.valt.typ = VALTYP_STR;
-		if( (ve.var.defined=(name!=NULL)) ) {
+		if( (ve.var.defined=(name!=NULL)) )
+		{
 			ve.var.valt.value.str = stringClone(name);
 		}
 	}

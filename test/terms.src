@@ -28,3 +28,10 @@
 	; some segment tests
 here:
 	#print segmentof *
+
+	s = "abc"
+	t = "def"
+	u = s + t
+	#print s
+	#print t
+	#print u

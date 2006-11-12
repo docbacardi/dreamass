@@ -2078,10 +2078,31 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 		case LE_VARDEF:
 			fprintf(dfh, "<b>VARDEF</b>(");
 			if( lelem->data.vardef.varadr.varidx!=no_var )
+			{
 				printString( dfh, getVarName(lelem->data.vardef.varadr.varidx) );
+			}
 			else
+			{
 				fprintf(dfh, "undefined");
-			fprintf(dfh, "=$%08x) ", lelem->data.vardef.var.valt.value.num);
+			}
+			switch( lelem->data.vardef.var.valt.typ )
+			{
+			case VALTYP_NUM:
+				fprintf(dfh, "=$%08x) ", lelem->data.vardef.var.valt.value.num);
+				break;
+			case VALTYP_STR:
+				if( lelem->data.vardef.var.valt.value.str!=NULL )
+				{
+					fprintf(dfh, "=\"");
+					printString(dfh, lelem->data.vardef.var.valt.value.str);
+					fprintf(dfh, "\")");
+				}
+				else
+				{
+					fprintf(dfh, "= NULL )");
+				}
+				break;
+			}
 			break;
 		case LE_VARTERM:
 			fprintf(dfh, "<a href=\"#term%x_p%d\"><b>VARTERM</b></a> ", lelem->data.termidx, pass_cnt);
