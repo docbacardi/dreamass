@@ -1,4 +1,37 @@
 
+
+@heading 12.11.2006
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item preprocessor operators @code{#iffile}, @code{#ifnfile}, @code{#elsiffile} and @code{#elsifnfile} with test and docs
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item vardef in debug dump showed only numbers and no strings
+	@item memoryleak in @code{segmentof} operator
+	@item updated distribution site in docs
+	@item sorted label dump
+	@end itemize
+@end itemize
+
+
+@heading 29.10.2006
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item Moved development to BerliOS, thanks for hosting us!
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item Using a lot of macros resulted in a crash
+	@item more detailed error message for overlapping segments
+	@item undefined variables not handled correctly
+	@item valid opcode check failed
+	@end itemize
+@end itemize
+
+
 @heading 26.03.2006
 @itemize @w
 @item New:
