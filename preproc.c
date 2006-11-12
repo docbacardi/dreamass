@@ -33,12 +33,16 @@ bool ppf_debug(lineelement_t *selem);
 bool ppf_else(lineelement_t *selem);
 bool ppf_elsif(lineelement_t *selem);
 bool ppf_elsifdef(lineelement_t *selem);
+bool ppf_elsiffile(lineelement_t *selem);
 bool ppf_elsifndef(lineelement_t *selem);
+bool ppf_elsifnfile(lineelement_t *selem);
 bool ppf_endif(lineelement_t *selem);
 bool ppf_error(lineelement_t *selem);
 bool ppf_if(lineelement_t *selem);
 bool ppf_ifdef(lineelement_t *selem);
+bool ppf_iffile(lineelement_t *selem);
 bool ppf_ifndef(lineelement_t *selem);
+bool ppf_ifnfile(lineelement_t *selem);
 bool ppf_include(lineelement_t *selem);
 bool ppf_outfile(lineelement_t *selem);
 bool ppf_print(lineelement_t *selem);
@@ -49,19 +53,25 @@ bool output(bool quiet);
 
 bool nextvalid(void);
 
+bool existFile(const stringsize_t *filename);
+
 /*-----------------------------------*/
 
-const pp_keytri preproc[15] =
+const pp_keytri preproc[19] =
 {
 	{ "else",	4,	PP_ELSE },
 	{ "elsif",	5,	PP_ELSIF },
 	{ "elsifdef",	8,	PP_ELSIFDEF },
+	{ "elsiffile",	9,	PP_ELSIFFILE },
 	{ "elsifndef",	9,	PP_ELSIFNDEF },
+	{ "elsifnfile",	10,	PP_ELSIFNFILE },
 	{ "endif",	5,	PP_ENDIF },
 	{ "error",	5,	PP_ERROR },
 	{ "if",		2,	PP_IF },
 	{ "ifdef",	5,	PP_IFDEF },
+	{ "iffile",	6,	PP_IFFILE },
 	{ "ifndef",	6,	PP_IFNDEF },
+	{ "ifnfile",	7,	PP_IFNFILE },
 	{ "include",	7,	PP_INCLUDE },
 	{ "macro",	5,	PP_MACRODEF },
 	{ "outfile",	7,	PP_OUTFILE },
@@ -77,17 +87,21 @@ PPZUST pp_stack[max_pp_stackpos+1] = { ZU_START };
 /*
  * size of this array is sizeof(preproc)*count(PPZUST)
  */
-const pp_func pp_functions[15] =
+const pp_func pp_functions[19] =
 {
 	ppf_else,
 	ppf_elsif,
 	ppf_elsifdef,
+	ppf_elsiffile,
 	ppf_elsifndef,
+	ppf_elsifnfile,
 	ppf_endif,
 	ppf_error,
 	ppf_if,
 	ppf_ifdef,
+	ppf_iffile,
 	ppf_ifndef,
+	ppf_ifnfile,
 	ppf_include,
 	NULL,			/* PP_MACRODEF */
 	ppf_outfile,
@@ -131,6 +145,7 @@ struct fileattribs_t
 bool ifDelete(bool delall)
 {
 	lineelement_t *lelem;
+	PREPROC tPreProcTyp;
 	int ifcnt=1;
 
 
@@ -146,42 +161,71 @@ bool ifDelete(bool delall)
 		} 
 		if( lelem->typ==LE_PREPROC )
 		{
-			if( lelem->data.pp==PP_IF || lelem->data.pp==PP_IFDEF || lelem->data.pp==PP_IFNDEF )
+			/* get preproc typ */
+			tPreProcTyp = lelem->data.pp;
+
+			switch( tPreProcTyp )
 			{
+			case PP_IF:
+			case PP_IFDEF:
+			case PP_IFFILE:
+			case PP_IFNDEF:
+			case PP_IFNFILE:
+				/* detect nested conditionals */
 				++ifcnt;
 				freeLineElement(lelem);
-				if( !src_next(pp_src) ) {
+				if( !src_next(pp_src) )
+				{
 					return false;
 				}
-			}
-			else if( lelem->data.pp==PP_ENDIF )
-			{
+				break;
+			case PP_ENDIF:
 				--ifcnt;
 				if( ifcnt!=0 || delall )
 				{
-					if( !src_next(pp_src) ) {
+					if( !src_next(pp_src) )
+					{
 						return false;
 					}
 					freeLineElement(lelem);
 				}
-			}
-			else if( !delall && ifcnt==1 && (lelem->data.pp==PP_ELSE || lelem->data.pp==PP_ELSIF || lelem->data.pp==PP_ELSIFDEF || lelem->data.pp==PP_ELSIFNDEF) ) {
-				--ifcnt;
-			}
-			else
-			{
+				break;
+			case PP_ELSE:
+			case PP_ELSIF:
+			case PP_ELSIFDEF:
+			case PP_ELSIFFILE:
+			case PP_ELSIFNDEF:
+			case PP_ELSIFNFILE:
+				/* closed a nested conditional? */
+				if( !delall && ifcnt==1 )
+				{
+					--ifcnt;
+					break;
+				}
+				/* else fallthrough to delete part */
+			case PP_ERROR:
+			case PP_INCLUDE:
+			case PP_MACRODEF:
+			case PP_OUTFILE:
+			case PP_PRINT:
+			case PP_SEGDEF:
+			case PP_WARNING:
+				/* delete lineelement */
 				freeLineElement(lelem);
-				if( !src_next(pp_src) ) {
+				if( !src_next(pp_src) )
+				{
 					return false;
 				}
 			}
 		}
 		else
 		{
-			if( lelem->typ!=LE_EOL ) {
+			if( lelem->typ!=LE_EOL )
+			{
 				freeLineElement(lelem);
 			}
-			if( !src_next(pp_src) ) {
+			if( !src_next(pp_src) )
+			{
 				return false;
 			}
 		}
@@ -213,13 +257,27 @@ bool ifSkip(void)
 			{
 			case PP_IF:
 			case PP_IFDEF:
+			case PP_IFFILE:
 			case PP_IFNDEF:
+			case PP_IFNFILE:
 				++ifcnt;
 				break;
 			case PP_ENDIF:
 				--ifcnt;
 				break;
-			default:
+			case PP_ELSE:
+			case PP_ELSIF:
+			case PP_ELSIFFILE:
+			case PP_ELSIFDEF:
+			case PP_ELSIFNDEF:
+			case PP_ELSIFNFILE:
+			case PP_ERROR:
+			case PP_INCLUDE:
+			case PP_MACRODEF:
+			case PP_OUTFILE:
+			case PP_PRINT:
+			case PP_SEGDEF:
+			case PP_WARNING:
 				/* nothing to do */
 				break;
 			};
@@ -355,7 +413,8 @@ bool ppf_elsifdef(lineelement_t *selem)
 
 	lpos_start = pp_src->slpos;
 	lelem = (lineelement_t*)src_peek(pp_src);
-	if( lelem==NULL ) {
+	if( lelem==NULL )
+	{
 		return false;
 	}
 	if( lelem->typ!=LE_TEXT )
@@ -363,7 +422,8 @@ bool ppf_elsifdef(lineelement_t *selem)
 		error(EM_MissingArgForPreProc);
 		return false;
 	}
-	if( !src_next(pp_src) ) {
+	if( !src_next(pp_src) )
+	{
 		return false;
 	}
 
@@ -374,10 +434,8 @@ bool ppf_elsifdef(lineelement_t *selem)
 	switch( pp_stack[pp_stackpos] )
 	{
 	case ZU_START:
-	{
 		error(EM_ElsifWithoutIf);
 		return false;
-	}
 	case ZU_IF_NEVERBEENTRUE:
 		if( vexists )
 			pp_stack[pp_stackpos] = ZU_IF_TRUE;
@@ -391,6 +449,71 @@ bool ppf_elsifdef(lineelement_t *selem)
 		--pp_stackpos;
 		if( !ifDelete(true) )
 			return false;
+		break;
+	};
+	return true;
+}
+
+
+bool ppf_elsiffile(lineelement_t *selem)
+{
+	linesize_t lpos_start;
+	lineelement_t *lelem;
+	bool fexists;
+
+
+	freeLineElement(selem);
+
+	if( pp_stackpos>=max_pp_stackpos )
+	{
+		error(EM_MaxDepth);
+		return false;
+	}
+
+	lpos_start = pp_src->slpos;
+	lelem = (lineelement_t*)src_peek(pp_src);
+	if( lelem==NULL )
+	{
+		return false;
+	}
+	if( lelem->typ!=LE_STRING )
+	{
+		error(EM_MissingArgForPreProc);
+		return false;
+	}
+	if( !src_next(pp_src) )
+	{
+		return false;
+	}
+
+	fexists = existFile(lelem->data.str);
+
+	pp_delItems(lpos_start, pp_src->slpos);
+
+	switch( pp_stack[pp_stackpos] )
+	{
+	case ZU_START:
+		error(EM_ElsifWithoutIf);
+		return false;
+	case ZU_IF_NEVERBEENTRUE:
+		if( fexists )
+		{
+			pp_stack[pp_stackpos] = ZU_IF_TRUE;
+		}
+		else
+		{
+			if( !ifDelete(false) )
+			{
+				return false;
+			}
+		}
+		break;
+	case ZU_IF_TRUE:
+		--pp_stackpos;
+		if( !ifDelete(true) )
+		{
+			return false;
+		}
 		break;
 	};
 	return true;
@@ -448,6 +571,71 @@ bool ppf_elsifndef(lineelement_t *selem)
 		--pp_stackpos;
 		if( !ifDelete(true) )
 			return false;
+		break;
+	};
+	return true;
+}
+
+
+bool ppf_elsifnfile(lineelement_t *selem)
+{
+	linesize_t lpos_start;
+	lineelement_t *lelem;
+	bool fexists;
+
+
+	freeLineElement(selem);
+
+	if( pp_stackpos>=max_pp_stackpos )
+	{
+		error(EM_MaxDepth);
+		return false;
+	}
+
+	lpos_start = pp_src->slpos;
+	lelem = (lineelement_t*)src_peek(pp_src);
+	if( lelem==NULL )
+	{
+		return false;
+	}
+	if( lelem->typ!=LE_STRING )
+	{
+		error(EM_MissingArgForPreProc);
+		return false;
+	}
+	if( !src_next(pp_src) )
+	{
+		return false;
+	}
+
+	fexists = existFile(lelem->data.str);
+
+	pp_delItems(lpos_start, pp_src->slpos);
+
+	switch( pp_stack[pp_stackpos] )
+	{
+	case ZU_START:
+		error(EM_ElsifWithoutIf);
+		return false;
+	case ZU_IF_NEVERBEENTRUE:
+		if( fexists )
+		{
+			if( !ifDelete(false) )
+			{
+				return false;
+			}
+		}
+		else
+		{
+			pp_stack[pp_stackpos] = ZU_IF_TRUE;
+		}
+		break;
+	case ZU_IF_TRUE:
+		--pp_stackpos;
+		if( !ifDelete(true) )
+		{
+			return false;
+		}
 		break;
 	};
 	return true;
@@ -579,6 +767,51 @@ bool ppf_ifdef(lineelement_t *selem)
 }
 
 
+bool ppf_iffile(lineelement_t *selem)
+{
+	linesize_t lpos_start;
+	lineelement_t *lelem;
+	bool fexists;
+
+
+	freeLineElement(selem);
+
+	if( pp_stackpos>=max_pp_stackpos )
+	{
+		error(EM_MaxDepth);
+		return false;
+	}
+
+	lpos_start = pp_src->slpos;
+	lelem = (lineelement_t*)src_peek(pp_src);
+	if( lelem==NULL ) {
+		return false;
+	}
+	if( lelem->typ!=LE_STRING )
+	{
+		error(EM_MissingArgForPreProc);
+		return false;
+	}
+	if( !src_next(pp_src) ) {
+		return false;
+	}
+
+	fexists = existFile(lelem->data.str);
+
+	pp_delItems(lpos_start, pp_src->slpos);
+
+	if( fexists )
+		pp_stack[++pp_stackpos] = ZU_IF_TRUE;
+	else
+	{
+		pp_stack[++pp_stackpos] = ZU_IF_NEVERBEENTRUE;
+		if( !ifDelete(false) )
+			return false;
+	}
+	return true;
+}
+
+
 bool ppf_ifndef(lineelement_t *selem)
 {
 	linesize_t lpos_start;
@@ -613,6 +846,52 @@ bool ppf_ifndef(lineelement_t *selem)
 	pp_delItems(lpos_start, pp_src->slpos);
 
 	if( vexists )
+	{
+		pp_stack[++pp_stackpos] = ZU_IF_NEVERBEENTRUE;
+		if( !ifDelete(false) )
+			return false;
+	}
+	else {
+		pp_stack[++pp_stackpos] = ZU_IF_TRUE;
+	}
+	return true;
+}
+
+
+bool ppf_ifnfile(lineelement_t *selem)
+{
+	linesize_t lpos_start;
+	lineelement_t *lelem;
+	bool fexists;
+
+
+	freeLineElement(selem);
+
+	if( pp_stackpos>=max_pp_stackpos )
+	{
+		error(EM_MaxDepth);
+		return false;
+	}
+
+	lpos_start = pp_src->slpos;
+	lelem = (lineelement_t*)src_peek(pp_src);
+	if( lelem==NULL ) {
+		return false;
+	}
+	if( lelem->typ!=LE_STRING )
+	{
+		error(EM_MissingArgForPreProc);
+		return false;
+	}
+	if( !src_next(pp_src) ) {
+		return false;
+	}
+
+	fexists = existFile(lelem->data.str);
+
+	pp_delItems(lpos_start, pp_src->slpos);
+
+	if( fexists )
 	{
 		pp_stack[++pp_stackpos] = ZU_IF_NEVERBEENTRUE;
 		if( !ifDelete(false) )
@@ -1253,6 +1532,32 @@ bool output(bool quiet)
 		printf("\n");
 
 	return true;
+}
+
+
+bool existFile(const stringsize_t *filename)
+{
+	int infile;
+	bool fFileExists;
+
+
+	infile = -1;
+
+	fprintf(stderr, "looking for '");
+	printString(stderr, filename);
+	fprintf(stderr, "'\n");
+
+	/* open and stat file */
+	infile = filelist_ropen(filename);
+	fFileExists = (infile!=-1) ? true : false;
+	fprintf(stderr, "result: %d\n", fFileExists);
+
+	if( infile!=-1 )
+	{
+		close(infile);
+	}
+
+	return fFileExists;
 }
 
 /*-----------------------------------*/

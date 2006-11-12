@@ -1,0 +1,50 @@
+;---------------------------------------
+; iffile demo
+;---------------------------------------
+;
+; iffile_01.bin : exists
+; iffile_02.bin : exists
+; iffile_03.bin : does not exist
+;
+
+	* = $c000
+
+
+#iffile "iffile_01.bin"
+	#print "found file 01"
+#else
+	#error "failed to find file 01 in 'iffile'"
+#endif
+
+
+#iffile "iffile_02.bin"
+	#print "found file 02"
+#else
+	#error "failed to find file 02 in 'iffile'"
+#endif
+
+
+#iffile "iffile_03.bin"
+	#error "failed to find file 01 in 'iffile'"
+#else
+	#print "not found file 03 (that's correct, don't worry)"
+#endif
+
+
+#iffile "iffile_03.bin"
+	#error "found file 03 in 'iffile', but it should not exist"
+#elsiffile "iffile_01.bin"
+	#print "found file 01 in elsiffile"
+#else
+	#error "failed to find any file"
+#endif
+
+
+#ifnfile "iffile_01.bin"
+	#error "failed to find file 01 in 'ifnfile'"
+#elsifnfile "iffile_03.bin"
+	#print "not found file 03 in elsifnfile (that's also correct)"
+#else
+	#error "found file 03, but it should not exist"
+#endif
+

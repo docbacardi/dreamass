@@ -37,7 +37,7 @@ typedef struct
 	PREPROC idx;
 } pp_keytri;
 
-extern const pp_keytri preproc[15];
+extern const pp_keytri preproc[19];
 
 bool pp_init(sourcefile_t *src);
 const lineelement_t *pp_peek(void);

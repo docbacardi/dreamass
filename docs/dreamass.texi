@@ -36,7 +36,7 @@ Free Documentation License''.
 @end direntry
 
 @set EMAIL DocBacardi@@the-dreams.de
-@set DISTRIB_SITE http://people.freenet.de/LittleDreamLand
+@set DISTRIB_SITE http://developer.berlios.de/projects/rrtools
 
 @shorttitlepage DreamAss
 
@@ -1229,14 +1229,22 @@ Please see Pseudo PC for examples.
  @tab If
 @item #ifdef variable
  @tab If Defined
+@item #iffile "filename"
+ @tab If File Exists
 @item #ifndef variable
  @tab If Not Defined
+@item #ifnfile "filename"
+ @tab If File Not Exists
 @item #elsif condition
  @tab Else If
 @item #elsifdef variable
  @tab Else If Defined
+@item #elsiffile "filename"
+ @tab Else If File Exists
 @item #elsifndef variable
  @tab Else If Not Defined
+@item #elsifnfile "filename"
+ @tab Else If File Not Exists
 @item #else
  @tab Else
 @item #endif
@@ -1261,10 +1269,14 @@ Please see Pseudo PC for examples.
 * Error::
 * If::
 * If Defined::
+* If File Exists::
 * If Not Defined::
+* If File Not Exists::
 * Else If::
 * Else If Defined::
+* Else If File Exists::
 * Else If Not Defined::
+* Else If File Not Exists::
 * Else::
 * End If::
 * Include::
@@ -1341,6 +1353,19 @@ Syntax:
 @end example
 
 
+@node If File Exists
+@subsection If File Exists
+@cindex Preprocessor Directives, If File Exists
+
+Only assemble the next lines if the file with the name "filename" exists and is readable. See Conditional
+Assembly for details and examples.
+
+Syntax: 
+@example
+#iffile "filename"
+@end example
+
+
 @node If Not Defined
 @subsection If Not Defined
 @cindex Preprocessor Directives, If Not Defined
@@ -1351,6 +1376,19 @@ Conditional Assembly for details and examples.
 Syntax: 
 @example
 #ifndef variable
+@end example
+
+
+@node If File Not Exists
+@subsection If File Not Exists
+@cindex Preprocessor Directives, If File Not Exists
+
+Only assemble the next lines if the file with the name "filename" does not exist or is not readable. See Conditional
+Assembly for details and examples.
+
+Syntax: 
+@example
+#ifnfile "filename"
 @end example
 
 
@@ -1381,6 +1419,19 @@ Syntax:
 @end example
 
 
+@node Else If File Exists
+@subsection Else If File Exists
+@cindex Preprocessor Directives, If Else File Exists
+
+Only assemble the next lines if the file with the name "filename" exists and is readable and no prior
+condition was true. See Conditional Assembly for details and examples.
+
+Syntax: 
+@example
+#elsiffile "filename"
+@end example
+
+
 @node Else If Not Defined
 @subsection Else If Not Defined
 @cindex Preprocessor Directives, Else If Not Defined
@@ -1391,6 +1442,19 @@ condition was true. See Conditional Assembly for details and examples.
 Syntax: 
 @example
 #elsifndef variable
+@end example
+
+
+@node Else If File Not Exists
+@subsection Else If File Not Exists
+@cindex Preprocessor Directives, If Else File Not Exists
+
+Only assemble the next lines if the file with the name "filename" does not exist or is not readable and no prior
+condition was true. See Conditional Assembly for details and examples.
+
+Syntax: 
+@example
+#elsifnfile "filename"
 @end example
 
 

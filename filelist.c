@@ -97,7 +97,7 @@ sourcefile_t *filelist_getSrc(filescnt_t fileidx)
  * Try to open a file for reading in the current
  * directory and all include paths
  */
-int filelist_ropen(stringsize_t *name)
+int filelist_ropen(const stringsize_t *name)
 {
 	includePathscnt_t cnt0;
 	stringsize_t namelen;
@@ -121,10 +121,12 @@ int filelist_ropen(stringsize_t *name)
 		return fdes;
 	}
 
-	for( cnt0=0; cnt0<includePaths_count; ++cnt0 ) {
+	for( cnt0=0; cnt0<includePaths_count; ++cnt0 )
+	{
 		cpos= cbuf+includeMaxLen-(inclen=*(*(includePaths+cnt0)));
 		memcpy( cpos, *(includePaths+cnt0)+1, inclen );
-		if( (fdes=ropen(cpos))!=-1 ) {
+		if( (fdes=ropen(cpos))!=-1 )
+		{
 			break;
 		}
 	}

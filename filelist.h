@@ -35,7 +35,7 @@ filescnt_t filelist_addFile(sourcefile_t *src, stringsize_t *filename);
 stringsize_t *filelist_getName(filescnt_t fileidx);
 sourcefile_t *filelist_getSrc(filescnt_t fileidx);
 
-int filelist_ropen(stringsize_t *name);
+int filelist_ropen(const stringsize_t *name);
 
 #endif		/* __FILELIST_H__ */
 
