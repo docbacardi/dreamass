@@ -371,7 +371,7 @@ void showHelp(const char *pcArgv0)
 		"  dreamass -DData=\"names.db\" addressbook.src    define Data=\"names.db\" and assemble addressbook.src\n"
 		"\n"
 		"Email bug reports to DocBacardi@the-dreams.de.\n"
-		"DreamAss home page: http://people.freenet.de/LittleDreamLand/dreamass/\n", pcArgv0 );
+		"DreamAss home page: http://rrtools.berlios.de\n", pcArgv0 );
 }
 
 
