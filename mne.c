@@ -54,6 +54,7 @@ ADRESSKEY scanAdrKeys(uint8_t sidx, uint8_t eidx);
 
 void mne_init(void)
 {
+	/* default is 6510 */
 	setCpuType(CPUTYPE_6510);
 }
 
@@ -183,6 +184,7 @@ elength_t parse_mne(void)
 				break;
 			default:
 				/* strange length, error! */
+				error(EM_Overflow_d, var_numArg1.valt.value.num);
 				return length;
 			}
 		}

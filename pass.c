@@ -632,11 +632,20 @@ bool pass_dump(sourcefile_t *src)
 	src_reset(src);
 	segment_reset();
 	if( !pp_init(src) )
+	{
 		return false;
+	}
 
 	while( (lelem=pp_get())->typ!=LE_EOF )
 	{
 		memptr = segment_getMemPtr();
+		if( memptr==NULL )
+		{
+			/* the memory element does not exist, this should never happen */
+			assert( false );
+			return false;
+		}
+
 		switch( lelem->typ )
 		{
 		case BE_1BYTE:

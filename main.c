@@ -766,10 +766,14 @@ __EXC_CleanUp__:
 void dumpObject(sourcefile_t *src, char *ofname)
 {
 	if( cfg_verbose )
+	{
 		printf("Writing object to '%s'\n", ofname);
+	}
 
 	if( pass_dump(src) )
+	{
 		segment_writeFiles(ofname);
+	}
 }
 
 
@@ -782,7 +786,9 @@ void dumpLabels(char *dfname)
 		printf("Writing labels to '%s'\n", dfname);
 
 	if( (dfh=fopen(dfname,"w"))==NULL )
+	{
 		error(EM_CreateFile_s, dfname);
+	}
 	else
 	{
 		if( !dump(dfh,0,false) )

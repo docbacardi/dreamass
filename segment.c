@@ -679,10 +679,17 @@ uint8_t *segment_getMemPtr(void)
 
 	seg = segment+act_segment;
 	selem = seg->seglist+seg->act_segelem;
-	if( (melem=seg->memlist+selem->memelemidx)==NULL ) {
+	/* does the memlist exist? */
+	melem = seg->memlist;
+	if( melem==NULL )
+	{
+		/* no -> return error */
 		return NULL;
 	}
-	else {
+	else
+	{
+		/* yes -> return offset in memelem */
+		melem += selem->memelemidx;
 		return melem->Memarea+(selem->pc-selem->adr);
 	}
 }

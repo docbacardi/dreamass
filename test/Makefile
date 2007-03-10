@@ -3,8 +3,8 @@
 .PHONY: all clean
 
 # select debug or release version
-DREAMASS = ../dreamass
-#DREAMASS = ../dreamass_dbg
+#DREAMASS = ../dreamass
+DREAMASS = ../dreamass_dbg
 
 # uncomment next line to enable valgrind
 CHECK = valgrind --leak-check=yes --log-file=$(subst src,log,$<) --show-reachable=yes -v

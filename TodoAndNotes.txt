@@ -28,6 +28,15 @@ works. But this includes all crap into the source archive. :(
 *** IMPORTANT BUGS ***
 ----------------------------------------
 
+* forward definitions and flexible dump psyopcodes do not work
+  Example: ".DT fwdef:fwdef" can not be resolved. Should the maximum size be used as the default?
+  This would of course only work for numeric arguments.
+
+  Another problem is the use of forced sizes:
+  ".DT fwdef.3:fwdef" can also not be resolved. This is an error, the fixed size is neither propagated
+  from the term evaluation, neither it is respected in the argument list.
+
+
 * Macroparameters compare error
   2 macroparameters starting with the same string can not be distinguished,
   e.g. bank and bankval
@@ -116,6 +125,8 @@ Soll hier reloc mit non-final oder undefined aktiviert werden?
 ----------------------------------------
 *** Done ***
 ----------------------------------------
+
+* 'sta $03022222' does not trigger an error
 
 * (undefined variable results in 'nuber too large: 0', see 'dload_error_number_too_large.tar.gz'
   seems to be only a problem for undefined variables in .DB parameters)
