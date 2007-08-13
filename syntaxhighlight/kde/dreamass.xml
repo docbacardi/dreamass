@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="DreamAss" version="1.0" author="Doc Bacardi (DocBacardi@the-dreams.de)" section="Sources" extensions="*.src" mimetype="text/x-dreamass" casesensitive="false" license="GPL">
+<language name="DreamAss" version="1.0" author="Doc Bacardi (DocBacardi@the-dreams.de)" section="Assembler" extensions="*.src" mimetype="text/x-dreamass" casesensitive="false" license="GPL">
 	<highlighting>
 		<list name="opcodes">
 			<item> acn </item>
