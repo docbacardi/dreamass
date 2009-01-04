@@ -639,27 +639,24 @@ bool pass_dump(sourcefile_t *src)
 	while( (lelem=pp_get())->typ!=LE_EOF )
 	{
 		memptr = segment_getMemPtr();
-		if( memptr==NULL )
-		{
-			/* the memory element does not exist, this should never happen */
-			assert( false );
-			return false;
-		}
 
 		switch( lelem->typ )
 		{
 		case BE_1BYTE:
+			assert(memptr!=NULL);
 			*(memptr++) =  lelem->data.b_1byte;
 			vlen.len=1;
 			segment_addLength(vlen);
 			break;
 		case BE_2BYTE:
+			assert(memptr!=NULL);
 			*(memptr++) =  lelem->data.b_2byte     &0xff;
 			*(memptr++) = (lelem->data.b_2byte>>8 )&0xff;
 			vlen.len=2;
 			segment_addLength(vlen);
 			break;
 		case BE_3BYTE:
+			assert(memptr!=NULL);
 			*(memptr++) =  lelem->data.b_3byte     &0xff;
 			*(memptr++) = (lelem->data.b_3byte>>8 )&0xff;
 			*(memptr++) = (lelem->data.b_3byte>>16)&0xff;
@@ -667,6 +664,7 @@ bool pass_dump(sourcefile_t *src)
 			segment_addLength(vlen);
 			break;
 		case BE_4BYTE:
+			assert(memptr!=NULL);
 			*(memptr++) =  lelem->data.b_4byte     &0xff;
 			*(memptr++) = (lelem->data.b_4byte>>8 )&0xff;
 			*(memptr++) = (lelem->data.b_4byte>>16)&0xff;
@@ -675,14 +673,20 @@ bool pass_dump(sourcefile_t *src)
 			segment_addLength(vlen);
 			break;
 		case BE_DSB:
+			assert(memptr!=NULL);
 			for(dsb_cnt=0; dsb_cnt<lelem->data.dsb.length; dsb_cnt++)
+			{
 				*(memptr++) = lelem->data.dsb.fillbyte;
+			}
 			vlen.len=lelem->data.dsb.length;
 			segment_addLength(vlen);
 			break;
 		case BE_nBYTE:
+			assert(memptr!=NULL);
 			for(nb_cnt=0; nb_cnt<*lelem->data.b_nbyte; nb_cnt++)
+			{
 				*(memptr++) = *((uint8_t*)lelem->data.b_nbyte+sizeof(stringsize_t)+nb_cnt);
+			}
 			vlen.len=*lelem->data.b_nbyte;
 			segment_addLength(vlen);
 			break;
