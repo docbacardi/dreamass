@@ -44,7 +44,8 @@ export CFLAGS_DBG = -Wall -DVERSION_ALL=\"$(VERSION_ALL)\" -DDEBUG -D__DUMP_TERM
 export ArcDir = /home/baccy/BackUp/
 
 # c cross compiler for dos
-export DOSCC = i386-pc-msdosdjgpp-gcc
+#export DOSCC = i386-pc-msdosdjgpp-gcc
+export DOSCC = i586-mingw32msvc-gcc
 
 # Options for dos c compiler
 export DOSCFLAGS = -Wall -DVERSION_ALL=\"$(VERSION_ALL)\" -O2 -g0 -s
