@@ -1887,12 +1887,50 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 	char mneUnpackedName[4];
 	stringsize_t *filename;
 	macro_t *mac;
+	uint32_t pc;
+	int pc_width;
+	char pc_formatstring[9] = { 0, ' ', '%', '0', '0', 'X', ':', ' ', 0 };
 
 
 	/*   init some vars  */
 	mneUnpackedName[3] = 0;
 
+	/* show the linenumber */
 	fprintf(dfh, "<tt>L%04X: ", lbuf->linenr);
+
+	/* if PC is final, show 'F' */
+	pc_formatstring[0] = ( segment_isPCFinal() ) ? 'F' : '.';
+	pc_width = 0;
+	if( segment_isPCDefined() )
+	{
+		/* PC is defined, show the address */
+		pc = segment_getPC();
+		/* the PC width depends on the current CPU */
+		switch( getCurrentCpu() )
+		{
+		case CPUTYPE_6510:
+		case CPUTYPE_6510Ill:
+			/* all 6510 models have a 16 bit PC */
+			pc_width = 4;
+			break;
+		case CPUTYPE_65815:
+			/* 65816 has 16 bit PC and 8 bit bankbyte */
+			pc_width = 6;
+			break;
+		case CPUTYPE_UNKNOWN:
+			/* unknown CPU defaults to 32 bit PC */
+			pc_width = 8;
+			break;
+		}
+		pc_formatstring[4] = '0'|pc_width;
+		fprintf(dfh, pc_formatstring, pc);
+	}
+	else
+	{
+		/* PC is undefined, show 'undef' */
+		fprintf(dfh, "undef:");
+	}
+
 	for(cnt1=0; cnt1<lbuf->line_size; cnt1++)
 	{
 		lelem = lbuf->line + cnt1;
