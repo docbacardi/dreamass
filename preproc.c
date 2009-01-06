@@ -142,7 +142,7 @@ struct fileattribs_t
 /*-----------------------------------*/
 
 /* Delete sections in #if, delall==true -> delete all sections, false -> delete just one */
-bool ifDelete(bool delall)
+static bool ifDelete(bool delall)
 {
 	lineelement_t *lelem;
 	PREPROC tPreProcTyp;
@@ -235,7 +235,7 @@ bool ifDelete(bool delall)
 }
 
 /* skip over the rest of #if */
-bool ifSkip(void)
+static bool ifSkip(void)
 {
 	lineelement_t *lelem;
 	int ifcnt=1;

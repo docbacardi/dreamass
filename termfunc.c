@@ -166,7 +166,7 @@ VARERR term_rEval(term *that, termsize_t n)
 
 /*-----------------------------------*/
 
-value_t bfn_shiftLeft(value_t l, value_t r, bool *err)
+static value_t bfn_shiftLeft(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -185,7 +185,7 @@ value_t bfn_shiftLeft(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_shiftRight(value_t l, value_t r, bool *err)
+static value_t bfn_shiftRight(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -204,7 +204,7 @@ value_t bfn_shiftRight(value_t l, value_t r, bool *err)
 }
 
 
-value_t ufn_hiByte(value_t l, value_t r, bool *err)
+static value_t ufn_hiByte(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -223,7 +223,7 @@ value_t ufn_hiByte(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_greater(value_t l, value_t r, bool *err)
+static value_t bfn_greater(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -247,7 +247,7 @@ value_t bfn_greater(value_t l, value_t r, bool *err)
 }
 
 
-value_t ufn_loByte(value_t l, value_t r, bool *err)
+static value_t ufn_loByte(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -266,7 +266,7 @@ value_t ufn_loByte(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_smaller(value_t l, value_t r, bool *err)
+static value_t bfn_smaller(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -290,7 +290,7 @@ value_t bfn_smaller(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_boolAnd(value_t l, value_t r, bool *err)
+static value_t bfn_boolAnd(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -309,7 +309,7 @@ value_t bfn_boolAnd(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_bitAnd(value_t l, value_t r, bool *err)
+static value_t bfn_bitAnd(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -328,7 +328,7 @@ value_t bfn_bitAnd(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_boolOr(value_t l, value_t r, bool *err)
+static value_t bfn_boolOr(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -347,7 +347,7 @@ value_t bfn_boolOr(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_bitOr(value_t l, value_t r, bool *err)
+static value_t bfn_bitOr(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -366,7 +366,7 @@ value_t bfn_bitOr(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_bitEor(value_t l, value_t r, bool *err)
+static value_t bfn_bitEor(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -385,7 +385,7 @@ value_t bfn_bitEor(value_t l, value_t r, bool *err)
 }
 
 
-value_t ufn_not(value_t l, value_t r, bool *err)
+static value_t ufn_not(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 	const uint32_t eorTab[4] =
@@ -414,7 +414,7 @@ value_t ufn_not(value_t l, value_t r, bool *err)
 }
 
 
-value_t ufn_posSign(value_t l, value_t r, bool *err)
+static value_t ufn_posSign(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -432,7 +432,7 @@ value_t ufn_posSign(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_add(value_t l, value_t r, bool *err)
+static value_t bfn_add(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -466,7 +466,7 @@ value_t bfn_add(value_t l, value_t r, bool *err)
 }
 
 
-value_t ufn_negSign(value_t l, value_t r, bool *err)
+static value_t ufn_negSign(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -485,7 +485,7 @@ value_t ufn_negSign(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_sub(value_t l, value_t r, bool *err)
+static value_t bfn_sub(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -504,7 +504,7 @@ value_t bfn_sub(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_mult(value_t l, value_t r, bool *err)
+static value_t bfn_mult(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -523,7 +523,7 @@ value_t bfn_mult(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_div(value_t l, value_t r, bool *err)
+static value_t bfn_div(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -548,7 +548,7 @@ value_t bfn_div(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_equal(value_t l, value_t r, bool *err)
+static value_t bfn_equal(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -572,7 +572,7 @@ value_t bfn_equal(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_unEqual(value_t l, value_t r, bool *err)
+static value_t bfn_unEqual(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -596,7 +596,7 @@ value_t bfn_unEqual(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_lessEqual(value_t l, value_t r, bool *err)
+static value_t bfn_lessEqual(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -620,7 +620,7 @@ value_t bfn_lessEqual(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_greaterEqual(value_t l, value_t r, bool *err)
+static value_t bfn_greaterEqual(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -644,7 +644,7 @@ value_t bfn_greaterEqual(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_modulo(value_t l, value_t r, bool *err)
+static value_t bfn_modulo(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -669,7 +669,7 @@ value_t bfn_modulo(value_t l, value_t r, bool *err)
 }
 
 
-value_t bfn_forceSize(value_t l, value_t r, bool *err)
+static value_t bfn_forceSize(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -701,7 +701,7 @@ value_t bfn_forceSize(value_t l, value_t r, bool *err)
 }
 
 
-value_t ufn_sizeOf(value_t l, value_t r, bool *err)
+static value_t ufn_sizeOf(value_t l, value_t r, bool *err)
 {
 	value_t out = { VALTYP_NUM, 0, { 0 }};
 
@@ -723,7 +723,7 @@ value_t ufn_sizeOf(value_t l, value_t r, bool *err)
  *   termsize_t ri	-- index to the right operand
  *   basic_bfn *basicfn	-- pointer to the basic function
  */
-VARERR fn_preunary(term *that, termsize_t le, termsize_t ri, basic_fn *basicufn)
+static VARERR fn_preunary(term *that, termsize_t le, termsize_t ri, basic_fn *basicufn)
 {
 	VARERR vr;
 	VARERR ve;
@@ -764,7 +764,7 @@ VARERR fn_preunary(term *that, termsize_t le, termsize_t ri, basic_fn *basicufn)
  *   termsize_t ri	-- index to the right operand
  *   basic_bfn *basicfn	-- pointer to the basic function
  */
-VARERR fn_sbinary(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_sbinary(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR vl, vr;
 	VARERR ve;
@@ -809,7 +809,7 @@ VARERR fn_sbinary(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
  *   termsize_t ri	-- index to the right operand
  *   basic_afn *basicfn	-- pointer to the basic function
  */
-VARERR fn_abinary(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_abinary(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR vl, ve;
 	termelem_s *tle;
@@ -970,7 +970,7 @@ VARERR fn_abinary(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 }
 
 
-VARERR fn_assign_r(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn, bool allowReassign)
+static VARERR fn_assign_r(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn, bool allowReassign)
 {
 	VARERR ve;
 	termelem_s *tle;
@@ -1063,19 +1063,19 @@ VARERR fn_assign_r(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn,
 }
 
 
-VARERR fn_assign(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_assign(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	return fn_assign_r(that, le, ri, basicbfn, cfg_allowSimpleRedefine);
 }
 
 
-VARERR fn_reassign(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_reassign(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	return fn_assign_r(that, le, ri, basicbfn, true);
 }
 
 
-VARERR fn_postinc(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_postinc(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR ve;
 	VARIABLE *var, pc;
@@ -1175,7 +1175,7 @@ VARERR fn_postinc(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 }
 
 
-VARERR fn_preinc(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_preinc(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR ve;
 	VARIABLE *var, pc;
@@ -1276,7 +1276,7 @@ VARERR fn_preinc(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 }
 
 
-VARERR fn_postdec(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_postdec(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR ve;
 	VARIABLE *var, pc;
@@ -1376,7 +1376,7 @@ VARERR fn_postdec(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 }
 
 
-VARERR fn_predec(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_predec(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR ve;
 	VARIABLE *var, pc;
@@ -1477,7 +1477,7 @@ VARERR fn_predec(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 	return ve;
 }
 
-VARERR fn_isDef(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_isDef(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR ve;
 	bool isDef;
@@ -1515,7 +1515,7 @@ VARERR fn_isDef(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 }
 
 
-VARERR fn_segmentOf(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
+static VARERR fn_segmentOf(term *that, termsize_t le, termsize_t ri, basic_fn *basicbfn)
 {
 	VARERR ve;
 	termelem_s *tri;

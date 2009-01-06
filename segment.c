@@ -695,7 +695,7 @@ uint8_t *segment_getMemPtr(void)
 }
 
 
-bool memSort(memtab_t *memlist, memtab_t **memlist_end, seglistsize_t segidx)
+static bool memSort(memtab_t *memlist, memtab_t **memlist_end, seglistsize_t segidx)
 {
 	memtab_t *mc;
 	uint32_t start, end;
@@ -746,7 +746,7 @@ bool memSort(memtab_t *memlist, memtab_t **memlist_end, seglistsize_t segidx)
 }
 
 
-bool sortedListDump(char *fname, memtab_t *memlist, memtab_t *me, bool writesadr, uint8_t fillbyte )
+static bool sortedListDump(char *fname, memtab_t *memlist, memtab_t *me, bool writesadr, uint8_t fillbyte )
 {
 	FILE *fh = NULL;
 	uint32_t dumpadr;
