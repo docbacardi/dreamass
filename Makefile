@@ -31,25 +31,26 @@ export VERSION_ALL = $(VERSION_MAJ).$(VERSION_MIN)
 
 # c compiler
 export CC = gcc
-# to be a bit stricter
-#export CC = g++
 
 # Options for c compiler, *** NO DEBUG ***
-export CFLAGS_REL = -Wall -DVERSION_ALL=\"$(VERSION_ALL)\" -O3 -g0
+export CFLAGS_REL = -Wall -Wextra -Wconversion -Wshadow -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -DVERSION_ALL=\"$(VERSION_ALL)\" -O3 -g0
 
 # Options for c compiler, *** DEBUG *** with dump terms
 export CFLAGS_DBG = -Wall -DVERSION_ALL=\"$(VERSION_ALL)\" -DDEBUG -D__DUMP_TERMS__ -O0 -g3
 
-# directory for backup
-export ArcDir = /home/baccy/BackUp/
-
 # c cross compiler for dos
-#export DOSCC = i386-pc-msdosdjgpp-gcc
-export DOSCC = i586-mingw32msvc-gcc
+export DOSCC = i386-pc-msdosdjgpp-gcc
+
+# c cross compiler for win
+export WINCC = i586-mingw32msvc-gcc
 
 # Options for dos c compiler
 export DOSCFLAGS = -Wall -DVERSION_ALL=\"$(VERSION_ALL)\" -O2 -g0 -s
 
+# Options for win c compiler
+export WINCFLAGS = -Wall -DVERSION_ALL=\"$(VERSION_ALL)\" -O2 -g0 -s
+
+export DISTDIR = distrib
 export DEBTMPDIR = /tmp/dreamass_deb
 
 #---------------------------------------
@@ -74,7 +75,7 @@ OBJFILES = $(patsubst %.c,%.o,$(SRCFILES))
 OBJFILES_LIN_DBG = $(addprefix lin_dbg/, $(OBJFILES))
 OBJFILES_LIN_REL = $(addprefix lin_rel/, $(OBJFILES))
 OBJFILES_DOS_REL = $(addprefix dos_rel/, $(OBJFILES))
-
+OBJFILES_WIN_REL = $(addprefix win_rel/, $(OBJFILES))
 
 DOCDIR = docs
 TESTDIR = test
@@ -86,7 +87,6 @@ DOCARCFILES = $(addprefix $(DOCDIR)/, dreamass.html dreamass.info dreamass.txt)
 
 DATE := $(shell date +%Y%m%d)
 DATETIME := $(shell date +%Y%m%d_%H%M)
-SRCARCNAME = $(ArcDir)dreamass_src_$(DATE)
 
 #---------------------------------------
 
@@ -101,7 +101,6 @@ test:
 #link everything for the release version
 dreamass: lin_rel $(OBJFILES_LIN_REL) $(HDRFILES)
 	$(CC) $(CFLAGS_REL) -o $@ $(OBJFILES_LIN_REL)
-#	strip --remove-section=.comment --remove-section=.note $@
 
 #link everything for the debug version
 dreamass_dbg: lin_dbg $(OBJFILES_LIN_DBG) $(HDRFILES)
@@ -115,11 +114,17 @@ lin_rel/%.o: %.c $(HDRFILES)
 	$(CC) $(CFLAGS_REL) -c -o $@ $<
 
 
-dreamass.exe: dos_rel $(OBJFILES_DOS_REL) $(HFILES)
+dos_rel/dreamass.exe: dos_rel $(OBJFILES_DOS_REL) $(HFILES)
 	$(DOSCC) $(DOSCFLAGS) -o $@ $(OBJFILES_DOS_REL)
 
 dos_rel/%.o: %.c $(HDRFILES)
 	$(DOSCC) $(DOSCFLAGS) -c -o $@ $<
+
+win_rel/dreamass.exe: win_rel $(OBJFILES_WIN_REL) $(HFILES)
+	$(WINCC) $(WINCFLAGS) -o $@ $(OBJFILES_WIN_REL)
+
+win_rel/%.o: %.c $(HDRFILES)
+	$(WINCC) $(WINCFLAGS) -c -o $@ $<
 
 #---------------------------------------
 
@@ -131,6 +136,9 @@ lin_rel:
 
 dos_rel:
 	mkdir dos_rel
+
+win_rel:
+	mkdir win_rel
 
 #---------------------------------------
 
@@ -148,29 +156,49 @@ deb:
 	mkdir $(DEBTMPDIR)/dreamass-$(VERSION_ALL)
 	cp -p --parents --target-directory=$(DEBTMPDIR)/dreamass-$(VERSION_ALL) $(SRCARCFILES)
 	cd $(DEBTMPDIR)/dreamass-$(VERSION_ALL) && dpkg-buildpackage -rfakeroot
-	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*.dsc $(ArcDir)
-	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*.tar.gz $(ArcDir)
-	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*_i386.changes $(ArcDir)
-	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*_i386.deb $(ArcDir)
+	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*.dsc .
+	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*.tar.gz .
+	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*_i386.changes .
+	cp $(DEBTMPDIR)/dreamass_$(VERSION_ALL)-*_i386.deb .
 
 #---------------------------------------
 
 clean:
 	rm -f $(OBJFILES_LIN_DBG) dreamass_dbg
 	rm -f $(OBJFILES_LIN_REL) dreamass
-	rm -f $(OBJFILES_DOS_REL) dreamass.exe
+	rm -f $(OBJFILES_DOS_REL) dos_rel/dreamass.exe
+	rm -f $(OBJFILES_WIN_REL) win_rel/dreamass.exe
 	make -C $(DOCDIR) clean
 	make -C $(TESTDIR) clean
 
 #---------------------------------------
 
-backup:
-	rar a -apdreamass -k -m5 -r -s $(ArcDir)dreamass_complete_$(DATETIME).tar.gz
-
-distrib: dreamass.exe doc
-	rar a -apdreamass -k -m5 -s $(SRCARCNAME).rar $(SRCARCFILES)
-	rar a -apdreamass -k -m5 -s $(ArcDir)dreamass_doc_$(DATE).rar $(DOCARCFILES)
-	rar a -apdreamass -k -m5 -s $(ArcDir)dreamass_dos_$(DATE).rar dreamass.exe COPYING
+distrib: dos_rel/dreamass.exe win_rel/dreamass.exe doc
+	echo clean the old distrib directory
+	rm -rf $(DISTDIR)
+	
+	echo copy the sources
+	mkdir -p $(DISTDIR)/src/dreamass
+	mkdir -p $(DISTDIR)/src/dreamass/docs
+	mkdir -p $(DISTDIR)/src/dreamass/test
+	cp -t $(DISTDIR)/src/dreamass --parents $(SRCARCFILES)
+	tar -c -f $(DISTDIR)/dreamass_src_$(DATE).tar.gz -v -z -C $(DISTDIR)/src/ dreamass
+	
+	echo copy the docs
+	mkdir -p $(DISTDIR)/docs/dreamass/docs
+	cp $(DOCARCFILES) $(DISTDIR)/docs/dreamass/docs/
+	tar -c -f $(DISTDIR)/dreamass_doc_$(DATE).tar.gz -v -z -C $(DISTDIR)/docs/ dreamass/docs
+	cd $(DISTDIR)/docs/ && zip -9r ../../$(DISTDIR)/dreamass_doc_$(DATE).zip dreamass/docs
+	
+	# create the dos distrib
+	mkdir -p $(DISTDIR)/dos/dreamass
+	cp dos_rel/dreamass.exe COPYING $(DISTDIR)/dos/dreamass/
+	cd $(DISTDIR)/dos/ && zip -9r ../../$(DISTDIR)/dreamass_dos_$(DATE).zip dreamass
+	
+	# create the win distrib
+	mkdir -p $(DISTDIR)/win/dreamass
+	cp win_rel/dreamass.exe COPYING $(DISTDIR)/win/dreamass/
+	cd $(DISTDIR)/win/ && zip -9r ../../$(DISTDIR)/dreamass_win_$(DATE).zip dreamass
 
 #---------------------------------------
 
