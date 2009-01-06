@@ -222,7 +222,7 @@ void warning(WARNMSG msg, ...)
 
 	if(
 		msg<arraysize(warnFlags) &&
-		(cfg_warnflags & warnFlags[msg].value)!=0 &&
+		(cfg_ulWarnflags & warnFlags[msg].ulValue)!=0 &&
 		++warningcnt<cfg_maxwarnings
 	  )
 	{

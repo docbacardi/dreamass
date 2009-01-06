@@ -159,9 +159,9 @@ typedef enum
 
 typedef struct
 {
-	const char *flag;
-	const long value;
-	const long mask;
+	const char *pcFlag;
+	const unsigned long ulValue;
+	const unsigned long ulMask;
 } warnFlag_t;
 
 extern const warnFlag_t warnFlags[12];

@@ -26,7 +26,7 @@
 
 extern bool cfg_verbose;
 extern bool cfg_debug;
-extern long cfg_warnflags;
+extern unsigned long cfg_ulWarnflags;
 extern bool cfg_allowSimpleRedefine;
 
 extern uint32_t cfg_maxwarnings;

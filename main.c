@@ -36,7 +36,7 @@ bool cfg_showVersion = false;
 bool cfg_debug = false;
 bool cfg_showHelp = false;
 bool cfg_allowSimpleRedefine = false;
-long cfg_warnflags = W_Normal;
+unsigned long cfg_ulWarnflags = W_Normal;
 
 uint32_t cfg_maxwarnings = 20;
 uint32_t cfg_maxerrors = 20;
@@ -385,8 +385,8 @@ bool parseArgs(int argc, char **argv)
 	uint8_t incslash;
 	char *wflagpos;
 	const warnFlag_t *wc, *we;
-	long wflags;
-	bool wflags_set;
+	unsigned long ulWflags;
+	bool fWflagsSet;
 	long int num;
 	char *epos;
 	char *srcpos;
@@ -401,8 +401,8 @@ bool parseArgs(int argc, char **argv)
 
 	srcFileNames_count = includePaths_count = 0;
 	includeMaxLen = 0;
-	wflags = 0;
-	wflags_set = false;
+	ulWflags = 0;
+	fWflagsSet = false;
 
 	includePaths_buflen = 16;
 	includePaths = (stringsize_t**)malloc(includePaths_buflen*sizeof(stringsize_t*));
@@ -632,11 +632,11 @@ bool parseArgs(int argc, char **argv)
 				we = wc + arraysize(warnFlags);
 				while( wc<we )
 				{
-					if( strcmp(wflagpos,wc->flag)==0 )
+					if( strcmp(wflagpos,wc->pcFlag)==0 )
 					{
-						wflags &= wc->mask;
-						wflags |= wc->value;
-						wflags_set = true;
+						ulWflags &= wc->ulMask;
+						ulWflags |= wc->ulValue;
+						fWflagsSet = true;
 						break;
 					}
 					++wc;
@@ -720,10 +720,14 @@ bool parseArgs(int argc, char **argv)
 		cmdLineSrc_buflen = cmdLineSrc_count;
 	}
 
-	if( wflags_set )
-		cfg_warnflags = wflags;
+	if( fWflagsSet==true )
+	{
+		cfg_ulWarnflags = ulWflags;
+	}
 	else
-		cfg_warnflags = W_Normal;
+	{
+		cfg_ulWarnflags = W_Normal;
+	}
 
 /*
 	printf("\n*** Arguments Start ***\n");
@@ -732,7 +736,7 @@ bool parseArgs(int argc, char **argv)
 	printf("Error log: %s\n", (errorLogName!=NULL)?errorLogName:"none");
 	printf("Label log: %s\n", (labelLogName!=NULL)?labelLogName:"none");
 	printf("Warnflags were %s set\n", wflags_set?"":"not");
-	printf("Warnflags: %lx\n", cfg_warnflags);
+	printf("Warnflags: %lx\n", cfg_ulWarnflags);
 	printf("Include paths: ");
 	for(newlen.i=0; newlen.i<includePaths_count; newlen.i++)
 	{
