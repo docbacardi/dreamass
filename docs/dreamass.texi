@@ -1223,45 +1223,45 @@ Please see Pseudo PC for examples.
 @caption{all preprocessor directives}
 @multitable @columnfractions .60 .40
 @headitem syntax @tab command
-@item #error [term | text] [,term | ,text]@dots{}
- @tab Error
-@item #if condition 
- @tab If
-@item #ifdef variable
- @tab If Defined
-@item #iffile "filename"
- @tab If File Exists
-@item #ifndef variable
- @tab If Not Defined
-@item #ifnfile "filename"
- @tab If File Not Exists
-@item #elsif condition
- @tab Else If
-@item #elsifdef variable
- @tab Else If Defined
-@item #elsiffile "filename"
- @tab Else If File Exists
-@item #elsifndef variable
- @tab Else If Not Defined
-@item #elsifnfile "filename"
- @tab Else If File Not Exists
-@item #else
- @tab Else
-@item #endif
- @tab End If
-@item #include "filename"
- @tab Include
-@item #macro name [( [parameter [, parameter@dots{}]] )]
- @{ [macrotext | @{parameter@}]@dots{} @}
- @tab Macro
-@item #outfile @{"filename" | @} [, sort | startadr | fillbyte | "segmentname"]@dots{}
- @tab Outfile
-@item #print [term | text] [,term | ,text]@dots{}
- @tab Print
-@item #segdef "name" , start-end [, fillup | force | fillbyte | typ | "segmentname"]@dots{}
- @tab Segdef
-@item #warning [term | text] [,term | ,text]@dots{}
- @tab Warning
+@item @command{#error} [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}
+ @tab @ref{Error}
+@item @command{#if} @var{condition}
+ @tab @ref{If}
+@item @command{#ifdef} @var{variable}
+ @tab @ref{If Defined}
+@item @command{#iffile} @var{filename}
+ @tab @ref{If File Exists}
+@item @command{#ifndef} @var{variable}
+ @tab @ref{If Not Defined}
+@item @command{#ifnfile} @var{filename}
+ @tab @ref{If File Not Exists}
+@item @command{#elsif} @var{condition}
+ @tab @ref{Else If}
+@item @command{#elsifdef} @var{variable}
+ @tab @ref{Else If Defined}
+@item @command{#elsiffile} @var{filename}
+ @tab @ref{Else If File Exists}
+@item @command{#elsifndef} @var{variable}
+ @tab @ref{Else If Not Defined}
+@item @command{#elsifnfile} @var{filename}
+ @tab @ref{Else If File Not Exists}
+@item @command{#else}
+ @tab @ref{Else}
+@item @command{#endif}
+ @tab @ref{End If}
+@item @command{#include} @var{filename}
+ @tab @ref{Include}
+@item @command{#macro} @var{name} [( [@var{parameter} [, @var{parameter}@dots{}]] )]
+ @{ [@var{macrotext} | @{@var{parameter}@}]@dots{} @}
+ @tab @ref{Macro}
+@item @command{#outfile} @{@var{filename} | @} [, @option{sort} | @option{startadr} | @option{fillbyte} | @var{segmentname}]@dots{}
+ @tab @ref{Outfile}
+@item @command{#print} [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}
+ @tab @ref{Print}
+@item @command{#segdef} @var{name} , @var{start}-@var{end} [, @option{fillup} | @option{force} | @var{fillbyte} | @var{typ}]@dots{}
+ @tab @ref{Segdef}
+@item @command{#warning} [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}
+ @tab @ref{Warning}
 @end multitable
 @end float
 
@@ -1298,7 +1298,7 @@ command. Use in conclusion with If to check vital parameters.
 
 Syntax: 
 @example
-#error [term | text] [,term | ,text]...
+@command{#error} [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}
 @end example
 
 Examples: 
@@ -1336,7 +1336,7 @@ number not equal to 0). See Conditional Assembly for details and examples.
 
 Syntax: 
 @example
-#if condition
+@command{#if} @var{condition}
 @end example
 
 
@@ -1349,7 +1349,7 @@ Assembly for details and examples.
 
 Syntax: 
 @example
-#ifdef variable
+@command{#ifdef} @var{variable}
 @end example
 
 
@@ -1362,7 +1362,7 @@ Assembly for details and examples.
 
 Syntax: 
 @example
-#iffile "filename"
+@command{#iffile} @var{filename}
 @end example
 
 
@@ -1375,7 +1375,7 @@ Conditional Assembly for details and examples.
 
 Syntax: 
 @example
-#ifndef variable
+@command{#ifndef} @var{variable}
 @end example
 
 
@@ -1388,7 +1388,7 @@ Assembly for details and examples.
 
 Syntax: 
 @example
-#ifnfile "filename"
+@command{#ifnfile} @var{filename}
 @end example
 
 
@@ -1402,7 +1402,7 @@ Assembly for details and examples.
 
 Syntax: 
 @example
-#elsif condition
+@command{#elsif} @var{condition}
 @end example
 
 
@@ -1415,7 +1415,7 @@ condition was true. See Conditional Assembly for details and examples.
 
 Syntax: 
 @example
-#elsifdef variable
+@command{#elsifdef} @var{variable}
 @end example
 
 
@@ -1428,7 +1428,7 @@ condition was true. See Conditional Assembly for details and examples.
 
 Syntax: 
 @example
-#elsiffile "filename"
+@command{#elsiffile} @var{filename}
 @end example
 
 
@@ -1441,7 +1441,7 @@ condition was true. See Conditional Assembly for details and examples.
 
 Syntax: 
 @example
-#elsifndef variable
+@command{#elsifndef} @var{variable}
 @end example
 
 
@@ -1454,7 +1454,7 @@ condition was true. See Conditional Assembly for details and examples.
 
 Syntax: 
 @example
-#elsifnfile "filename"
+@command{#elsifnfile} @var{filename}
 @end example
 
 
@@ -1467,7 +1467,7 @@ Assembly for details and examples.
 
 Syntax: 
 @example
-#else
+@command{#else}
 @end example
 
 
@@ -1480,7 +1480,7 @@ examples.
 
 Syntax: 
 @example
-#endif
+@command{#endif}
 @end example
 
 
@@ -1493,7 +1493,7 @@ file was pasted into the sourcecode.
 
 Syntax: 
 @example
-#include "filename"
+@command{#include} @var{filename}
 @end example
 
 @quotation Note
@@ -1509,8 +1509,8 @@ Define a macro.
 
 Syntax: 
 @example
-#macro name [( [parameter [, parameter...]] )]
- @{ [macrotext | @{parameter@}]... @}
+@command{#macro} @var{name} [( [@var{parameter} [, @var{parameter}@dots{}]] )]
+ @{ [@var{macrotext} | @{@var{parameter}@}]@dots{} @}
 @end example
 
 For more details and examples take a look at the Macros chapter.
@@ -1524,7 +1524,7 @@ Define an output file.
 
 Syntax: 
 @example
-#outfile @{"filename" | @@@} [, sort | startadr | fillbyte | "segmentname"]...
+@command{#outfile} @{@var{filename} | @} [, @option{sort} | @option{startadr} | @option{fillbyte} | @var{segmentname}]@dots{}
 @end example
 
 For more details and examples take a look at the Outfiles chapter.
@@ -1538,7 +1538,7 @@ Print a sequence of arguments. Arguments are seperated with a comma.
 
 Syntax: 
 @example
-#print [term | text] [,term | ,text]...
+@command{#print} [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}
 @end example
 
 Examples: 
@@ -1566,7 +1566,7 @@ Define a segment.
 
 Syntax: 
 @example
-#segdef "name" , start-end [, fillup | force | fillbyte | typ | "segmentname"]...
+@command{#segdef} @var{name} , @var{start}-@var{end} [, @option{fillup} | @option{force} | @var{fillbyte} | @var{typ}]@dots{}
 @end example
 For more details and examples take a look at the Segments chapter.
 
@@ -1580,7 +1580,7 @@ prints a sequence of arguments to stdout just like the #print command.
 
 Syntax: 
 @example
-#warning [term | text] [,term | ,text]...
+@command{#warning} [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}
 @end example
 
 Examples: 
