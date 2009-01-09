@@ -1254,7 +1254,7 @@ Please see Pseudo PC for examples.
 @item @command{#macro} @var{name} [( [@var{parameter} [, @var{parameter}@dots{}]] )]
  @{ [@var{macrotext} | @{@var{parameter}@}]@dots{} @}
  @tab @ref{Macro}
-@item @command{#outfile} @{@var{filename} | @} [, @option{sort} | @option{startadr} | @option{fillbyte} | @var{segmentname}]@dots{}
+@item @command{#outfile} @{@var{filename} | @@ @} [, @option{sort} | @option{startadr} | @option{fillbyte} | @var{segmentname}]@dots{}
  @tab @ref{Outfile}
 @item @command{#print} [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}
  @tab @ref{Print}
@@ -1524,7 +1524,7 @@ Define an output file.
 
 Syntax: 
 @example
-@command{#outfile} @{@var{filename} | @} [, @option{sort} | @option{startadr} | @option{fillbyte} | @var{segmentname}]@dots{}
+@command{#outfile} @{@var{filename} | @@ @} [, @option{sort} | @option{startadr} | @option{fillbyte} | @var{segmentname}]@dots{}
 @end example
 
 For more details and examples take a look at the Outfiles chapter.
@@ -1975,10 +1975,14 @@ Whenever a command expects a number or a text it can be specified by a term. The
 @caption{symbols for all operands}
 @multitable @columnfractions .20 .80
 @headitem symbol @tab function
+@item @code{.}
+ @tab force the size of an argument
 @item @code{isdef}
  @tab test if a variable is defined
 @item @code{segmentof}
  @tab get the name of the segment where a variable was defined or modified
+@item @code{sizeof}
+ @tab get the size of an argument
 @item @code{~}
  @tab bit not
 @item @code{++}
@@ -2048,13 +2052,25 @@ Whenever a command expects a number or a text it can be specified by a term. The
 @end multitable
 @end float
 
+@menu
+* Operand Priorities::
+* Force Size::
+@end menu
+
+
+@node Operand Priorities
+@subsection Operand Priorities
+@cindex Terms, Operand Priorities
+
 @float Table,table:priority of the operands
 @caption{priority of the operands}
 @multitable @columnfractions .10 .90
 @headitem priority @tab symbols
 @item 13
- @tab @command{isdef},
- @command{segmentof}
+ @tab @command{.},
+ @command{isdef},
+ @command{segmentof},
+ @command{sizeof}
 @item 12
  @tab @command{~},
  @command{++} (postunary),
@@ -2122,6 +2138,38 @@ Example: All lines produce the same output
 .dw c002
 .dw 49152+8>>2
 .dw (8+4)*$1000 + 2
+@end example
+
+
+@node Force Size
+@subsection Force Size
+@cindex Terms, Force Size
+
+DreamAss tries to use the minimum possible size for numeric arguments. In the next example the argument is @code{$ff}. This fits into one byte, so DreamAss uses this as the argument's size and chooses the "zero page" addressing mode.
+@example
+lda $ff
+@end example
+
+The size check of the argument is only done by looking at the value. Leading zeros do not change anything. All arguments in the next example have a size of 1 byte.
+@example
+lda $ff         ; zero page (a5 ff)
+lda $00ff       ; zero page (a5 ff)
+lda $0000ff     ; zero page (a5 ff)
+lda $000000ff   ; zero page (a5 ff)
+@end example
+
+DreamAss chooses the best addressing mode for the situation. That's nice, but it is sometimes necessary to choose another addressing mode, like in timing critical routines. This is possible with the dot (".") operator. It forces a larger size for an argument:
+
+@var{argument}.@var{size}
+
+The next example uses the dot operator to enlarge the size of the argument from 1 byte to 2 bytes.
+@example
+lda $ff.2       ; absolute (ad ff 00)
+@end example
+
+It is also possible to force the size of complex expressions:
+@example
+lda ($80 + slot<<2).2
 @end example
 
 
