@@ -17,7 +17,7 @@
 This manual is for DreamAss (version @value{VERSION}, @value{UPDATED}),
 a crossassembler for 6510, 65816 and compatible CPUs.
 
-Copyright (C)  2002, 2003, 2004, 2005, 2006  Christoph Thelen.
+Copyright (C)  2002-2009  Christoph Thelen.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document

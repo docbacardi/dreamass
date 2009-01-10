@@ -1,4 +1,27 @@
 
+@heading 10.01.2009
+@itemize @w
+@item New:
+	@itemize @bullet
+	@item use "-" as debug log filename to write to stdout, add docs for this, add examples for debug log command line parameter
+	@item enable more warning flags for linux release build
+	@item provide dos and windows binary
+	@item use tar and zip for distribution files instead of rar
+	@item show PC in dump
+	@end itemize
+@item Fixed:
+	@itemize @bullet
+	@item macro at eof is ignored (bug #15036)
+	@item more than 16 segment elements trash the memory (bug #15035)
+	@item "outfile" syntax in docs
+	@item added "force size" docs (bug #015034)
+	@item add markup to preprocessor chapter
+	@item crash when macro is at eof
+	@item changed section for Kate syntaxhighlighting from Sources to Assembly, notes updated (install directory missing and conflict with pic asm)
+	@item overflow in opcode argument did not trigger an error (e.g. 'sta $12345678')
+	@end itemize
+@end itemize
+
 
 @heading 12.11.2006
 @itemize @w
