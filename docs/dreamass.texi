@@ -247,8 +247,8 @@ I'm also very grateful for bug-fixes. :)
 @caption{all commandline options}
 @multitable @columnfractions .15 .30 .45 .10
 @headitem short form @tab long form @tab function @tab default
-@item @option{-d} @var{file}
-@tab @option{--debug} @var{file}
+@item @option{-d} [ @var{file} | - ]
+@tab @option{--debug} [ @var{file} | - ]
 @tab @ref{Set Debug Mode}
 @tab off
 @item @option{-D}@var{var}=@var{value}
@@ -330,15 +330,33 @@ them:
 @item labelsizes@dots{}
 @end itemize
 
-Short syntax: 
-@example
--d file 
-@end example
+Short syntax:
+@option{-d} [ @var{file} | - ]
 
 Long syntax: 
+@option{--debug} [ @var{file} | - ]
+
+The argument can either be a file like @file{log.html}, or a single minus ("@code{-}") to write the debug output to @file{stdout}.
+
+If DreamAss crashes, writing to a real file might loose some of the debug output. Write to @file{stdout} to get all output until the crash.
+
+The output is written in html.
+
+Examples:
 @example
---debug file
+% dreamass -d log.html te-he.src
 @end example
+Write the debug log to the file @file{log.html}.
+
+@example
+% dreamass --debug log.html te-he.src
+@end example
+Same as above with long syntax.
+
+@example
+% dreamass -d - overtherainbow.src
+@end example
+Write the debug output to @file{stdout}. It will display all debug messages even if DreamAss crashes.
 
 
 @node Define variable

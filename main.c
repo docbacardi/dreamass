@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2002, 2003, 2004, 2005, 2006 by Christoph Thelen        *
+ *   Copyright (C) 2002-2009 by Christoph Thelen                           *
  *   DocBacardi@the-dreams.de                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -42,10 +42,10 @@ uint32_t cfg_maxwarnings = 20;
 uint32_t cfg_maxerrors = 20;
 
 stringsize_t **srcFileNames = NULL;
-char *outFileName = "a.out";
-char *debugLogName = NULL;
-char *errorLogName = NULL;
-char *labelLogName = NULL;
+char *pcOutFileName = "a.out";
+char *pcDebugLogName = NULL;
+char *pcErrorLogName = NULL;
+char *pcLabelLogName = NULL;
 FILE *debugLog = NULL;
 
 stringsize_t **includePaths = NULL;
@@ -116,12 +116,19 @@ int main(int argc, char **argv)
 	/* If debug log is open (!=NULL) then close the file */
 	if( debugLog!=NULL )
 	{
+		/* write final line */
 		fprintf(debugLog, "</body></html>\n");
-		fclose(debugLog);
+		/* only close if this is not stdout */
+		if( debugLog!=stdout )
+		{
+			fclose(debugLog);
+		}
 	}
 
 	if( cfg_verbose )
+	{
 		printf("\n\nBye.\n\n");
+	}
 
 	return ((ok&&(errorcnt==0)) ? EXIT_SUCCESS:EXIT_FAILURE);
 }
@@ -146,12 +153,22 @@ bool baekwha(const char *pcArgv0)
 	/*
 	 * Open Debug log if '-d' was set
 	 */
-	if( cfg_debug )
+	if( cfg_debug==true )
 	{
-		if( (debugLog=fopen(debugLogName,"w"))==NULL )
+		/* catch special filename "-" for stdout */
+		if( strcmp(pcDebugLogName, "-")==0 )
 		{
-			fprintf(stderr, "error opening debug log '%s' : %s\n", debugLogName, strerror(errno));
-			return false;
+			/* set output file to stdout */
+			debugLog = stdout;
+		}
+		else
+		{
+			debugLog = fopen(pcDebugLogName, "w");
+			if( debugLog==NULL )
+			{
+				fprintf(stderr, "error opening debug log '%s' : %s\n", pcDebugLogName, strerror(errno));
+				return false;
+			}
 		}
 		fprintf(debugLog, "<html><head><title>DreamAss debug log</title></head><body>\n");
 	}
@@ -208,8 +225,8 @@ bool baekwha(const char *pcArgv0)
 
 			if( errorcnt==0 )
 			{
-				if( labelLogName!=NULL )
-					dumpLabels( labelLogName );
+				if( pcLabelLogName!=NULL )
+					dumpLabels( pcLabelLogName );
 
 				if( !allBytesResolved )
 				{
@@ -217,7 +234,7 @@ bool baekwha(const char *pcArgv0)
 					pass_showUndefs(topLevelSrc);
 				}
 				else
-					dumpObject(topLevelSrc, outFileName);
+					dumpObject(topLevelSrc, pcOutFileName);
 			}
 		}
 		if( topLevelSrc!=NULL )
@@ -323,7 +340,7 @@ void showVersion(void)
 	printf(VERSION_ALL);
 #endif
 	printf("\n\n");
-	printf("Copyright (C) 2002-2006 Christoph Thelen.\n");
+	printf("Copyright (C) 2002-2009 Christoph Thelen.\n");
 	printf("There is NO warranty.  You may redistribute this software\n");
 	printf("under the terms of the GNU General Public License.\n");
 	printf("For more information about these matters, see the files named COPYING.\n");
@@ -442,7 +459,7 @@ bool parseArgs(int argc, char **argv)
 				break;
 			}
 			cfg_debug = true;
-			debugLogName = *argp;
+			pcDebugLogName = *argp;
 		}
 		else if( !strcmp(*argp, "-e") || !strcmp(*argp, "--error-log") )
 		{
@@ -451,7 +468,7 @@ bool parseArgs(int argc, char **argv)
 				fprintf(stderr, "Missing Argument for parameter '%s'\n", *(argp-1) );
 				break;
 			}
-			errorLogName = *argp;
+			pcErrorLogName = *argp;
 		}
 		else if( !strcmp(*argp, "-l") || !strcmp(*argp, "--label-log") )
 		{
@@ -460,7 +477,7 @@ bool parseArgs(int argc, char **argv)
 				fprintf(stderr, "Missing Argument for parameter '%s'\n", *(argp-1) );
 				break;
 			}
-			labelLogName = *argp;
+			pcLabelLogName = *argp;
 		}
 		else if( !strcmp(*argp, "-o") || !strcmp(*argp, "--output") )
 		{
@@ -469,7 +486,7 @@ bool parseArgs(int argc, char **argv)
 				fprintf(stderr, "Missing Argument for parameter '%s'\n", *(argp-1) );
 				break;
 			}
-			outFileName = *argp;
+			pcOutFileName = *argp;
 		}
 		else if( !strcmp(*argp, "-me") || !strcmp(*argp, "--max-errors") )
 		{
