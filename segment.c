@@ -132,31 +132,56 @@ seglistsize_t segment_new(stringsize_t *name, uint32_t startadr, uint32_t endadr
 {
 	seglistsize_t newlen;
 	segment_t *sm;
+	void *pvAlloc;
 
 
-	if( segment_count >= segment_buflen ) {
-		if( segment_buflen==((seglistsize_t)-1) ) {
+	/* does the new segment still fit into the list? */
+	if( segment_count>=segment_buflen )
+	{
+		/* no space left -> grow list */
+
+		/* reached the maximum list size? */
+		if( segment_buflen==((seglistsize_t)-1) )
+		{
+			/* yes -> cancel! */
 			error(EM_TooManySegments);
 			return ((seglistsize_t)-1);
 		}
 
-		if( (newlen=segment_buflen<<1)<segment_buflen ) {
-			newlen=((seglistsize_t)-1);
+		/* double the list size */
+		newlen = segment_buflen<<1;
+		/* check for overflow */
+		if( newlen<segment_buflen )
+		{
+			/* overflow -> set to maximum size */
+			newlen = ((seglistsize_t)-1);
 		}
-		if( (sm=(segment_t*)(realloc(segment, newlen*sizeof(segment_t))))==NULL ) {
+
+		/* resize the list */
+		pvAlloc = realloc(segment, newlen*sizeof(segment_t));
+		/* check for realloc error */
+		if( pvAlloc==NULL )
+		{
+			/* failed to reallocate the list */
 			systemError(EM_OutOfMemory);
 			return ((seglistsize_t)-1);
 		}
-		segment = sm;
+		/* realloc ok, use new pointer and length */
+		segment = (segment_t*)pvAlloc;
 		segment_buflen = newlen;
 	}
 
-	sm=segment+segment_count;
-	if( (sm->name=stringClone(name))==NULL ) {
+	/* get a pointer to the next free element */
+	sm = segment+segment_count;
+	/* copy the segment name */
+	sm->name = stringClone(name);
+	if( sm->name==NULL )
+	{
+		/* failed to copy the segment name */
 		return ((seglistsize_t)-1);
 	}
 
-	/* name is no longer needed */
+	/* input name is no longer needed */
 	free(name);
 
 	/* set the segments attributes */
@@ -172,14 +197,19 @@ seglistsize_t segment_new(stringsize_t *name, uint32_t startadr, uint32_t endadr
 
 	/* Create the list for the SegElems */
 	sm->seglist_count = 1;
-	if( (sm->seglist=(segelem_t*)(malloc((sm->seglist_buflen=16)*sizeof(segelem_t))))==NULL ) {
+	sm->seglist_buflen = 16;
+	pvAlloc = malloc(sm->seglist_buflen*sizeof(segelem_t));
+	if( pvAlloc==NULL )
+	{
 		systemError(EM_OutOfMemory);
 		return ((seglistsize_t)-1);
 	}
+	sm->seglist = (segelem_t*)pvAlloc;
 	sm->seglist->fixed = false;
 	sm->seglist->phaseidx = 0;
 	sm->seglist->pc_defined = true;
-	sm->seglist->adr = sm->seglist->pc = 0;
+	sm->seglist->adr = 0;
+	sm->seglist->pc = 0;
 	sm->seglist->memelemidx = 0;
 
 	/* actual SegElem is the first entry */
@@ -208,17 +238,35 @@ void segment_reset(void)
 	segelem_t *ec, *ee;
 
 
-	for( se=(sc=segment)+segment_count; sc<se; ++sc )
+	/* loop over all segments */
+	sc = segment;
+	se = sc + segment_count;
+	while( sc<se )
 	{
 		sc->next_segelem = 0;
 		sc->act_segelem = 0;
-		for( ee=(ec=sc->seglist)+sc->seglist_count; ec<ee; ++ec )
+
+		/* loop over all segelems */
+		ec = sc->seglist;
+		ee = ec +sc->seglist_count;
+		while( ec<ee )
 		{
+			/* reset pc to start of the segelem */
 			ec->pc = ec->adr;
+			/* pc is defined */
 			ec->pc_defined = true;
+			/* pc is not phased to another address with ".pseudopc" */
 			ec->phaseidx = 0;
+
+			/* next segelem */
+			++ec;
 		}
+
+		/* next segment */
+		++sc;
 	}
+
+	/* reset current segment to start segment */
 	act_segment = 0;
 }
 
@@ -232,15 +280,31 @@ void segment_enterSegment(const seglistsize_t segidx)
 seglistsize_t segment_findSegment(const stringsize_t *name)
 {
 	segment_t *sc, *se;
+	seglistsize_t tSegIdx;
 
 
-	for( se=(sc=segment)+segment_count; sc<se; ++sc )
+	/* segment not found yet */
+	tSegIdx = (seglistsize_t)-1;
+
+	/* loop over all segments */
+	sc = segment;
+	se = sc + segment_count;
+	while( sc<se )
 	{
+		/* compare the name */
 		if( stringCmp(sc->name, name)==0 )
+		{
+			/* name matches -> found the requested segment! */
+			tSegIdx = sc-segment;
 			break;
+		}
+
+		/* next segment */
+		++sc;
 	}
 
-	return (sc<se)?sc-segment:((seglistsize_t)-1);
+	/* return the index */
+	return tSegIdx;
 }
 
 
@@ -254,14 +318,17 @@ seglistsize_t segment_findSegment(const stringsize_t *name)
 seglistsize_t segment_newSegElem(bool fixed, uint32_t adr)
 {
 	seglistsize_t newlen;
+	seglistsize_t newpos;
 	segment_t *seg;
 	segelem_t *sl;
+	void *pvAlloc;
 
 
 	seg = segment+act_segment;
 	/* If the actual SegElem is empty, there's no need to create a new one */
-	sl=seg->seglist+seg->act_segelem;
-	if( sl->adr==sl->pc && sl->pc_defined ) {
+	sl = seg->seglist + seg->act_segelem;
+	if( sl->adr==sl->pc && sl->pc_defined==true )
+	{
 /*
 		printf("SegElem: no new SegElem for idx %d\n", act_segelem);
 */
@@ -273,32 +340,61 @@ seglistsize_t segment_newSegElem(bool fixed, uint32_t adr)
 
 		return 0;
 	}
-	else {
-		if( seg->seglist_count >= seg->seglist_buflen ) {
-			if( seg->seglist_buflen==((seglistsize_t)-1) ) {
+	else
+	{
+		/* is enough space in the list for one more segelem? */
+		if( seg->seglist_count>=seg->seglist_buflen )
+		{
+			/* not enough space -> enlarge the list */
+
+			/* has the list reached the maximum size? */
+			if( seg->seglist_buflen==((seglistsize_t)-1) )
+			{
+				/* yes -> error! */
 				error(EM_TooManySegElems);
 				return ((seglistsize_t)-1);
 			}
 
-			if( (newlen=seg->seglist_buflen<<1)<seg->seglist_buflen )
-				newlen=((seglistsize_t)-1);
-			if( (sl=(segelem_t*)(realloc(seg->seglist, newlen*sizeof(segelem_t*))))==NULL )
+			/* double the list size */
+			newlen = seg->seglist_buflen << 1;
+			/* check for overflow */
+			if( newlen<seg->seglist_buflen )
 			{
+				/* overflow detected, set listsize to maximum */
+				newlen = ((seglistsize_t)-1);
+			}
+			/* reallocate the list with the new size */
+			pvAlloc = realloc(seg->seglist, newlen*sizeof(segelem_t*));
+			if( pvAlloc==NULL )
+			{
+				/* failed to reallocate the list */
 				systemError(EM_OutOfMemory);
 				return ((seglistsize_t)-1);
 			}
-			seg->seglist = sl;
+			/* reallocated the list -> use the new pointer and length */
+			seg->seglist = (segelem_t*)pvAlloc;
 			seg->seglist_buflen = newlen;
 		}
 
-		(sl=seg->seglist+seg->seglist_count)->fixed = fixed;
+		/* get the pointer to the next free list element */
+		newpos = seg->seglist_count;
+		sl = seg->seglist + newpos;
+
+		sl->fixed = fixed;
 		sl->pc_defined = true;
 		sl->adr = sl->pc = fixed?adr:0;
 		sl->phaseidx = 0;
 /*
 		printf("SegElem: new SegElem %x\n", seg->seglist_count);
 */
-		return seg->next_segelem=seg->seglist_count++;
+		/* the new created element is the next segelem */
+		seg->next_segelem = newpos;
+
+		/* increase number of segelems in the list */
+		++seg->seglist_count;
+
+		/* return the index of the new element */
+		return newpos;
 	}
 }
 
