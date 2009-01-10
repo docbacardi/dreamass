@@ -294,19 +294,23 @@ int readFileLine(sourcefile_t *that)
 
 	/*   loop until a complete block was parsed, e.g. multiline comment, so  */
 	/*   that addLine can be called  */
-	while( that->plaintext_pos<that->plaintext_end && !lineReady ) {
+	while( (that->macfifo_last!=NULL || that->plaintext_pos<that->plaintext_end) && !lineReady )
+	{
 		/*   is plaintext left in the linebuffer? (happens for lines with ':')  */
-		if( that->li_pos>=that->li_end ) {
+		if( that->li_pos>=that->li_end )
+		{
 			/*   nothing left in buffer  */
 
 			/*   TODO: keep the line in the linebuffer. this way we'll see how macros expand :)  */
 			/*   free old linebuffer  */
-			if( that->li!=NULL ) {
+			if( that->li!=NULL )
+			{
 				free( that->li );
 				that->li = NULL;
 			}
 			/*   get next line  */
-			if( !getline(that) ) {
+			if( !getline(that) )
+			{
 				/*   error!  */
 				return -1;
 			}
@@ -316,10 +320,14 @@ int readFileLine(sourcefile_t *that)
 /*  			that->linebuf[that->linebuf_size].text_line = that->li;  */
 		}
 
-		if( cfg_debug ) {
-			if( that->macfifo_count==0 ) {
+		if( cfg_debug )
+		{
+			if( that->macfifo_count==0 )
+			{
 				fprintf(debugLog, "<tt>L%04X</tt>: \"", that->linenr);
-			} else {
+			}
+			else
+			{
 				fprintf(debugLog, "<tt>M%04X</tt>(", that->macfifo_last->mline);
 				mac = macro_get(that->macfifo_last->macroIdx);
 				if( mac==NULL )
@@ -335,19 +343,23 @@ int readFileLine(sourcefile_t *that)
 
 
 		/*   parse the whole line until lineend, start of macro or ':'  */
-		while( that->li_pos<that->li_end ) {
+		while( that->li_pos<that->li_end )
+		{
 			c=*that->li_pos;
-			if( c=='\n' || c=='\r' ) {
+			if( c=='\n' || c=='\r' )
+			{
 				/*   skip linefeed character  */
 				++that->li_pos;
 				/*   is the parser inside a block (that->readin_state!=READIN_TEXT) ?  */
-				if( that->readin_state==READIN_TEXT && that->lbuf.line!=NULL ) {
+				if( that->readin_state==READIN_TEXT && that->lbuf.line!=NULL )
+				{
 					/*   no -> the newline finishes the current block  */
 					lineReady = true;
 					break;
 				}
 			}
-			else if( !readJmp[that->readin_state](that) ) {
+			else if( !readJmp[that->readin_state](that) )
+			{
 				/*   error!  */
 				return -1;
 			}
@@ -355,9 +367,11 @@ int readFileLine(sourcefile_t *that)
 	}
 
 	/*   reached the end of the file?  */
-	if( that->plaintext_pos>=that->plaintext_end ) {
+	if( that->plaintext_pos>=that->plaintext_end )
+	{
 		/*   If the last line of the file did not end with a EOL there's still something in that->lbuf  */
-		if( that->readin_state==READIN_TEXT && that->lbuf.line!=NULL ) {
+		if( that->readin_state==READIN_TEXT && that->lbuf.line!=NULL )
+		{
 			lineReady = true;
 		}
 
@@ -374,12 +388,15 @@ int readFileLine(sourcefile_t *that)
 	}
 
 	/*   Append lbuf to sourcebuffer  */
-	if( lineReady ) {
-		if( cfg_debug ) {
+	if( lineReady )
+	{
+		if( cfg_debug )
+		{
 			/*   debug output  */
 			src_debug_line(that, &that->lbuf, debugLog, false);
 		}
-		if( !addLine(that) ) {
+		if( !addLine(that) )
+		{
 			/*   error!  */
 			return -1;
 		}
