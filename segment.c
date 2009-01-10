@@ -324,9 +324,13 @@ seglistsize_t segment_newSegElem(bool fixed, uint32_t adr)
 	void *pvAlloc;
 
 
-	seg = segment+act_segment;
-	/* If the actual SegElem is empty, there's no need to create a new one */
+	/* get the current segment */
+	seg = segment + act_segment;
+
+	/* get the current segelem */
 	sl = seg->seglist + seg->act_segelem;
+
+	/* If the actual SegElem is empty, there's no need to create a new one */
 	if( sl->adr==sl->pc && sl->pc_defined==true )
 	{
 /*
@@ -364,7 +368,7 @@ seglistsize_t segment_newSegElem(bool fixed, uint32_t adr)
 				newlen = ((seglistsize_t)-1);
 			}
 			/* reallocate the list with the new size */
-			pvAlloc = realloc(seg->seglist, newlen*sizeof(segelem_t*));
+			pvAlloc = realloc(seg->seglist, newlen*sizeof(segelem_t));
 			if( pvAlloc==NULL )
 			{
 				/* failed to reallocate the list */
