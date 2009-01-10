@@ -25,7 +25,7 @@ export VERSION_DATE := $(shell date +%Y-%m-%d)
 
 # get version number
 include version
-export VERSION_ALL = $(VERSION_MAJ).$(VERSION_MIN)
+export VERSION_ALL = $(VERSION_MAJ).$(VERSION_MIN).$(VERSION_SUB)
 
 #---------------------------------------
 
