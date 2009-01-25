@@ -2212,7 +2212,17 @@ if (isdef a)==1 && (isdef b)==0
 #endif
 @end example
 
-Please note: the @code{isdef} operator is dangerous in combination with 'forward use' of variables. Basically 'forward use' boils down to 'I can not calculate the result yet. Some parts are still missing.'.
+@quotation Note
+The @code{isdef} operator's argument must be a variable. It can not be a term, like @code{a+2} or even @code{(a)}.
+@example
+; *** THIS DOES NOT WORK ***
+.DB isdef a+2
+; *** THIS DOES NOT WORK ***
+@end example
+@end quotation
+
+@quotation Note
+The @code{isdef} operator is dangerous in combination with 'forward use' of variables. Basically 'forward use' boils down to 'I can not calculate the result yet. Some parts are still missing.'.
 The next example shows a simple case of forward use:
 @example
 ; This is a 'forward use'. We want to dump the variable 'a', but it is not defined yet.
@@ -2234,6 +2244,7 @@ a = 1
 @end example
 This is no longer a 'forward use' of @code{a}. The @code{isdef} operator does not care about the value of @code{a}. It only tests if @code{a} is defined or not.
 @code{a} is still undefined when DreamAss first sees the line @code{.DB isdef a}. This means @code{isdef a} evaluates to 0 and that's it for this line. @code{a} is defined later, but this does not change anything anymore. 
+@end quotation
 
 
 @node Local Blocks
