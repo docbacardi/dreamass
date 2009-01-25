@@ -4,6 +4,8 @@
 #
 # -------------------------------------
 
+include ../version
+
 all: dreamass.txt dreamass.info dreamass.html
 #all: dreamass.pdf
 #all: dreamass.txt
