@@ -2073,6 +2073,7 @@ Whenever a command expects a number or a text it can be specified by a term. The
 @menu
 * Operand Priorities::
 * Force Size::
+* isdef::
 @end menu
 
 
@@ -2189,6 +2190,50 @@ It is also possible to force the size of complex expressions:
 @example
 lda ($80 + slot<<2).2
 @end example
+
+
+@node isdef
+@subsection isdef
+@cindex Terms, isdef
+
+The operator @code{isdef} tests if the argument is defined. If it is defined, the @code{isdef} construct evaluates to 1. If the argument is undefined, it evaluates to 0.
+@example
+a = 19
+
+; a is defined, the next line prints a '1'
+#print isdef a
+
+; b is not defined, the next line prints a '0'
+#print isdef b
+
+; a is defined, but b not. the 'print' statement is executed
+if (isdef a)==1 && (isdef b)==0
+	#print "a is defined and b is undefined"
+#endif
+@end example
+
+Please note: the @code{isdef} operator is dangerous in combination with 'forward use' of variables. Basically 'forward use' boils down to 'I can not calculate the result yet. Some parts are still missing.'.
+The next example shows a simple case of forward use:
+@example
+; This is a 'forward use'. We want to dump the variable 'a', but it is not defined yet.
+.DB a
+
+; Here is the definition for 'a'.
+a = 1
+@end example
+DreamAss handles these situations by running multiple passes, i.e. it starts again at the beginning of the sourcecode. In the last example DreamAss knows the value of @code{a} after the first pass.
+When it hits the @code{.DB a} the second time, it can finally write the correct byte (which is 1).
+
+Now we change the example from @code{.DB a} to @code{.DB isdef a}:
+@example
+; 'a' is not defined yet!
+.DB isdef a
+
+; Here is the definition for 'a'.
+a = 1
+@end example
+This is no longer a 'forward use' of @code{a}. The @code{isdef} operator does not care about the value of @code{a}. It only tests if @code{a} is defined or not.
+@code{a} is still undefined when DreamAss first sees the line @code{.DB isdef a}. This means @code{isdef a} evaluates to 0 and that's it for this line. @code{a} is defined later, but this does not change anything anymore. 
 
 
 @node Local Blocks
