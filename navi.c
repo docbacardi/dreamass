@@ -41,11 +41,29 @@ int stringCmp(const stringsize_t *s1, const stringsize_t *s2)
 {
 	stringsize_t minlen;
 	int res;
+	stringsize_t strSizS1;
+	stringsize_t strSizS2;
+	const char *pcS1;
+	const char *pcS2;
 
 
-	minlen = (*s1<*s2)?*s1:*s2;
-	if( (res=strncmp((char*)(s1+1),(char*)(s2+1),minlen))==0 && *s1!=*s2 )
-		res=(*s1<*s2)?-1:1;
+	/* get the length for both strings */
+	strSizS1 = *s1;
+	strSizS2 = *s2;
+	/* get the charpointer for both strings */
+	pcS1 = (const char*)(s1+1);
+	pcS2 = (const char*)(s2+1);
+	/* get the minimum length of the strings */
+	minlen = (strSizS1<strSizS2)?strSizS1:strSizS2;
+	/* compare the strings, but limit it to the minimum length */
+	res = strncmp(pcS1, pcS2, minlen);
+	/* were the complete strings compared? */
+	if( res==0 && strSizS1!=strSizS2 )
+	{
+		/* no -> pick the longer one */
+		res=(strSizS1<strSizS2)?-1:1;
+	}
+
 	return res;
 }
 
@@ -108,12 +126,12 @@ char *string2cstr(const stringsize_t *str)
 	char *newstr;
 
 
-	if( (newstr=(char*)malloc(*str+1))==NULL )
+	if( (newstr=(char*)malloc(*str+1U))==NULL )
 	{
 		systemError(EM_OutOfMemory);
 		return NULL;
 	}
-	memcpy( newstr, (char*)(str+1), *str );
+	memcpy( newstr, (const char*)(str+1), *str );
 	*(newstr+*str) = 0;
 	return newstr;
 }
@@ -129,11 +147,11 @@ char *string2cstr(const stringsize_t *str)
 void printString(FILE *f, const stringsize_t *str)
 {
 	stringsize_t nl;
-	char *np;
+	const char *np;
 
 	if( str!=NULL ) {
 		nl=*str;
-		np= (char*)(str+1);
+		np= (const char*)(str+1);
 		fwrite(np, nl, 1, f);
 	} else {
 		fwrite("(null)", 6, 1, f);

@@ -784,16 +784,16 @@ __EXC_CleanUp__:
 }
 
 
-void dumpObject(sourcefile_t *ptSrc, const char *pcOutFileName)
+void dumpObject(sourcefile_t *ptSrc, const char *pcFileName)
 {
 	if( cfg_verbose )
 	{
-		printf("Writing object to '%s'\n", pcOutFileName);
+		printf("Writing object to '%s'\n", pcFileName);
 	}
 
 	if( pass_dump(ptSrc) )
 	{
-		segment_writeFiles(pcOutFileName);
+		segment_writeFiles(pcFileName);
 	}
 }
 

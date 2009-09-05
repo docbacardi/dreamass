@@ -64,7 +64,9 @@ void mne_init(void)
 
 elength_t parse_mne(void)
 {
-	lineelement_t *mneelem, *termelem, *lelem;
+	lineelement_t *mneelem;
+	lineelement_t *termelem;
+	const lineelement_t *lelem;
 	linesize_t linepos_term;
 	lineelement_t nlelem;
 	uint32_t adrKeys=AK_NONE;		/* combination of multiple ADRESSKEY's */
@@ -219,7 +221,7 @@ elength_t parse_mne(void)
 		 */
 		if( op==OP_Comma )
 		{
-			lelem = (lineelement_t*)pp_peek();
+			lelem = pp_peek();
 			if( lelem==NULL ) {
 				return length;
 			}
@@ -264,7 +266,7 @@ elength_t parse_mne(void)
 		/* test for ',x', ',y' and ',Zp' */
 		if( op==OP_Comma )
 		{
-			lelem = (lineelement_t*)pp_peek();
+			lelem = pp_peek();
 			if( lelem==NULL ) {
 				return length;
 			}

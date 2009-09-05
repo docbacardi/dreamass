@@ -1638,20 +1638,26 @@ bool nextvalid(void)
 			setLocalBlock(lelem->data.blockidx);
 			break;
 		case LE_PHASE:
-			if( !src_next(pp_src) ) {
+			if( !src_next(pp_src) )
+			{
 				return false;
 			}
 			/* this is a lineelement. the number of nested phases should already be checked */
 			if( !segment_phase(lelem->data.phasepc) )
+			{
 				assert( false );
+			}
 			break;
 		case LE_DEPHASE:
-			if( !src_next(pp_src) ) {
+			if( !src_next(pp_src) )
+			{
 				return false;
 			}
 			/* this is a lineelement. the matching phase should already be checked */
 			if( !segment_dephase() )
+			{
 				assert( false );
+			}
 			break;
 		case LE_SETCODE:
 			if( !src_next(pp_src) ) {
