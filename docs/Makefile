@@ -6,7 +6,7 @@
 
 include ../version
 
-all: dreamass.txt dreamass.info dreamass.html
+all: dreamass.txt dreamass.info.gz dreamass.html
 #all: dreamass.pdf
 #all: dreamass.txt
 #all: dreamass.info
@@ -24,6 +24,9 @@ dreamass.pdf: $(TEXI_FILES)
 
 dreamass.txt: $(TEXI_FILES)
 	makeinfo -D "VERSION $(VERSION_ALL)" -D "UPDATED $(VERSION_DATE)" --plaintext -o $@ $<
+
+dreamass.info.gz: dreamass.info
+	gzip -9 -c $< >$@
 
 dreamass.info: $(TEXI_FILES)
 	makeinfo -D "VERSION $(VERSION_ALL)" -D "UPDATED $(VERSION_DATE)" -o $@ $<
