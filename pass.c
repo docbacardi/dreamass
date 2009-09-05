@@ -769,6 +769,15 @@ bool pass_showUndefs(sourcefile_t *src)
 		case BE_DSB:
 		case BE_nBYTE:
 
+		case LE_PSYOPC:
+			/* is this is an unparsed pseudopc? */
+			if( lelem->data.psyopc==PSY_PSEUDOPC )
+			{
+				/* yes -> enter a new phase to match ".realpc" statements */
+				segment_phase(0);
+			}
+			break;
+
 		/*
 		 * not parsed yet, maybe an error before
 		 * ignore them
@@ -779,7 +788,6 @@ bool pass_showUndefs(sourcefile_t *src)
 		case LE_TEXTNUM3:
 		case LE_TEXTNUM4:
 		case LE_OPERAND:
-		case LE_PSYOPC:
 		case LE_PREPROC:
 		case LE_MNE:
 		case LE_STRING:
