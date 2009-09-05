@@ -846,51 +846,70 @@ static bool memSort(memtab_t *memlist, memtab_t **memlist_end, seglistsize_t seg
 }
 
 
-static bool sortedListDump(char *fname, memtab_t *memlist, memtab_t *me, bool writesadr, uint8_t fillbyte )
+static bool sortedListDump(const char *pcFileName, memtab_t *memlist, memtab_t *me, bool fWriteStartAdr, uint8_t fillbyte)
 {
 	FILE *fh = NULL;
-	uint32_t dumpadr;
+	uint32_t ulDumpAdr;
 	memtab_t *mc;
-	bool wsadr;
+	bool fResult;
 
 
-	wsadr = writesadr;
+	/* expect success */
+	fResult = true;
+
 	/* Open the file */
-	if( (fh=fopen(fname,"wb"))==NULL ) {
-		error(EM_CreateFile_s, fname);
-		return false;
+	fh = fopen(pcFileName,"wb");
+	if( fh==NULL )
+	{
+		error(EM_CreateFile_s, pcFileName);
+		fResult = false;
+	}
+	else
+	{
+		ulDumpAdr = memlist->Start;
+
+		/* process all memlist elements */
+		mc = memlist;
+		while( mc<me )
+		{
+			/* fill the space between the segments */
+			while( ulDumpAdr<mc->Start )
+			{
+				fputc( (int)(fillbyte), fh);
+				++ulDumpAdr;
+			}
+			if( ferror(fh) )
+			{
+				error(EM_WriteError_s, pcFileName);
+				fResult = false;
+				break;
+			}
+
+			fResult = segment_writeSegment(fh, mc->segelemidx, fWriteStartAdr);
+			if( fResult!=true )
+			{
+				error(EM_WriteError_s, pcFileName);
+				break;
+			}
+
+			/* Only write the startadress of the first segment */
+			fWriteStartAdr = false;
+
+			ulDumpAdr = mc->End;
+
+			/* next memory segment */
+			++mc;
+		}
+
+		/* close the file */
+		fclose(fh);
 	}
 
-	/* process all memlist elements */
-	dumpadr = memlist->Start;
-	for( mc=memlist; mc<me; ++mc ) {
-		/* fill the space between the segments */
-		while( dumpadr<mc->Start ) {
-			fputc( (int)(fillbyte), fh);
-			++dumpadr;
-		}
-		if( ferror(fh) ) {
-			error(EM_WriteError_s, fname);
-			fclose( fh );
-			return false;
-		}
-
-		if( !segment_writeSegment( fh, mc->segelemidx, wsadr ) ) {
-			error(EM_WriteError_s, fname);
-			fclose( fh );
-			return false;
-		}
-		/* Only write the startadress of the first segment */
-		wsadr = false;
-
-		dumpadr=mc->End;
-	};
-	fclose( fh );
-	return true;
+	return fResult;
 }
 
 
-bool segment_writeFiles(char *ofile)
+bool segment_writeFiles(const char *pcOutFileName)
 {
 	outfile_t *oc, *oe;
 	bool writesadr;
@@ -929,7 +948,7 @@ bool segment_writeFiles(char *ofile)
 				}
 			}
 		}
-		if( !sortedListDump(ofile, memlist, me, true, 0x00 ) ) {
+		if( !sortedListDump(pcOutFileName, memlist, me, true, 0x00 ) ) {
 			goto __ERROR_EXIT__;
 		}
 	}
@@ -940,7 +959,7 @@ bool segment_writeFiles(char *ofile)
 				cname = string2cstr( oc->filename );
 			}
 			else {
-				cname = ofile;
+				cname = pcOutFileName;
 			}
 
 			/* write a startadress to this file? */
@@ -998,14 +1017,15 @@ bool segment_writeFiles(char *ofile)
 
 				for( segcnt=0; segcnt<oc->segnames_count; ++segcnt ) {
 					if( !segment_writeSegment( fh, *(seglist+segcnt), writesadr ) ) {
-						error(EM_WriteError_s, ofile);
+						error(EM_WriteError_s, pcOutFileName);
 						goto __ERROR_EXIT__;
 					}
 					/* Only write the startadress of the first segment */
 					writesadr=false;
 				}
 				fclose( fh );
-				if( cname!=ofile ) {
+				if( cname!=pcOutFileName )
+				{
 					free( cname );
 				}
 			}
@@ -1028,7 +1048,8 @@ __ERROR_EXIT__:
 	if( seglist!=NULL ) {
 		free( seglist );
 	}
-	if( cname!=NULL && cname!=ofile ) {
+	if( cname!=NULL && cname!=pcOutFileName )
+	{
 		free( cname );
 	}
 	if( fh!=NULL ) {

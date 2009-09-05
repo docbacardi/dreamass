@@ -113,7 +113,7 @@ void segment_debug(FILE *dfh);
 
 bool segment_memDump(void);
 uint8_t *segment_getMemPtr(void);
-bool segment_writeFiles(char *ofile);
+bool segment_writeFiles(const char *pcOutFileName);
 bool segment_writeSegment(FILE *ofh, seglistsize_t segidx, bool startadr);
 
 bool segment_newOutfile( stringsize_t *filename, bool sort, bool writesadr, uint8_t fillbyte, stringsize_t **segnames, seglistsize_t segnames_count );

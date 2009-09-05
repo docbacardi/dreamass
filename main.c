@@ -72,7 +72,7 @@ sourcefile_t *assemble(void);
 void showVersion(void);
 void showHelp(const char *pcArgv0);
 bool parseArgs(int argc, char **argv);
-void dumpObject(sourcefile_t *src, char *ofname);
+void dumpObject(sourcefile_t *ptSrc, const char *pcOutFileName);
 void dumpLabels(char *dfname);
 
 /*-----------------------------------*/
@@ -784,16 +784,16 @@ __EXC_CleanUp__:
 }
 
 
-void dumpObject(sourcefile_t *src, char *ofname)
+void dumpObject(sourcefile_t *ptSrc, const char *pcOutFileName)
 {
 	if( cfg_verbose )
 	{
-		printf("Writing object to '%s'\n", ofname);
+		printf("Writing object to '%s'\n", pcOutFileName);
 	}
 
-	if( pass_dump(src) )
+	if( pass_dump(ptSrc) )
 	{
-		segment_writeFiles(ofname);
+		segment_writeFiles(pcOutFileName);
 	}
 }
 

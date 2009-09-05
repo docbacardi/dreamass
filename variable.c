@@ -362,7 +362,7 @@ VARFIND find_var(const stringsize_t *name)
 {
 	stringsize_t namelen;
 	localdepth_t level;
-	char *cname;
+	const char *cname;
 	bool digread;
 	bool fixedlevel;
 	localdepth_t *pi_start, *pi_cnt, *pi_end;
