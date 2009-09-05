@@ -1930,7 +1930,7 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 			/* all 6510 models have a 16 bit PC */
 			pc_width = 4;
 			break;
-		case CPUTYPE_65815:
+		case CPUTYPE_65816:
 			/* 65816 has 16 bit PC and 8 bit bankbyte */
 			pc_width = 6;
 			break;

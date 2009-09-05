@@ -658,7 +658,7 @@ elength_t psy_regsize(linesize_t linepos_start, int reg)
 	{
 		error(EM_IllegalRegSizeArg_d, datavar.valt.value.num);
 	}
-	else if( datavar.valt.value.num==16 && getCurrentCpu()!=CPUTYPE_65815 )
+	else if( datavar.valt.value.num==16 && getCurrentCpu()!=CPUTYPE_65816 )
 	{
 		error(EM_RegSize16NotAllowed_s, getCurrentCpuName());
 	}

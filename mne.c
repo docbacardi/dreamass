@@ -807,7 +807,7 @@ bool checkJmpInd(VARIABLE *param)
 	if( param->defined && param->final )
 	{
 		/* this bug is fixed for 65816 */
-		if( currentCpu!=CPUTYPE_65815 )
+		if( currentCpu!=CPUTYPE_65816 )
 		{
 			/* the parameter must be a number. parse_mne should have checked this */
 			assert( param->valt.typ==VALTYP_NUM );

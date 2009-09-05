@@ -977,7 +977,7 @@ const cpuTypeNamePair_t cputype_name[3] =
 {
 	{ "6510",	CPUTYPE_6510,		validModes_6510 },
 	{ "6510ill",	CPUTYPE_6510Ill,	validModes_6510Ill },
-	{ "65816",	CPUTYPE_65815,		validModes_65816 }
+	{ "65816",	CPUTYPE_65816,		validModes_65816 }
 };
 
 
