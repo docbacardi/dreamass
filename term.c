@@ -1124,7 +1124,7 @@ bool term_insOp(term *that, OPERAND op)
 						return false;
 
 					/*   go up until root node is reached or above priority is higher than this operand (priority 0 is the highest)  */
-					while( ti->up!=no_term && fn_pri[(tiu=that->t+ti->up)->data.function & FN_IdxMask]<fn_pri[te.data.function & FN_IdxMask] )
+					while( ti->up!=no_term && fn_pri[(tiu=that->t+ti->up)->data.function & FN_IdxMask]<=fn_pri[te.data.function & FN_IdxMask] )
 					{
 						that->inspos = ti->up;
 						ti = tiu;
