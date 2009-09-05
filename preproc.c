@@ -112,7 +112,7 @@ const pp_func pp_functions[19] =
 
 struct segattribs_t
 {
-	char *name;
+	const char *name;
 	stringsize_t len;
 	SEGMENT_T typ;
 } segattribs[5] =
@@ -130,7 +130,7 @@ struct segattribs_t
 
 struct fileattribs_t
 {
-	char *name;
+	const char *name;
 	stringsize_t len;
 } fileattribs[2] =
 {
@@ -144,14 +144,14 @@ struct fileattribs_t
 /* Delete sections in #if, delall==true -> delete all sections, false -> delete just one */
 static bool ifDelete(bool delall)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	PREPROC tPreProcTyp;
 	int ifcnt=1;
 
 
 	while( ifcnt!=0 )
 	{
-		lelem = (lineelement_t*)src_peek(pp_src);
+		lelem = src_peek(pp_src);
 		if( lelem==NULL ) {
 			return false;
 		}
@@ -237,13 +237,13 @@ static bool ifDelete(bool delall)
 /* skip over the rest of #if */
 static bool ifSkip(void)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	int ifcnt=1;
 
 
 	while( ifcnt!=0 )
 	{
-		lelem = (lineelement_t*)src_peek(pp_src);
+		lelem = src_peek(pp_src);
 		if( lelem==NULL ) {
 			return false;
 		}
@@ -399,7 +399,7 @@ bool ppf_elsif(lineelement_t *selem)
 bool ppf_elsifdef(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool vexists;
 
 
@@ -412,7 +412,7 @@ bool ppf_elsifdef(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL )
 	{
 		return false;
@@ -458,7 +458,7 @@ bool ppf_elsifdef(lineelement_t *selem)
 bool ppf_elsiffile(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool fexists;
 
 
@@ -471,7 +471,7 @@ bool ppf_elsiffile(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL )
 	{
 		return false;
@@ -523,7 +523,7 @@ bool ppf_elsiffile(lineelement_t *selem)
 bool ppf_elsifndef(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool vexists;
 
 
@@ -536,7 +536,7 @@ bool ppf_elsifndef(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}
@@ -580,7 +580,7 @@ bool ppf_elsifndef(lineelement_t *selem)
 bool ppf_elsifnfile(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool fexists;
 
 
@@ -593,7 +593,7 @@ bool ppf_elsifnfile(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL )
 	{
 		return false;
@@ -725,7 +725,7 @@ bool ppf_if(lineelement_t *selem)
 bool ppf_ifdef(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool vexists;
 
 
@@ -738,7 +738,7 @@ bool ppf_ifdef(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}
@@ -770,7 +770,7 @@ bool ppf_ifdef(lineelement_t *selem)
 bool ppf_iffile(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool fexists;
 
 
@@ -783,7 +783,7 @@ bool ppf_iffile(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}
@@ -815,7 +815,7 @@ bool ppf_iffile(lineelement_t *selem)
 bool ppf_ifndef(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool vexists;
 
 
@@ -828,8 +828,9 @@ bool ppf_ifndef(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
-	if( lelem==NULL ) {
+	lelem = src_peek(pp_src);
+	if( lelem==NULL )
+	{
 		return false;
 	}
 	if( lelem->typ!=LE_TEXT )
@@ -837,7 +838,8 @@ bool ppf_ifndef(lineelement_t *selem)
 		error(EM_MissingArgForPreProc);
 		return false;
 	}
-	if( !src_next(pp_src) ) {
+	if( !src_next(pp_src) )
+	{
 		return false;
 	}
 
@@ -849,9 +851,12 @@ bool ppf_ifndef(lineelement_t *selem)
 	{
 		pp_stack[++pp_stackpos] = ZU_IF_NEVERBEENTRUE;
 		if( !ifDelete(false) )
+		{
 			return false;
+		}
 	}
-	else {
+	else
+	{
 		pp_stack[++pp_stackpos] = ZU_IF_TRUE;
 	}
 	return true;
@@ -861,7 +866,7 @@ bool ppf_ifndef(lineelement_t *selem)
 bool ppf_ifnfile(lineelement_t *selem)
 {
 	linesize_t lpos_start;
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool fexists;
 
 
@@ -874,7 +879,7 @@ bool ppf_ifnfile(lineelement_t *selem)
 	}
 
 	lpos_start = pp_src->slpos;
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}
@@ -906,12 +911,12 @@ bool ppf_ifnfile(lineelement_t *selem)
 
 bool ppf_include(lineelement_t *selem)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	sourcefile_t *nsrc;
 
 
 	/* get the filename for the include command */
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}
@@ -962,7 +967,7 @@ bool ppf_print(lineelement_t *selem)
 
 bool ppf_outfile(lineelement_t *selem)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	linesize_t lpos_start;
 	stringsize_t *filename;
 	bool sort, dumpadr;
@@ -986,7 +991,7 @@ bool ppf_outfile(lineelement_t *selem)
 	fillbyte = 0;
 
 	/* get "filename" or @ for the commandline -o value */
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}
@@ -1006,7 +1011,7 @@ bool ppf_outfile(lineelement_t *selem)
 
 	while( 1 )
 	{
-		lelem = (lineelement_t*)src_peek(pp_src);
+		lelem = src_peek(pp_src);
 		if( lelem==NULL ) {
 			return false;
 		}
@@ -1017,7 +1022,7 @@ bool ppf_outfile(lineelement_t *selem)
 			return false;
 		}
 
-		lelem = (lineelement_t*)src_peek(pp_src);
+		lelem = src_peek(pp_src);
 		if( lelem==NULL ) {
 			return false;
 		}
@@ -1162,7 +1167,7 @@ bool ppf_outfile(lineelement_t *selem)
 
 bool ppf_segdef(lineelement_t *selem)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool deffillup, defforce, deftyp, deffillbyte, defrange;
 	SEGMENT_T segtyp;
 	uint8_t fillbyte, cnt0;
@@ -1191,7 +1196,7 @@ bool ppf_segdef(lineelement_t *selem)
 	lpos_start = pp_src->slpos;
 	neot = true;
 	do {
-		lelem = (lineelement_t*)src_peek(pp_src);
+		lelem = src_peek(pp_src);
 		if( lelem==NULL ) {
 			return false;
 		}
@@ -1254,7 +1259,7 @@ bool ppf_segdef(lineelement_t *selem)
 			if( !src_next(pp_src) ) {
 				return false;
 			}
-			lelem = (lineelement_t*)src_peek(pp_src);
+			lelem = src_peek(pp_src);
 			if( lelem==NULL ) {
 				return false;
 			}
@@ -1266,7 +1271,7 @@ bool ppf_segdef(lineelement_t *selem)
 				if( !src_next(pp_src) ) {
 					return false;
 				}
-				lelem = (lineelement_t*)src_peek(pp_src);
+				lelem = src_peek(pp_src);
 				if( lelem==NULL ) {
 					return false;
 				}
@@ -1341,7 +1346,7 @@ bool ppf_segdef(lineelement_t *selem)
 			/* Should never happen */
 			assert( false );
 		};
-		lelem = (lineelement_t*)src_peek(pp_src);
+		lelem = src_peek(pp_src);
 		if( lelem==NULL ) {
 			return false;
 		}
@@ -1355,7 +1360,7 @@ bool ppf_segdef(lineelement_t *selem)
 		}
 	} while( neot );
 
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}
@@ -1559,7 +1564,7 @@ bool existFile(const stringsize_t *filename)
 
 bool nextvalid(void)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	sourcefile_t *newsrc;
 	bool nv = true;
 	VARERR ve;
@@ -1567,7 +1572,7 @@ bool nextvalid(void)
 
 	while( nv )
 	{
-		lelem = (lineelement_t*)src_peek(pp_src);
+		lelem = src_peek(pp_src);
 		if( lelem==NULL ) {
 			return false;
 		}
@@ -1754,10 +1759,10 @@ const lineelement_t *pp_get(void)
 
 bool pp_eat(void)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 
 
-	lelem = (lineelement_t*)src_peek(pp_src);
+	lelem = src_peek(pp_src);
 	if( lelem==NULL ) {
 		return false;
 	}

@@ -112,7 +112,7 @@ int filelist_ropen(const stringsize_t *name)
 		return -1;
 	}
 	/* copy name to cbuf */
-	memcpy( cbuf+includeMaxLen, (char*)(name+1), namelen );
+	memcpy( cbuf+includeMaxLen, (const char*)(name+1), namelen );
 	/* terminate the string */
 	*(cbuf+includeMaxLen+namelen) = '\0';
 

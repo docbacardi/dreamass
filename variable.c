@@ -210,7 +210,7 @@ VARADR assumeVariable(const stringsize_t *name)
 	varcnt_t newlen;
 	VARNAME *pp;
 	VARFIND vf;
-	char *cname;
+	const char *cname;
 	stringsize_t namelen;
 
 
@@ -278,7 +278,7 @@ VARADR assumeVariable(const stringsize_t *name)
 
 		/*   Erase the '@...'  */
 		namelen = *name;
-		cname = (char*)(name+1);
+		cname = (const char*)(name+1);
 		if( namelen>1 && *cname=='@' )
 		{
 			do
@@ -374,7 +374,7 @@ VARFIND find_var(const stringsize_t *name)
 	/*  start and endpointer to the list of parent indices  */
 	pi_end=(pi_start=parentidx+pliststart[blockidx].start)+pliststart[blockidx].length;
 
-	cname=(char*)(name+1);
+	cname=(const char*)(name+1);
 	if( (namelen=*name)>1 && *cname=='@' )
 	{
 		level=0;					/*  the level  */

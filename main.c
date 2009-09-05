@@ -42,7 +42,7 @@ uint32_t cfg_maxwarnings = 20;
 uint32_t cfg_maxerrors = 20;
 
 stringsize_t **srcFileNames = NULL;
-char *pcOutFileName = "a.out";
+const char *pcOutFileName = "a.out";
 char *pcDebugLogName = NULL;
 char *pcErrorLogName = NULL;
 char *pcLabelLogName = NULL;

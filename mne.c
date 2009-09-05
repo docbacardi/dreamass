@@ -467,11 +467,12 @@ elength_t parse_mne(void)
 
 bool getNextOp(OPERAND *op)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 
 
-	lelem = (lineelement_t*)pp_peek();
-	if( lelem==NULL ) {
+	lelem = pp_peek();
+	if( lelem==NULL )
+	{
 		return false;
 	}
 	if( lelem->typ==LE_OPERAND && (*op=lelem->data.op)!=OP_Colon )

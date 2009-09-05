@@ -32,7 +32,7 @@ typedef enum
 
 typedef struct
 {
-	char *key;
+	const char *key;
 	uint8_t keylen;
 	PREPROC idx;
 } pp_keytri;

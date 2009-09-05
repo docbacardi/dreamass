@@ -49,7 +49,7 @@ typedef enum
 
 typedef struct
 {
-	char *key;
+	const char *key;
 	uint8_t keylen;
 	PSYOPC idx;
 } psyopc_s;

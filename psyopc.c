@@ -288,7 +288,7 @@ elength_t psy_align(linesize_t linepos_start)
 elength_t psy_binclude(linesize_t linepos_start)
 {
 	elength_t elength = { true, { true, 0 }};
-	lineelement_t *lelem2;
+	const lineelement_t *lelem2;
 	stringsize_t *filename, *fnameclone;
 	VARIABLE binc_offs = { true, false, true, false, (seglistsize_t)-1, { VALTYP_NUM, 0, { 0 }}};
 	VARIABLE binc_len = { false, false, false, false, (seglistsize_t)-1, { VALTYP_NUM, 0, { 0 }}};
@@ -300,7 +300,8 @@ elength_t psy_binclude(linesize_t linepos_start)
 	char *cfname;
 
 
-	if( (lelem2=(lineelement_t*)pp_get())->typ!=LE_STRING )
+	lelem2 = pp_get();
+	if( lelem2->typ!=LE_STRING )
 	{
 		error(EM_MissingFilename);
 		return elength;
@@ -308,14 +309,17 @@ elength_t psy_binclude(linesize_t linepos_start)
 
 	filename = lelem2->data.str;
 
-	lelem2 = (lineelement_t*)pp_peek();
-	if( lelem2==NULL ) {
+	lelem2 = pp_peek();
+	if( lelem2==NULL )
+	{
 		return elength;
 	}
 	if( lelem2->typ==LE_OPERAND && lelem2->data.op==OP_Comma )
 	{
 		if( !pp_skip() )
+		{
 			return elength;
+		}
 
 		if( !read_term(TS_4BYTE,&binc_offs, false) )
 		{
@@ -323,14 +327,17 @@ elength_t psy_binclude(linesize_t linepos_start)
 			return elength;
 		}
 
-		lelem2 = (lineelement_t*)pp_peek();
-		if( lelem2==NULL ) {
+		lelem2 = pp_peek();
+		if( lelem2==NULL )
+		{
 			return elength;
 		}
 		if( lelem2->typ==LE_OPERAND && lelem2->data.op==OP_Comma )
 		{
 			if( !pp_skip() )
+			{
 				return elength;
+			}
 
 			if( !read_term(TS_2BYTE,&binc_len, false) )
 			{
@@ -341,7 +348,8 @@ elength_t psy_binclude(linesize_t linepos_start)
 		}
 	}
 
-	if( binc_offs.defined && ( !lendef || ( lendef && binc_len.defined ) ) ) {
+	if( binc_offs.defined && ( !lendef || ( lendef && binc_len.defined ) ) )
+	{
 		fnameclone = stringClone(filename);
 
 		pp_delItems(linepos_start, pp_getPos());
@@ -364,7 +372,9 @@ elength_t psy_binclude(linesize_t linepos_start)
 
 		/* Get Filesize */
 		if( fstat(bincfile, &statbuf)==0 && S_ISREG(statbuf.st_mode) )
+		{
 			filesize=statbuf.st_size;
+		}
 		else
 		{
 			error(EM_FileNotFound_s, cfname);
@@ -396,7 +406,8 @@ elength_t psy_binclude(linesize_t linepos_start)
 
 		/* Allocate buffer for data and length info */
 		nlelem.typ = BE_nBYTE;
-		if( (nlelem.data.b_nbyte=(stringsize_t*)malloc(binc_len.valt.value.num+sizeof(stringsize_t)))==NULL )
+		nlelem.data.b_nbyte = (stringsize_t*)malloc(binc_len.valt.value.num+sizeof(stringsize_t));
+		if( nlelem.data.b_nbyte==NULL )
 		{
 			systemError(EM_OutOfMemory);
 			free( cfname );
@@ -416,7 +427,8 @@ elength_t psy_binclude(linesize_t linepos_start)
 		}
 
 		/* read in the data */
-		if( readFile(bincfile, (char*)(nlelem.data.b_nbyte+1), binc_len.valt.value.num)==false ) {
+		if( readFile(bincfile, (char*)(nlelem.data.b_nbyte+1), binc_len.valt.value.num)==false )
+		{
 			error(EM_ReadError_s, cfname);
 			free( cfname );
 			close(bincfile);
@@ -509,7 +521,7 @@ elength_t psy_dsb(linesize_t linepos_start)
  */
 elength_t readData(linesize_t linepos_start, TERMSIZE maxSize, bool lPetMode)
 {
-	lineelement_t *lelem;
+	const lineelement_t *lelem;
 	bool neot = true;
 	bool oPetMode;
 	VARIABLE datavar;
@@ -598,7 +610,7 @@ elength_t readData(linesize_t linepos_start, TERMSIZE maxSize, bool lPetMode)
 		}
 
 		linepos_start = pp_getPos();
-		lelem = (lineelement_t*)pp_peek();
+		lelem = pp_peek();
 		if( lelem==NULL ) {
 			return elen;
 		}

@@ -1608,13 +1608,13 @@ bool addPreproc(linebuffer_t *lbuf, PREPROC pp)
 }
 
 
-bool addPsyopc(linebuffer_t *lbuf, PSYOPC psyopc)
+bool addPsyopc(linebuffer_t *lbuf, PSYOPC tPsyopc)
 {
 	lineelement_t lelem;
 
 
 	lelem.typ = LE_PSYOPC;
-	lelem.data.psyopc = psyopc;
+	lelem.data.psyopc = tPsyopc;
 	return addLineelement(lbuf,&lelem);
 }
 
