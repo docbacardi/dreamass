@@ -1510,7 +1510,7 @@ bool readMacroValues(sourcefile_t *that, char ***buf)
 			}
 			else
 			{
-				while( that->li_pos<that->li_end && (c=*that->li_pos)!=',' && c!=')' && !isblank(c) )
+				while( that->li_pos<that->li_end && (c=*that->li_pos)!=',' && c!=')' )
 				{
 					if( c=='\\' && ++that->li_pos>=that->li_end )
 					{
@@ -1550,7 +1550,7 @@ bool readMacroValues(sourcefile_t *that, char ***buf)
 			*(macVal_buf[macVal_count]+slen) = 0;
 
 			if( cfg_debug )
-				fprintf(debugLog, "Parameter %d: %s<br>\n", macVal_count, *(macVal_buf+macVal_count));
+				fprintf(debugLog, "Parameter %d: '%s'<br>\n", macVal_count, *(macVal_buf+macVal_count));
 
 			++macVal_count;
 
