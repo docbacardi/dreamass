@@ -1,8 +1,7 @@
 set test "opcodes_6510"
-set DREAMASS "./dreamass"
 
-compare_ref opcodes_6510 opcodes_6510_ref
+compare_ref opcodes_6510    opcodes_6510_ref
 compare_ref opcodes_6510ill opcodes_6510ill_ref
-compare_ref opcodes_65816 opcodes_65816_ref
+compare_ref opcodes_65816   opcodes_65816_ref
 
 pass "ok"

@@ -2,14 +2,19 @@ set tool dreamass
 set srcdir ./testsuite
 set outdir /tmp
 set all 1
+set DREAMASS "./dreamass"
 
+
+proc scriptdir {} {
+	return [file dirname [info script]]
+}
 
 proc assemble {source binary} {
 	global DREAMASS
-	global outdir
 
-	verbose "# Executing $DREAMASS -o $outdir/$binary $source"
-	spawn $DREAMASS -o $outdir/$binary $source
+
+	verbose "# Executing $DREAMASS -o $binary $source"
+	spawn $DREAMASS -o $binary $source
 	expect {
 		"No such file."		{ unresolved "Can't start $DREAMASS" }
 		"error:"		{ fail "Failed to build $binary" }
@@ -20,8 +25,10 @@ proc assemble {source binary} {
 proc compare_ref {test_src ref_src} {
 	global outdir
 
-	assemble testsuite/dreamass/opcodes/$test_src.src $test_src.prg
-	assemble testsuite/dreamass/opcodes/$ref_src.src $ref_src.prg
+
+	set srcdir [scriptdir]
+	assemble $srcdir/$test_src.src $outdir/$test_src.prg
+	assemble $srcdir/$ref_src.src  $outdir/$ref_src.prg
 
 	if { [diff $outdir/$test_src.prg $outdir/$ref_src.prg]!=1 } {
 		fail "the output differs!"
