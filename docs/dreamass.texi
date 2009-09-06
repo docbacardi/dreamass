@@ -741,377 +741,75 @@ All other commandline options are silently ignored.
 @caption{all pseudo opcodes}
 @multitable @columnfractions .60 .40
 @headitem syntax @tab command
+@item @code{.(}
+ @tab @ref{Open Local Block}
+@item @code{.)}
+ @tab @ref{Close Local Block}
+@item @code{.align @var{base} [,@var{fillyte}]}
+ @tab @ref{Align the PC}
+@item @code{.asize @var{size}}
+ @tab @ref{Set the Akku size}
 @item @code{.binclude @var{filename} [,@var{offset} [,@var{max_length}]]}
  @tab @ref{Binary Include}
 @item @code{.byte @var{term} [,@var{term}@dots{}]}
  @tab @ref{Dump Bytes} (alias for '.db').
+@item @code{.cpu @var{cpuid}}
+ @tab @ref{Set CPU}.
 @item @code{.db @var{term} [,@var{term}@dots{}]}
  @tab @ref{Dump Bytes}
-@item @code{.dw @var{term} [,@var{term}@dots{}]}
- @tab @ref{Dump Words}
-@item @code{.text [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
- @tab @ref{Dump Text}
-@item @code{.dt [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
- @tab @ref{Dump Text} (alias for .text).
-@item @code{.pet [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
- @tab @ref{Dump Petascii}
 @item @code{.dp [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
  @tab @ref{Dump Petascii} (alias for .pet).
-@item @code{.scr [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
- @tab @ref{Dump Screencode}
 @item @code{.ds [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
  @tab @ref{Dump Screencode} (alias for .scr).
+@item @code{.dsb @var{size} [,@var{fillyte}]}
+ @tab @ref{Fill Area}
+@item @code{.dt [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Text} (alias for .text).
+@item @code{.dw @var{term} [,@var{term}@dots{}]}
+ @tab @ref{Dump Words}
+@item @code{.pet [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Petascii}
+@item @code{.pseudopc @var{address}}
+ @tab @ref{Pseudo PC}
+@item @code{.realpc}
+ @tab @ref{Real PC}
+@item @code{.scr [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Screencode}
 @item @code{.segment @var{name}}
  @tab @ref{Switch Segment}
 @item @code{.setpet}
  @tab @ref{Set Petascii Mode}
 @item @code{.setscr}
  @tab @ref{Set Screencode Mode}
+@item @code{.text [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+ @tab @ref{Dump Text}
 @item @code{.word @var{term} [,@var{term}@dots{}]}
  @tab @ref{Dump Words}
-@item @code{.dsb @var{size} [,@var{fillyte}]}
- @tab @ref{Fill Area}
-@item @code{.align @var{base} [,@var{fillyte}]}
- @tab @ref{Align}
-@item @code{.(}
- @tab @ref{Open Local Block}
-@item @code{.)}
- @tab @ref{Close Local Block}
-@item @code{.pseudopc @var{address}}
- @tab @ref{Pseudo PC}
-@item @code{.realpc}
- @tab @ref{Real PC}
+@item @code{.xysize @var{size}}
+ @tab @ref{Set the size of the X and Y register}
 @end multitable
 @end float
 
 @menu
+* Open Local Block::
+* Close Local Block::
+* Align the PC::
+* Set the Akku size::
 * Binary Include::
+* Set CPU::
 * Dump Bytes::
-* Dump Words::
-* Dump Text::
-* Dump Petascii::
 * Dump Screencode::
+* Fill Area::
+* Dump Text::
+* Dump Words::
+* Dump Petascii::
+* Pseudo PC::
+* Real PC::
 * Switch Segment::
 * Set Petascii Mode::
 * Set Screencode Mode::
-* Fill Area::
-* Align::
-* Open Local Block::
-* Close Local Block::
-* Pseudo PC::
-* Real PC::
+* Set the size of the X and Y register::
 @end menu
-
-
-@node Binary Include
-@subsection Binary Include
-@cindex Pseudo Opcodes, Binary Include
-
-Includes a file 'as it is'.
-
-Syntax: 
-@example
-@code{.binclude @var{filename} [,@var{offset} [,@var{max_length}]]}
-@end example
-
-Examples: 
-@example
-.binclude "gfx/bitmap01.koa"
-@end example
-This includes the complete file @file{gfx/bitmap01.koa}.
-
-@example
-.binclude "sfx/sound01.prg",2
-@end example
-The offset is used to skip bytes at the beginning of the file. This example
-ignores the first 2 bytes of the file.
-
-@example
-.binclude "gfx/bitmap02.koa",2,8000
-@end example
-The third parameter is the maximum number of bytes to include. If @var{max_length}
-is omitted, the maximum possible length is used.
-This example reads from file @file{gfx/bitmap02.koala}. The first 2 bytes are skipped,
-then 8000 bytes are included. The file may contain more data, but it is ignored.
-For a picture in koala format this example would extract the bitmap.
-
-@quotation Note
-If the file is not found in the current path, the includepaths are serached.
-@end quotation
-
-
-
-@node Dump Bytes
-@subsection Dump Bytes
-@cindex Pseudo Opcodes, Dump Bytes
-
-Dump a sequence of 8 bit values. The values are seperated with a comma.
-
-Syntax: 
-@example
-@code{.db @var{term} [,@var{term}@dots{}]}
-@end example
-
-Examples: 
-@example
-.DB 0
-.DB $ab, 'd', 4, 6*(%10110+&711)
-@end example
-
-Wrong example: 
-@example
-.DB $123        ;*** DOES NOT WORK ***
-@end example
-This will produce an 'overflow error' as $123 does not fit in one byte
-
-
-@node Dump Words
-@subsection Dump Words
-@cindex Pseudo Opcodes, Dump Words
-
-Produces a sequence of 16 bit values. The byteorder is big endian. Two and
-more values are seperated with a comma. Bytevalues will be expanded to word
-values.
-
-Syntax: 
-@example
-@code{.dw @var{term} [,@var{term}@dots{}]}
-@end example
-
-Examples: 
-@example
-.DW 0
-.dw $abcd, 'd', 1024, $6*(%10110+&711)
-@end example
-
-Wrong example: 
-@example
-.DW $12345      ;*** DOES NOT WORK ***
-@end example
-This will produce an @samp{overflow error} as $12345 does not fit in a word.
-
-
-
-@node Dump Text
-@subsection Dump Text
-@cindex Pseudo Opcodes, Dump Text
-
-Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
-converted according to the actual pet/screen mode.
-
-Syntax: 
-@example
-@code{.text [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
-@end example
-
-Examples: 
-@example
-.text "poop",0
-@end example
-produces @samp{$50,$4F,$4F,$50,$00} in pet mode or @samp{$10,$0F,$0F,$10,$00} in screencode
-mode
-
-@example
-.text $12,$1234,$123456,$12345678
-@end example
-produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
-
-
-@node Dump Petascii
-@subsection Dump Petascii
-@cindex Pseudo Opcodes, Dump Petascii
-
-Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
-converted to petascii.
-
-Syntax: 
-
-@example
-@code{.pet [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
-@end example
-
-Examples: 
-@example
-.pet "poop",0
-@end example
-produces @samp{$50,$4F,$4F,$50,$00}
-
-@example
-.pet $12,$1234,$123456,$12345678
-@end example
-produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
-
-
-@node Dump Screencode
-@subsection Dump Screencode
-@cindex Pseudo Opcodes, Dump Screencode
-
-Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
-converted to screencode.
-
-Syntax: 
-
-@example
-@code{.scr [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
-@end example
-
-Examples: 
-@example
-.scr "poop",0
-@end example
-produces @samp{$10,$0F,$0F,$10,$00}
-
-@example
-.scr $12,$1234,$123456,$12345678
-@end example
-produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
-
-
-@node Switch Segment
-@subsection Switch Segment
-@cindex Pseudo Opcodes, Switch Segment
-
-Switch to a segment. Take a look at the chapter Segments for detailed info on
-defining and using segments.
-
-Syntax: 
-@example
-@code{.segment @var{name}}
-@end example
-
-Examples: 
-@example
-.segment "gamecode"
-@end example
-Switch to the segment @samp{gamecode}.
-
-@example
-disksegment = "bank3"
-
-.segment disksegment
-@end example
-Switch to the segment @samp{bank3}.
-
-
-@node Set Petascii Mode
-@subsection Set Petascii Mode
-@cindex Pseudo Opcodes, Set Petascii Mode
-
-Set petascii as the default text format. This affects the conversion of and
-string arguments for the .text opcode text converted to numbers using the
-'@dots{}' syntax
-
-Syntax: 
-@example
-@code{.setpet}
-@end example
-
-Examples: 
-@example
-.setpet
-        lda #'a'
-@end example
-produces @samp{$a9, $41}
-
-@example
-.setpet
-        .text "mooh"
-        .db 'a'
-@end example
-produces @samp{$4d, $4f, $4f, $48, $41}
-
-
-@node Set Screencode Mode
-@subsection Set Screencode Mode
-@cindex Pseudo Opcodes, Set Screencode Mode
-
-Set screencode as the default text format. This affects the conversion of and
-string arguments for the .text opcode text converted to numbers using the
-'@dots{}' syntax
-
-Syntax: 
-@example
-@code{.setscr}
-@end example
-
-Examples: 
-@example
-.setscr
-        lda #'a'
-@end example
-produces @samp{$a9, $01}
-
-@example
-.setscr
-        .text "mooh"
-        .db 'a'
-@end example
-produces @samp{$0d, $0f, $0f, $08, $01}
-
-
-@node Fill Area
-@subsection Fill Area
-@cindex Pseudo Opcodes, Fill Area
-
-Fill an area with a value.
-
-Syntax: 
-@example
-@code{.dsb @var{size} [,@var{fillyte}]}
-@end example
-
-Examples: 
-@example
-.dsb 4
-@end example
-produces @samp{$00, $00, $00, $00}
-
-@example
-.dsb 4,$ab
-@end example
-produces @samp{$ab, $ab, $ab, $ab}
-
-@example
-.dsb 0
-@end example
-produces nothing
-
-
-@node Align
-@subsection Align
-@cindex Pseudo Opcodes, Align
-
-Align the PC to a base by inserting a fillbyte. Aligning means after the
-.align command the PC will be divisible by base without remainder.
-
-Syntax: 
-@example
-@code{.align @var{base} [,@var{fillyte}]}
-@end example
-
-Examples: 
-@example
-.align $100
-CriticalTiming:
-        lda #shiftcol
-        bit $ea
-        sta $d011
-        ...
-@end example
-This aligns the PC to $100, so the routine @samp{CriticalTiming} will start at the
-beginning of a page.
-
-@example
-        .align $40
-sprite:
-.binclude "sprite.bin"
-
-        ...
-
-        lda #sprite/$40
-        sta $07f8
-@end example
-This inserts sprite data at the next possible sprite block.
 
 
 @node Open Local Block
@@ -1161,6 +859,323 @@ Syntax:
 @end example
 
 Please see Open Local Block for examples.
+
+
+@node Align the PC
+@subsection Align the PC
+@cindex Pseudo Opcodes, Align the PC
+
+Align the PC to a base by inserting a fillbyte. Aligning means after the
+.align command the PC will be divisible by base without remainder.
+
+Syntax: 
+@example
+@code{.align @var{base} [,@var{fillyte}]}
+@end example
+
+Examples: 
+@example
+.align $100
+CriticalTiming:
+        lda #shiftcol
+        bit $ea
+        sta $d011
+        ...
+@end example
+This aligns the PC to $100, so the routine @samp{CriticalTiming} will start at the
+beginning of a page.
+
+@example
+        .align $40
+sprite:
+.binclude "sprite.bin"
+
+        ...
+
+        lda #sprite/$40
+        sta $07f8
+@end example
+This inserts sprite data at the next possible sprite block.
+
+
+
+@node Set the Akku size
+@subsection Set the Akku size
+@cindex Pseudo Opcodes, Set the Akku size
+
+Set the internal size of the Akku to 8 or 16 bits.
+
+The 65816 CPU can switch its register size between 8 and 16 bits. This opcode
+tells the assembler about the size of the akku register. This will only
+generate different output for something like @code{lda #$12}. It does not
+generate any code to tell the CPU about the switch.
+
+Syntax: 
+@example
+@code{.asize @var{size}}
+@end example
+
+Examples:
+@example
+.asize 8
+	lda #1
+@end example
+produces @samp{$a9,$01}
+
+@example
+.cpu "65816"
+.asize 16
+	lda #1
+@end example
+produces @samp{$a9,$01,$00}
+
+
+@quotation Note
+Switching to 16 bits is only possible if the current CPU type supports it.
+@end quotation
+
+@quotation Note
+There is no autodetection for the register size based on @code{rep} and @code{sep} instructions. The author believes that this would be the wrong approach in an assembly environment.
+@end quotation
+
+
+
+@node Binary Include
+@subsection Binary Include
+@cindex Pseudo Opcodes, Binary Include
+
+Includes a file 'as it is'.
+
+Syntax: 
+@example
+@code{.binclude @var{filename} [,@var{offset} [,@var{max_length}]]}
+@end example
+
+Examples:
+@example
+.binclude "gfx/bitmap01.koa"
+@end example
+This includes the complete file @file{gfx/bitmap01.koa}.
+
+@example
+.binclude "sfx/sound01.prg",2
+@end example
+The offset is used to skip bytes at the beginning of the file. This example
+ignores the first 2 bytes of the file.
+
+@example
+.binclude "gfx/bitmap02.koa",2,8000
+@end example
+The third parameter is the maximum number of bytes to include. If @var{max_length}
+is omitted, the maximum possible length is used.
+This example reads from file @file{gfx/bitmap02.koala}. The first 2 bytes are skipped,
+then 8000 bytes are included. The file may contain more data, but it is ignored.
+For a picture in koala format this example would extract the bitmap.
+
+@quotation Note
+If the file is not found in the current path, the includepaths are serached.
+@end quotation
+
+
+
+@node Set CPU
+@subsection Set the CPU Type
+@cindex Pseudo Opcodes, Set CPU
+
+Set the CPU type. The CPU type controls the available set of assembly instructions. There are 3 different CPU types implemented in DreamAss:
+
+@itemize
+@item "6510": a 6510 CPU without illegal opcodes
+@item "6510ill": a 6510 CPU with illegal opcodes
+@item "65816": a 651816 CPU with 8 and 16 bit instructions
+@end itemize
+
+The default CPU type is 6510. This means you do not have access to illegal opcodes or the 16 bit instructions of the 65816.
+
+Syntax: 
+@example
+@code{.cpu @var{cpuid}}
+@end example
+
+Examples: 
+@example
+.cpu "6510"
+@end example
+This sets the CPU type to a plain 6510 without illegal opcodes.
+
+@example
+.cpu "6510ill"
+@end example
+This sets the CPU type to 6510 with illegal opcodes enabled.
+
+@example
+.cpu "65816"
+@end example
+This sets the CPU type to 65816. The size of the Akku and X/Y Registers are assumed to be 8 bits (just like after a @code{.asize 8:.xysize 8}).
+
+@quotation Note
+Setting the CPU type resets the register size for Akku,X and Y back to 8 bits.
+@end quotation
+
+
+
+@node Dump Bytes
+@subsection Dump Bytes
+@cindex Pseudo Opcodes, Dump Bytes
+
+Dump a sequence of 8 bit values. The values are seperated with a comma.
+
+Syntax: 
+@example
+@code{.db @var{term} [,@var{term}@dots{}]}
+@end example
+
+Examples: 
+@example
+.DB 0
+.DB $ab, 'd', 4, 6*(%10110+&711)
+@end example
+
+Wrong example: 
+@example
+.DB $123        ;*** DOES NOT WORK ***
+@end example
+This will produce an 'overflow error' as $123 does not fit in one byte
+
+
+
+@node Dump Screencode
+@subsection Dump Screencode
+@cindex Pseudo Opcodes, Dump Screencode
+
+Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
+converted to screencode.
+
+Syntax: 
+
+@example
+@code{.scr [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+@end example
+
+Examples: 
+@example
+.scr "poop",0
+@end example
+produces @samp{$10,$0F,$0F,$10,$00}
+
+@example
+.scr $12,$1234,$123456,$12345678
+@end example
+produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
+
+
+
+@node Fill Area
+@subsection Fill Area
+@cindex Pseudo Opcodes, Fill Area
+
+Fill an area with a value.
+
+Syntax: 
+@example
+@code{.dsb @var{size} [,@var{fillyte}]}
+@end example
+
+Examples: 
+@example
+.dsb 4
+@end example
+produces @samp{$00, $00, $00, $00}
+
+@example
+.dsb 4,$ab
+@end example
+produces @samp{$ab, $ab, $ab, $ab}
+
+@example
+.dsb 0
+@end example
+produces nothing
+
+
+
+@node Dump Text
+@subsection Dump Text
+@cindex Pseudo Opcodes, Dump Text
+
+Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
+converted according to the actual pet/screen mode.
+
+Syntax: 
+@example
+@code{.text [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+@end example
+
+Examples: 
+@example
+.text "poop",0
+@end example
+produces @samp{$50,$4F,$4F,$50,$00} in pet mode or @samp{$10,$0F,$0F,$10,$00} in screencode
+mode
+
+@example
+.text $12,$1234,$123456,$12345678
+@end example
+produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
+
+
+
+@node Dump Words
+@subsection Dump Words
+@cindex Pseudo Opcodes, Dump Words
+
+Produces a sequence of 16 bit values. The byteorder is big endian. Two and
+more values are seperated with a comma. Bytevalues will be expanded to word
+values.
+
+Syntax: 
+@example
+@code{.dw @var{term} [,@var{term}@dots{}]}
+@end example
+
+Examples: 
+@example
+.DW 0
+.dw $abcd, 'd', 1024, $6*(%10110+&711)
+@end example
+
+Wrong example: 
+@example
+.DW $12345      ;*** DOES NOT WORK ***
+@end example
+This will produce an @samp{overflow error} as $12345 does not fit in a word.
+
+
+
+@node Dump Petascii
+@subsection Dump Petascii
+@cindex Pseudo Opcodes, Dump Petascii
+
+Dumps text and numbers. A number can have a size of 1 to 4 bytes. The text is
+converted to petascii.
+
+Syntax: 
+
+@example
+@code{.pet [@var{term} | @var{text}] [,@var{term} | ,@var{text}]@dots{}}
+@end example
+
+Examples: 
+@example
+.pet "poop",0
+@end example
+produces @samp{$50,$4F,$4F,$50,$00}
+
+@example
+.pet $12,$1234,$123456,$12345678
+@end example
+produces @samp{$12, $34,$12, $56,$34,$12, $78,$56,$34,$12}
+
 
 
 @node Pseudo PC
@@ -1218,6 +1233,7 @@ Every .pseudopc must have a matching .realpc.
 @end quotation
 
 
+
 @node Real PC
 @subsection Real PC
 @cindex Pseudo Opcodes, Real PC
@@ -1230,6 +1246,135 @@ Syntax:
 @end example
 
 Please see Pseudo PC for examples.
+
+
+
+@node Switch Segment
+@subsection Switch Segment
+@cindex Pseudo Opcodes, Switch Segment
+
+Switch to a segment. Take a look at the chapter Segments for detailed info on
+defining and using segments.
+
+Syntax: 
+@example
+@code{.segment @var{name}}
+@end example
+
+Examples: 
+@example
+.segment "gamecode"
+@end example
+Switch to the segment @samp{gamecode}.
+
+@example
+disksegment = "bank3"
+
+.segment disksegment
+@end example
+Switch to the segment @samp{bank3}.
+
+
+
+@node Set Petascii Mode
+@subsection Set Petascii Mode
+@cindex Pseudo Opcodes, Set Petascii Mode
+
+Set petascii as the default text format. This affects the conversion of and
+string arguments for the .text opcode text converted to numbers using the
+'@dots{}' syntax
+
+Syntax: 
+@example
+@code{.setpet}
+@end example
+
+Examples: 
+@example
+.setpet
+        lda #'a'
+@end example
+produces @samp{$a9, $41}
+
+@example
+.setpet
+        .text "mooh"
+        .db 'a'
+@end example
+produces @samp{$4d, $4f, $4f, $48, $41}
+
+
+
+@node Set Screencode Mode
+@subsection Set Screencode Mode
+@cindex Pseudo Opcodes, Set Screencode Mode
+
+Set screencode as the default text format. This affects the conversion of and
+string arguments for the .text opcode text converted to numbers using the
+'@dots{}' syntax
+
+Syntax: 
+@example
+@code{.setscr}
+@end example
+
+Examples: 
+@example
+.setscr
+        lda #'a'
+@end example
+produces @samp{$a9, $01}
+
+@example
+.setscr
+        .text "mooh"
+        .db 'a'
+@end example
+produces @samp{$0d, $0f, $0f, $08, $01}
+
+
+
+@node Set the size of the X and Y register
+@subsection Set the size of the X and Y register
+@cindex Pseudo Opcodes, Set the size of the X and Y register
+
+Set the internal size of the X and Y registers to 8 or 16 bits.
+
+The 65816 CPU can switch its register size between 8 and 16 bits. This opcode
+tells the assembler about the size of the X and Y register. This will only
+generate different output for something like @code{ldx #$12}. It does not
+generate any code to tell the CPU about the switch.
+
+Syntax: 
+@example
+@code{.xysize @var{size}}
+@end example
+
+Examples:
+@example
+.xysize 8
+	ldx #1
+	ldy #2
+@end example
+produces @samp{$a2,$01,$a0,$02}
+
+@example
+.cpu "65816"
+.xysize 16
+	ldx #1
+	ldy #2
+@end example
+produces @samp{$a2,$01,$00,$a0,$02,$00}
+
+
+@quotation Note
+Switching to 16 bits is only possible if the current CPU type supports it.
+@end quotation
+
+@quotation Note
+There is no autodetection for the register size based on @code{rep} and @code{sep} instructions. The author believes that this would be the wrong approach in an assembly environment.
+@end quotation
+
 
 
 @node Preprocessor Directives
