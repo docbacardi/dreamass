@@ -143,7 +143,7 @@ win_rel:
 #---------------------------------------
 
 dreamass.1.gz: dreamass
-	help2man dreamass -o dreamass.1
+	help2man ./dreamass -o dreamass.1
 	rm -f $@
 	gzip -9 dreamass.1
 
