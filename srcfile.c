@@ -38,7 +38,7 @@ readFunc readText;
 char *readString(sourcefile_t *that);
 bool readMacroPar(sourcefile_t *that);
 
-bool getline(sourcefile_t *that);
+bool getLine(sourcefile_t *that);
 char *getMacroLine(sourcefile_t *that, linesize_t *lsize);
 bool readMacroParameters(sourcefile_t *that, char ***buf);
 bool readMacroValues(sourcefile_t *that, char ***buf);
@@ -309,7 +309,7 @@ int readFileLine(sourcefile_t *that)
 				that->li = NULL;
 			}
 			/*   get next line  */
-			if( !getline(that) )
+			if( !getLine(that) )
 			{
 				/*   error!  */
 				return -1;
@@ -1119,7 +1119,7 @@ char *readString(sourcefile_t *that)
 }
 
 
-bool getline(sourcefile_t *that)
+bool getLine(sourcefile_t *that)
 {
 	char *sbuf=NULL;
 	char *ibuf=NULL;
