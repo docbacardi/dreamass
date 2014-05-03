@@ -22,11 +22,11 @@
 #ifndef __FILELIST_H__
 #define __FILELIST_H__
 
-typedef struct
+typedef struct SRCNAME_STRUCT
 {
 	stringsize_t *name;
 	sourcefile_t *src;
-} SRCNAME;
+} SRCNAME_T;
 
 void filelist_zero(void);
 bool filelist_init(filescnt_t nmemb);
@@ -37,5 +37,5 @@ sourcefile_t *filelist_getSrc(filescnt_t fileidx);
 
 int filelist_ropen(const stringsize_t *name);
 
-#endif		/* __FILELIST_H__ */
+#endif  /* __FILELIST_H__ */
 

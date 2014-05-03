@@ -39,17 +39,17 @@ void filelist_zero(void)
 
 bool filelist_init(filescnt_t nmemb)
 {
-	return nalloc_init(&filelist, sizeof(SRCNAME), nmemb);
+	return nalloc_init(&filelist, sizeof(SRCNAME_T), nmemb);
 }
 
 
 void filelist_cleanUp(void)
 {
-	SRCNAME *pc, *pe;
+	SRCNAME_T *pc, *pe;
 
 
-	/*   only free the names, the sourcefiles were created somewhere else  */
-	pc = (SRCNAME*)filelist.buf;
+	/*   only free the names, the source files were created somewhere else  */
+	pc = (SRCNAME_T*)filelist.buf;
 	pe = pc + filelist.elemCount;
 	while(pc<pe) {
 		free((pc++)->name);
@@ -60,14 +60,14 @@ void filelist_cleanUp(void)
 
 filescnt_t filelist_addFile(sourcefile_t *src, stringsize_t *filename)
 {
-	SRCNAME *ptSrcName;
+	SRCNAME_T *ptSrcName;
 
 
 	if( nalloc_size(&filelist, filelist.elemCount+1)==false ) {
 		return (filescnt_t)-1;
 	}
 
-	ptSrcName  = (SRCNAME*)(filelist.buf);
+	ptSrcName  = (SRCNAME_T*)(filelist.buf);
 	ptSrcName += filelist.elemCount;
 	if( (ptSrcName->name=stringClone(filename))==NULL ) {
 		return (filescnt_t)-1;
@@ -82,14 +82,14 @@ filescnt_t filelist_addFile(sourcefile_t *src, stringsize_t *filename)
 stringsize_t *filelist_getName(filescnt_t fileidx)
 {
 	assert( fileidx<filelist.elemCount );
-	return ((SRCNAME*)filelist.buf)[fileidx].name;
+	return ((SRCNAME_T*)filelist.buf)[fileidx].name;
 }
 
 
 sourcefile_t *filelist_getSrc(filescnt_t fileidx)
 {
 	assert( fileidx<filelist.elemCount );
-	return ((SRCNAME*)filelist.buf)[fileidx].src;
+	return ((SRCNAME_T*)filelist.buf)[fileidx].src;
 }
 
 
