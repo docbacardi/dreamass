@@ -237,32 +237,32 @@ typedef enum
 
 typedef enum
 {
-	AMB_Empty		= 0x00000000,
-	AMB_None		= 0x00000001,
-	AMB_CaZp		= 0x00000002,
-	AMB_CaAbs		= 0x00000004,
-	AMB_Zp			= 0x00000008,
-	AMB_ZpCoS		= 0x00000010,
-	AMB_ZpCoX		= 0x00000020,
-	AMB_ZpCoY		= 0x00000040,
-	AMB_ZpCoZp		= 0x00000080,
-	AMB_BrZpBr		= 0x00000100,
-	AMB_BrZpCoXBr		= 0x00000200,
-	AMB_BrZpCoSBrCoY	= 0x00000400,
-	AMB_BrZpBrCoY		= 0x00000800,
-	AMB_SbrZpSbr		= 0x00001000,
-	AMB_SbrZpSbrCoY		= 0x00002000,
-	AMB_Abs			= 0x00004000,
-	AMB_AbsCoX		= 0x00008000,
-	AMB_AbsCoY		= 0x00010000,
-	AMB_BrAbsBr		= 0x00020000,
-	AMB_BrAbsCoXBr		= 0x00040000,
-	AMB_Long		= 0x00080000,
-	AMB_LongCoX		= 0x00100000,
-	AMB_Rel			= 0x00200000,
-	AMB_RelLong		= 0x00400000,
-	AMB_CaAsize		= 0x00800000,
-	AMB_CaXysize		= 0x01000000
+	AMB_Empty		= 0x00000000U,
+	AMB_None		= 0x00000001U,
+	AMB_CaZp		= 0x00000002U,
+	AMB_CaAbs		= 0x00000004U,
+	AMB_Zp			= 0x00000008U,
+	AMB_ZpCoS		= 0x00000010U,
+	AMB_ZpCoX		= 0x00000020U,
+	AMB_ZpCoY		= 0x00000040U,
+	AMB_ZpCoZp		= 0x00000080U,
+	AMB_BrZpBr		= 0x00000100U,
+	AMB_BrZpCoXBr		= 0x00000200U,
+	AMB_BrZpCoSBrCoY	= 0x00000400U,
+	AMB_BrZpBrCoY		= 0x00000800U,
+	AMB_SbrZpSbr		= 0x00001000U,
+	AMB_SbrZpSbrCoY		= 0x00002000U,
+	AMB_Abs			= 0x00004000U,
+	AMB_AbsCoX		= 0x00008000U,
+	AMB_AbsCoY		= 0x00010000U,
+	AMB_BrAbsBr		= 0x00020000U,
+	AMB_BrAbsCoXBr		= 0x00040000U,
+	AMB_Long		= 0x00080000U,
+	AMB_LongCoX		= 0x00100000U,
+	AMB_Rel			= 0x00200000U,
+	AMB_RelLong		= 0x00400000U,
+	AMB_CaAsize		= 0x00800000U,
+	AMB_CaXysize		= 0x01000000U
 } ADRESSMODEBITS;
 
 
@@ -294,17 +294,17 @@ extern const uint8_t amode_length[23];
 
 typedef enum
 {
-	CPUTYPE_6510		= 0x00,
-	CPUTYPE_6510Ill		= 0x01,
-	CPUTYPE_65816		= 0x02,
+	CPUTYPE_6510		= 0x00U,
+	CPUTYPE_6510Ill		= 0x01U,
+	CPUTYPE_65816		= 0x02U,
 
-	CPUTYPE_UNKNOWN		= 0xff
+	CPUTYPE_UNKNOWN		= 0xffU
 } CPUTYPE;
 
 typedef struct
 {
-	const char *name;
-	CPUTYPE id;
+	const char *pcName;
+	CPUTYPE tId;
 	const uint32_t *validmodes;
 } cpuTypeNamePair_t;
 

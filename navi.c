@@ -20,6 +20,8 @@
 
 #include "globals.h"
 
+#include <string.h>
+
 /*
  * This is a collection of little helper routines.
  * The confusing name 'Navi' comes from the game
@@ -50,7 +52,7 @@ int stringCmp(const stringsize_t *s1, const stringsize_t *s2)
 	/* get the length for both strings */
 	strSizS1 = *s1;
 	strSizS2 = *s2;
-	/* get the charpointer for both strings */
+	/* get the char pointer for both strings */
 	pcS1 = (const char*)(s1+1);
 	pcS2 = (const char*)(s2+1);
 	/* get the minimum length of the strings */
@@ -75,18 +77,21 @@ int stringCmp(const stringsize_t *s1, const stringsize_t *s2)
  * Ret:  NULL : malloc failed
  *       other: Pointer to new string
  */
-stringsize_t *stringClone(const stringsize_t *str)
+stringsize_t *stringClone(const stringsize_t *ptString)
 {
-	stringsize_t *newstr;
+	stringsize_t *ptNewString;
 
 
-	if( (newstr=(stringsize_t*)malloc(sizeof(stringsize_t)+*str))==NULL )
+	ptNewString = (stringsize_t*)malloc(sizeof(stringsize_t)+*ptString);
+	if( ptNewString==NULL )
 	{
 		systemError(EM_OutOfMemory);
-		return NULL;
 	}
-	memcpy( newstr, str, sizeof(stringsize_t)+*str );
-	return newstr;
+	else
+	{
+		memcpy(ptNewString, ptString, sizeof(stringsize_t)+*ptString );
+	}
+	return ptNewString;
 }
 
 
@@ -98,19 +103,22 @@ stringsize_t *stringClone(const stringsize_t *str)
  * Ret:  NULL : malloc failed
  *       other: Pointer to new string
  */
-stringsize_t *cstr2string(const char *cstr, const stringsize_t clen)
+stringsize_t *cstr2string(const char *pcCString, const stringsize_t sizCString)
 {
-	stringsize_t *newstr;
+	stringsize_t *ptNewString;
 
 
-	if( (newstr=(stringsize_t*)malloc(sizeof(stringsize_t)+clen))==NULL )
+	ptNewString = (stringsize_t*)malloc(sizeof(stringsize_t)+sizCString);
+	if( ptNewString==NULL )
 	{
 		systemError(EM_OutOfMemory);
-		return NULL;
 	}
-	*newstr = clen;
-	memcpy( (char*)(newstr+1), cstr, clen );
-	return newstr;
+	else
+	{
+		*ptNewString = sizCString;
+		memcpy( (char*)(ptNewString+1), pcCString, sizCString );
+	}
+	return ptNewString;
 }
 
 
@@ -123,17 +131,21 @@ stringsize_t *cstr2string(const char *cstr, const stringsize_t clen)
  */
 char *string2cstr(const stringsize_t *str)
 {
-	char *newstr;
+	char *pcCString;
 
 
-	if( (newstr=(char*)malloc(*str+1U))==NULL )
+	pcCString = (char*)malloc(*str+1U);
+	if( pcCString==NULL )
 	{
 		systemError(EM_OutOfMemory);
-		return NULL;
 	}
-	memcpy( newstr, (const char*)(str+1), *str );
-	*(newstr+*str) = 0;
-	return newstr;
+	else
+	{
+		memcpy( pcCString, (const char*)(str+1), *str );
+		/* Terminate the string with a 0x00 byte. */
+		*(pcCString+*str) = '\0';
+	}
+	return pcCString;
 }
 
 
@@ -149,35 +161,49 @@ void printString(FILE *f, const stringsize_t *str)
 	stringsize_t nl;
 	const char *np;
 
-	if( str!=NULL ) {
+	if( str!=NULL )
+	{
 		nl=*str;
 		np= (const char*)(str+1);
 		fwrite(np, nl, 1, f);
-	} else {
+	}
+	else
+	{
 		fwrite("(null)", 6, 1, f);
 	}
 }
 
 
 
-bool readFile(int filedsc, char *pc, size_t length)
+bool readFile(int filedsc, char *pcBuffer, size_t sizBuffer)
 {
-	ssize_t readLen;
-	char *pe;
+	ssize_t ssizReadLen;
+	size_t sizBufferLeft;
+	char *pcEnd;
 
 
-	/* get pointer to end of buffer */
-	pe = pc + length;
-	/* read in the data */
-	do {
-		readLen = read(filedsc, pc, pe-pc);
-		if( readLen<1 ) {
+	/* Get a pointer to the end of the buffer. */
+	pcEnd = pcBuffer + sizBuffer;
+
+	sizBufferLeft = sizBuffer;
+
+	/* Read in the data */
+	do
+	{
+		ssizReadLen = read(filedsc, pcBuffer, sizBufferLeft);
+		/* 0 indicates end of file, negative values show an error. */
+		if( ssizReadLen<1 )
+		{
 			break;
 		}
-		pc += readLen;
-	} while( pc<pe );
+		else
+		{
+			pcBuffer += ssizReadLen;
+			sizBufferLeft -= (size_t)ssizReadLen;
+		}
+	} while( pcBuffer<pcEnd );
 
-	return (pc==pe);
+	return (pcBuffer==pcEnd);
 }
 
 
@@ -196,16 +222,19 @@ bool nalloc_init(NALLOC *ptNAlloc, size_t elemSize, size_t initialLen)
 	sMaxLen /= elemSize;
 
 	/* is the initial length valid? */
-	if( initialLen>sMaxLen ) {
+	if( initialLen>sMaxLen )
+	{
 		/* no -> this length can not be allocated */
 		systemError(EM_OutOfMemory);
 		return false;
 	}
 
-	if( initialLen!=0 ) {
+	if( initialLen!=0 )
+	{
 		/* allocate initial array */
 		pvBuf = malloc(elemSize*initialLen);
-		if( pvBuf==NULL ) {
+		if( pvBuf==NULL )
+		{
 			systemError(EM_OutOfMemory);
 			return false;
 		}
@@ -235,7 +264,8 @@ bool nalloc_size(NALLOC *ptNAlloc, size_t reqLen)
 	/* get current size */
 	sBufLen = ptNAlloc->bufLen;
 	/* does the requested length 'reqLen' fit into the buffer? */
-	if( sBufLen<reqLen ) {
+	if( sBufLen<reqLen )
+	{
 		/* no -> the buffer must be enlarged */
 
 		/* get the maximum length */
@@ -244,7 +274,8 @@ bool nalloc_size(NALLOC *ptNAlloc, size_t reqLen)
 		/* is the new length invalid or is the max size already reached?
 		   sBufLen must not be equal to sMaxLen as it will be enlarged.
 		   (sBufLen<reqLen -> reqLen>sBufLen>=sMaxLen -> reqLen>sMaxLen -> reqLen is invalid) */
-		if( sBufLen>=sMaxLen ) {
+		if( sBufLen>=sMaxLen )
+		{
 			/* yes -> the buffer can not be enlarged */
 			systemError(EM_OutOfMemory);
 			return false;
@@ -253,14 +284,16 @@ bool nalloc_size(NALLOC *ptNAlloc, size_t reqLen)
 		/* get new length, just double the old length */
 		sNewLen = sBufLen<<1;
 		/* restrict length to max length and check for overflow */
-		if( sNewLen>sMaxLen || sNewLen<sBufLen ) {
+		if( sNewLen>sMaxLen || sNewLen<sBufLen )
+		{
 			/* set to maximum length */
 			sNewLen = sMaxLen;
 		}
 
 		/* try to reallocate the buffer */
 		pvNewBuf = realloc(ptNAlloc->buf, ptNAlloc->elemSize*sNewLen);
-		if( pvNewBuf==NULL ) {
+		if( pvNewBuf==NULL )
+		{
 			systemError(EM_OutOfMemory);
 			return false;
 		}
@@ -278,7 +311,8 @@ void nalloc_free(NALLOC *ptNAlloc)
 {
 	assert( ptNAlloc!=NULL );
 
-	if( ptNAlloc->buf!=NULL ) {
+	if( ptNAlloc->buf!=NULL )
+	{
 		free(ptNAlloc->buf);
 		ptNAlloc->buf = NULL;
 	}

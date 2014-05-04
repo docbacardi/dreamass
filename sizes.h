@@ -69,180 +69,33 @@
  * default is $10000 which means 2 byte
  */
 
-/*  default sizes  */
-#define ARRAYSIZE_IncludePaths		1
-#define ARRAYSIZE_CmdLineDefines	1
-#define ARRAYSIZE_SourceFiles		1
-#define ARRAYSIZE_Files			2
-#define ARRAYSIZE_Lines			4
-#define ARRAYSIZE_LineChars		4
-#define ARRAYSIZE_Macros		2
-#define ARRAYSIZE_MacroParameters	1
-#define ARRAYSIZE_String		2
-#define ARRAYSIZE_Term			2
 
-/*  amiga(unexpanded) sizes
-#define ARRAYSIZE_IncludePaths		1
-#define ARRAYSIZE_CmdLineDefines	1
-#define ARRAYSIZE_SourceFiles		1
-#define ARRAYSIZE_Files			2
-#define ARRAYSIZE_Lines			4
-#define ARRAYSIZE_LineChars		2
-#define ARRAYSIZE_Macros		1
-#define ARRAYSIZE_MacroParameters	1
-#define ARRAYSIZE_String		2
-#define ARRAYSIZE_Term			1
-*/
+typedef size_t includePathscnt_t;
 
-/*  c64 sizes
-#define ARRAYSIZE_IncludePaths		1
-#define ARRAYSIZE_CmdLineDefines	1
-#define ARRAYSIZE_SourceFiles		1
-#define ARRAYSIZE_Files			1
-#define ARRAYSIZE_Lines			2
-#define ARRAYSIZE_LineChars		1
-#define ARRAYSIZE_Macros		1
-#define ARRAYSIZE_MacroParameters	1
-#define ARRAYSIZE_String		2
-#define ARRAYSIZE_Term			1
-*/
+typedef size_t srcFileNamescnt_t;
 
-/*-----------------------------------*/
-/* End of config                     */
-/*-----------------------------------*/
+typedef size_t filescnt_t;
 
-#if ARRAYSIZE_IncludePaths==1
-typedef uint8_t		includePathscnt_t;
-#else
-#if ARRAYSIZE_IncludePaths==2
-typedef uint16_t	includePathscnt_t;
-#else
-#if ARRAYSIZE_IncludePaths==4
-typedef uint32_t	includePathscnt_t;
-#else
-#error "ARRAYSIZE_IncludePaths has illegal value!"
-#endif
-#endif
-#endif
+typedef size_t linescnt_t;
 
-#if ARRAYSIZE_SourceFiles==1
-typedef uint8_t		srcFileNamescnt_t;
-#else
-#if ARRAYSIZE_SourceFiles==2
-typedef uint16_t	srcFileNamescnt_t;
-#else
-#if ARRAYSIZE_SourceFiles==4
-typedef uint32_t	srcFileNamescnt_t;
-#else
-#error "ARRAYSIZE_SourceFiles has illegal value!"
-#endif
-#endif
-#endif
+typedef size_t linesize_t;
 
-#if ARRAYSIZE_Files==1
-typedef uint8_t		filescnt_t;
-#else
-#if ARRAYSIZE_Files==2
-typedef uint16_t	filescnt_t;
-#else
-#if ARRAYSIZE_Files==4
-typedef uint32_t	filescnt_t;
-#else
-#error "ARRAYSIZE_Files has illegal value!"
-#endif
-#endif
-#endif
+typedef size_t macro_cnt;
 
-#if ARRAYSIZE_Lines==1
-typedef uint8_t		linescnt_t;
-#else
-#if ARRAYSIZE_Lines==2
-typedef uint16_t	linescnt_t;
-#else
-#if ARRAYSIZE_Lines==4
-typedef uint32_t	linescnt_t;
-#else
-#error "ARRAYSIZE_Lines has illegal value!"
-#endif
-#endif
-#endif
+typedef size_t macroparam_cnt;
 
-#if ARRAYSIZE_LineChars==1
-typedef uint8_t		linesize_t;
-#else
-#if ARRAYSIZE_LineChars==2
-typedef uint16_t	linesize_t;
-#else
-#if ARRAYSIZE_LineChars==4
-typedef uint32_t	linesize_t;
-#else
-#error "ARRAYSIZE_LineChars has illegal value!"
-#endif
-#endif
-#endif
+typedef size_t stringsize_t;
 
-#if ARRAYSIZE_Macros==1
-typedef uint8_t		macro_cnt;
-#else
-#if ARRAYSIZE_Macros==2
-typedef uint16_t	macro_cnt;
-#else
-#if ARRAYSIZE_Macros==4
-typedef uint32_t	macro_cnt;
-#else
-#error "ARRAYSIZE_Macros has illegal value!"
-#endif
-#endif
-#endif
+typedef size_t termsize_t;
 
-#if ARRAYSIZE_MacroParameters==1
-typedef uint8_t		macroparam_cnt;
-#else
-#if ARRAYSIZE_MacroParameters==2
-typedef uint16_t	macroparam_cnt;
-#else
-#if ARRAYSIZE_MacroParameters==4
-typedef uint32_t	macroparam_cnt;
-#else
-#error "ARRAYSIZE_MacroParameters has illegal value!"
-#endif
-#endif
-#endif
 
-#if ARRAYSIZE_String==1
-typedef uint8_t		stringsize_t;
-#else
-#if ARRAYSIZE_String==2
-typedef uint16_t	stringsize_t;
-#else
-#if ARRAYSIZE_String==4
-typedef uint32_t	stringsize_t;
-#else
-#error "ARRAYSIZE_String has illegal value!"
-#endif
-#endif
-#endif
 
-#if ARRAYSIZE_Term==1
-typedef uint8_t		termsize_t;
-#else
-#if ARRAYSIZE_Term==2
-typedef uint16_t	termsize_t;
-#else
-#if ARRAYSIZE_Term==4
-typedef uint32_t	termsize_t;
-#else
-#error "ARRAYSIZE_Term has illegal value!"
-#endif
-#endif
-#endif
+typedef size_t localdepth_t;
 
-typedef uint16_t localdepth_t;
+typedef size_t varcnt_t;
 
-typedef uint32_t varcnt_t;
+typedef size_t termcnt_t;
 
-typedef uint32_t termcnt_t;
-
-typedef uint32_t seglistsize_t;
+typedef size_t seglistsize_t;
 
 #endif		/* __SIZES_H__ */

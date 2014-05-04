@@ -353,8 +353,11 @@ bool pass_line(void)
 			{
 				pp_delItems(linepos_start, pp_getPos());
 				nlelem.typ = BE_1BYTE;
-				if( (rel=adr2rel(var.valt.value.num,segment_getPC()))==-1 )
+				rel = adr2rel(var.valt.value.num, segment_getPC());
+				if( rel==-1 )
+				{
 					return false;
+				}
 				nlelem.data.b_1byte = (uint8_t)rel;
 				pp_replaceItem(linepos_start, &nlelem);
 			}
@@ -368,8 +371,11 @@ bool pass_line(void)
 			{
 				pp_delItems(linepos_start, pp_getPos());
 				nlelem.typ = BE_2BYTE;
-				if( (relLong=adr2relLong(var.valt.value.num,segment_getPC()))==-1 )
+				relLong = adr2relLong(var.valt.value.num,segment_getPC());
+				if( relLong==-1 )
+				{
 					return false;
+				}
 				nlelem.data.b_2byte = (uint8_t)relLong;
 				pp_replaceItem(linepos_start, &nlelem);
 			}
@@ -428,39 +434,117 @@ bool pass_line(void)
 
 uint8_t Asc2Pet(uint8_t c)
 {
+	uint8_t ucPetChar;
+
+
 	if(c==0xa3)
-		return 0x5c;				/*  pound -> 5c  */
+	{
+		ucPetChar = 0x5c;                  /*  pound -> 5c  */
+	}
 	else if(c <0x20)
-		return NO_CHAR;				/*  00 - 1f : nothing  */
+	{
+		ucPetChar = NO_CHAR;               /*  00 - 1f : nothing  */
+	}
 	else if(c <0x41)
-		return c;				/*  20 - 40 : same  */
+	{
+		ucPetChar = c;                     /*  20 - 40 : same  */
+	}
 	else if(c <0x5b)
-		return c+0x80;				/*  41 - 5a -> c0 - da  */
-	else if(c==0x5b || c==0x5d)  return c;          /*  5b, 5d -> 5b, 5d  */
-	else if(c==0x5c)  return 0x6d;                  /*  backslash -> shift M  */
-	else if(c==0x5e)  return c;                     /*  ^ -> arrow up  */
-	else if(c==0x5f)  return 0xa4;                  /*  _ -> C= @  */
-	else if(c==0x60)  return NO_CHAR;               /*  ` -> nothing  */
-	else if(c <0x7b)  return c-0x20;                /*  61 - 7a -> 41 - 5a  */
-	else if(c==0x7c)  return 0xdd;                  /*  | -> C= -  */
-	else              return NO_CHAR;               /*  7b, 7d, 7e, 7f -> nothing  */
+	{
+		ucPetChar = (uint8_t)(c+0x80U);    /*  41 - 5a -> c0 - da  */
+	}
+	else if(c==0x5b || c==0x5d)
+	{
+		ucPetChar = c;                     /*  5b, 5d -> 5b, 5d  */
+	}
+	else if(c==0x5c)
+	{
+		ucPetChar = 0x6d;                  /*  backslash -> shift M  */
+	}
+	else if(c==0x5e)
+	{
+		ucPetChar = c;                     /*  ^ -> arrow up  */
+	}
+	else if(c==0x5f)
+	{
+		ucPetChar = 0xa4;                  /*  _ -> C= @  */
+	}
+	else if(c==0x60)
+	{
+		ucPetChar = NO_CHAR;               /*  ` -> nothing  */
+	}
+	else if(c <0x7b)
+	{
+		ucPetChar = (uint8_t)(c-0x20U);    /*  61 - 7a -> 41 - 5a  */
+	}
+	else if(c==0x7c)
+	{
+		ucPetChar = 0xdd;                  /*  | -> C= -  */
+	}
+	else
+	{
+		ucPetChar = NO_CHAR;               /*  7b, 7d, 7e, 7f -> nothing  */
+	}
+
+	return ucPetChar;
 }
 
 
 uint8_t Asc2Scr(uint8_t c)
 {
-	if(c==0xa3)      return 0x1c;			/*  pound -> 1c  */
-	else if(c <0x20)  return NO_CHAR;		/*  00 - 1f : nothing  */
-	else if(c==0x40)  return 0;			/*  @ -> 00  */
-	else if(c <0x5b)  return c;			/*  20 - 5a : same  */
-	else if(c==0x5b || c==0x5d)  return c-0x40;	/*  5b, 5d -> 1b, 1d  */
-	else if(c==0x5c)  return 0x4d;			/*  backslash -> shift M  */
-	else if(c==0x5e)  return 0x1e;			/*  ^ -> arrow up  */
-	else if(c==0x5f)  return 0x64;			/*  _ -> C= @  */
-	else if(c==0x60)  return NO_CHAR;		/*  ` -> nothing  */
-	else if(c <0x7b)  return c-0x60;		/*  61 - 7a -> 01 - 1a  */
-	else if(c==0x7c)  return 0x5d;			/*  | -> C= -  */
-	else              return NO_CHAR;		/*  7b, 7d, 7e, 7f -> nothing  */
+	uint8_t ucScreenChar;
+
+
+	if(c==0xa3)
+	{
+		ucScreenChar = 0x1c;                 /*  pound -> 1c  */
+	}
+	else if(c <0x20)
+	{
+		ucScreenChar = NO_CHAR;              /*  00 - 1f : nothing  */
+	}
+	else if(c==0x40)
+	{
+		ucScreenChar = 0;                    /*  @ -> 00  */
+	}
+	else if(c <0x5b)
+	{
+		ucScreenChar = c;                    /*  20 - 5a : same  */
+	}
+	else if(c==0x5b || c==0x5d)
+	{
+		ucScreenChar = (uint8_t)(c-0x40U);   /*  5b, 5d -> 1b, 1d  */
+	}
+	else if(c==0x5c)
+	{
+		ucScreenChar = 0x4d;                 /*  backslash -> shift M  */
+	}
+	else if(c==0x5e)
+	{
+		ucScreenChar = 0x1e;                 /*  ^ -> arrow up  */
+	}
+	else if(c==0x5f)
+	{
+		ucScreenChar = 0x64;                 /*  _ -> C= @  */
+	}
+	else if(c==0x60)
+	{
+		ucScreenChar = NO_CHAR;              /*  ` -> nothing  */
+	}
+	else if(c <0x7b)
+	{
+		ucScreenChar = (uint8_t)(c-0x60U);   /*  61 - 7a -> 01 - 1a  */
+	}
+	else if(c==0x7c)
+	{
+		ucScreenChar = 0x5d;                 /*  | -> C= -  */
+	}
+	else
+	{
+		ucScreenChar = NO_CHAR;              /*  7b, 7d, 7e, 7f -> nothing  */
+	}
+
+	return ucScreenChar;
 }
 
 
@@ -650,25 +734,25 @@ bool pass_dump(sourcefile_t *src)
 			break;
 		case BE_2BYTE:
 			assert(memptr!=NULL);
-			*(memptr++) =  lelem->data.b_2byte     &0xff;
-			*(memptr++) = (lelem->data.b_2byte>>8 )&0xff;
+			*(memptr++) = (uint8_t)( lelem->data.b_2byte       & 0xffU);
+			*(memptr++) = (uint8_t)((lelem->data.b_2byte>> 8U) & 0xffU);
 			vlen.len=2;
 			segment_addLength(vlen);
 			break;
 		case BE_3BYTE:
 			assert(memptr!=NULL);
-			*(memptr++) =  lelem->data.b_3byte     &0xff;
-			*(memptr++) = (lelem->data.b_3byte>>8 )&0xff;
-			*(memptr++) = (lelem->data.b_3byte>>16)&0xff;
+			*(memptr++) = (uint8_t)( lelem->data.b_3byte       & 0xffU);
+			*(memptr++) = (uint8_t)((lelem->data.b_3byte>> 8U) & 0xffU);
+			*(memptr++) = (uint8_t)((lelem->data.b_3byte>>16U) & 0xffU);
 			vlen.len=3;
 			segment_addLength(vlen);
 			break;
 		case BE_4BYTE:
 			assert(memptr!=NULL);
-			*(memptr++) =  lelem->data.b_4byte     &0xff;
-			*(memptr++) = (lelem->data.b_4byte>>8 )&0xff;
-			*(memptr++) = (lelem->data.b_4byte>>16)&0xff;
-			*(memptr++) = (lelem->data.b_4byte>>24)&0xff;
+			*(memptr++) = (uint8_t)( lelem->data.b_4byte       & 0xffU);
+			*(memptr++) = (uint8_t)((lelem->data.b_4byte>> 8U) & 0xffU);
+			*(memptr++) = (uint8_t)((lelem->data.b_4byte>>16U) & 0xffU);
+			*(memptr++) = (uint8_t)((lelem->data.b_4byte>>24U) & 0xffU);
 			vlen.len=4;
 			segment_addLength(vlen);
 			break;

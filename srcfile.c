@@ -105,14 +105,18 @@ sourcefile_t *newSourcefile(void)
 	 */
 	that->macfifo_count = 0;
 	that->macfifo_last = NULL;
-	if( (that->macfifo=(mfifo_t*)(malloc((that->macfifo_buflen=16)*sizeof(mfifo_t))))==NULL )
+	that->macfifo_buflen = 16;
+	that->macfifo = (mfifo_t*)(malloc((that->macfifo_buflen)*sizeof(mfifo_t)));
+	if( that->macfifo==NULL )
 	{
 		systemError(EM_OutOfMemory);
 		return NULL;
 	}
 
 	that->linebuf_size = 0;
-	if( (that->linebuf=(linebuffer_t*)(malloc((that->linebuf_alloc=16)*sizeof(linebuffer_t))))==NULL )
+	that->linebuf_alloc = 16;
+	that->linebuf = (linebuffer_t*)(malloc((that->linebuf_alloc)*sizeof(linebuffer_t)));
+	if( that->linebuf==NULL )
 	{
 		systemError(EM_OutOfMemory);
 		return NULL;
@@ -159,7 +163,9 @@ bool cmdlineSourcefile(sourcefile_t *that, char *buffer, size_t buffer_size)
 
 	/* add source structure to the list */
 	filename = cstr2string("*** command line ***", 20);
-	if( (that->fileidx=filelist_addFile(that, filename))==(filescnt_t)-1 ) {
+	that->fileidx = filelist_addFile(that, filename);
+	if( that->fileidx==(filescnt_t)-1 )
+	{
 		goto __error_exit;
 	}
 	free(filename);
@@ -175,7 +181,8 @@ bool cmdlineSourcefile(sourcefile_t *that, char *buffer, size_t buffer_size)
 	that->li = that->li_pos = that->li_end = NULL;
 
 	/* read the first line of the sourcefile */
-	if( readFileLine(that)==-1 ) {
+	if( readFileLine(that)==-1 )
+	{
 		goto __error_exit;
 	}
 
@@ -197,6 +204,7 @@ bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *pa
 	struct stat finfo;
 	int infile;
 	char *cfilename;
+	bool fResult;
 
 
 	infile = -1;
@@ -218,7 +226,8 @@ bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *pa
 	  )
 	{
 		/*   alloc buffer for the plaintext file  */
-		if( (that->plaintext_start=(char*)malloc(finfo.st_size))==NULL )
+		that->plaintext_start = (char*)malloc(finfo.st_size);
+		if( that->plaintext_start==NULL )
 		{
 			systemError(EM_OutOfMemory);
 			goto __error_exit;
@@ -226,11 +235,17 @@ bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *pa
 		/*   set read and end counter  */
 		that->plaintext_end = (that->plaintext_pos=that->plaintext_start)+finfo.st_size;
 		/*   read complete file into mem  */
-		if( readFile(infile, that->plaintext_start, finfo.st_size)==false ) {
+		fResult = readFile(infile, that->plaintext_start, finfo.st_size);
+		if( fResult==false )
+		{
 			if( parent==NULL )
+			{
 				systemError(EM_FileNotFound_s, cfilename);
+			}
 			else
+			{
 				scanError(EM_FileNotFound_s, parent->fileidx, parent->linenr, cfilename);
+			}
 			goto __error_exit;
 		}
 		/*   close file  */
@@ -240,9 +255,13 @@ bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *pa
 	else
 	{
 		if( parent==NULL )
+		{
 			systemError(EM_FileNotFound_s, cfilename);
+		}
 		else
+		{
 			scanError(EM_FileNotFound_s, parent->fileidx, parent->linenr, cfilename);
+		}
 		goto __error_exit;
 	}
 
@@ -255,20 +274,27 @@ bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *pa
 	that->li = that->li_pos = that->li_end = NULL;
 
 	/*   read the first line of the sourcefile  */
-	if( readFileLine(that)==-1 ) {
+	if( readFileLine(that)==-1 )
+	{
 		goto __error_exit;
 	}
 
 	if( cfilename!=NULL )
+	{
 		free(cfilename);
+	}
 
 	return true;
 
 __error_exit:
 	if( cfilename!=NULL )
+	{
 		free(cfilename);
+	}
 	if( infile!=-1 )
+	{
 		close(infile);
+	}
 	if( that->plaintext_start!=NULL )
 	{
 		free(that->plaintext_start);
@@ -454,8 +480,10 @@ bool addLine(sourcefile_t *that)
  */
 bool readMacroHead(sourcefile_t *that)
 {
-	char *wo_start, *wo_pos;
+	char *wo_start;
+//	char *wo_pos;
 	macro_t *mac;
+	bool fResult;
 
 
 	/*  Skip whitespace  */
@@ -478,14 +506,18 @@ bool readMacroHead(sourcefile_t *that)
 	}
 	wo_start = that->li_pos;
 	while( ++that->li_pos<that->li_end && (isalnum(*that->li_pos) || *that->li_pos=='_') );
-	wo_pos = that->li_pos;
+//	wo_pos = that->li_pos;
 
-	if( (that->macroIdx=macro_add(wo_start, that->li_pos-wo_start))==(macro_cnt)-1 ) {
+	that->macroIdx = macro_add(wo_start, that->li_pos-wo_start);
+	if( that->macroIdx==(macro_cnt)-1 )
+	{
 		return false;
 	}
 	that->mlines_buflen = 16;
 
-	if( !readMacroParameters(that, &macPar) ) {
+	fResult = readMacroParameters(that, &macPar);
+	if( !fResult )
+	{
 		return false;
 	}
 	mac = macro_get(that->macroIdx);
@@ -506,15 +538,18 @@ bool readMacroStart(sourcefile_t *that)
 
 
 	/*  Skip whitespace  */
-	while( that->li_pos<that->li_end && isblank(*that->li_pos) ) {
+	while( that->li_pos<that->li_end && isblank(*that->li_pos) )
+	{
 		++that->li_pos;
 	}
 
 	/*  Wait for opening '{'  */
-	if( that->li_pos<that->li_end && *(that->li_pos++)=='{' ) {
+	if( that->li_pos<that->li_end && *(that->li_pos++)=='{' )
+	{
 		that->readin_state = READIN_MACRODEF;
 	}
-	else {
+	else
+	{
 		scanError(EM_ExpectingCOBracket, that->fileidx, that->linenr);
 		return false;
 	}
@@ -550,7 +585,8 @@ bool readMacroDef(sourcefile_t *that)
 		else if( *that->li_pos=='{' )
 		{
 			/*   add text before parameter to the macro linebuffer  */
-			if( (keylen=that->li_pos-wo_start)>0 )
+			keylen = (size_t)(that->li_pos - wo_start);
+			if( keylen>0 )
 			{
 				mld.line = wo_start;
 				if( (that->mlines_buflen=macro_addLine(that->macroIdx, mld, keylen, that->mlines_buflen))==(linescnt_t)-1 )
@@ -572,7 +608,7 @@ bool readMacroDef(sourcefile_t *that)
 
 			wo_start = that->li_pos;
 			while( ++that->li_pos<that->li_end && (isalnum(*that->li_pos) || *that->li_pos=='_') );
-			keylen = that->li_pos-wo_start;
+			keylen = (size_t)(that->li_pos - wo_start);
 
 			cnt0=0;
 			while( cnt0<macPar_count )
@@ -628,7 +664,8 @@ bool readMacroDef(sourcefile_t *that)
 		}
 		else if( *that->li_pos=='}' ) {
 			/*  Text before '}'  */
-			if( (keylen=that->li_pos-wo_start)>0 )
+			keylen = (size_t)(that->li_pos - wo_start);
+			if( keylen>0 )
 			{
 				mld.line = wo_start;
 				if( (that->mlines_buflen=macro_addLine(that->macroIdx, mld, keylen, that->mlines_buflen))==(linescnt_t)-1 )
@@ -639,26 +676,31 @@ bool readMacroDef(sourcefile_t *that)
 			that->readin_state = READIN_TEXT;
 
 			/*   finalize macro  */
-			if( !macro_finalize(that->macroIdx, that->mlines_buflen) ) {
+			if( !macro_finalize(that->macroIdx, that->mlines_buflen) )
+			{
 				return false;
 			}
 
 			/*   add macro lineelement  */
 			lelem.typ = LE_MACRODEF;
 			lelem.data.macroIdx = that->macroIdx;
-			if( !addLineelement(&that->lbuf, &lelem) ) {
+			if( !addLineelement(&that->lbuf, &lelem) )
+			{
 				return false;
 			}
 
-			if( macPar!=NULL ) {
+			if( macPar!=NULL )
+			{
 				/*   free the parameter list  */
-				while( macPar_count>0 ) {
+				while( macPar_count>0 )
+				{
 					free( *(macPar+(--macPar_count)) );
 				}
 				free( macPar );
 			}
 
-			if( cfg_debug ) {
+			if( cfg_debug )
+			{
 				fprintf(debugLog, "<p>Macro ");
 				mac = macro_get(that->macroIdx);
 				if( mac==NULL )
@@ -693,7 +735,8 @@ bool readMacroDef(sourcefile_t *that)
 
 			break;
 		}
-		else {
+		else
+		{
 			that->li_pos++;
 		}
 	};
@@ -702,8 +745,11 @@ bool readMacroDef(sourcefile_t *that)
 	{
 /*  		*li_pos='\n';  */
 		mld.line = wo_start;
-		if( (that->mlines_buflen=macro_addLine(that->macroIdx, mld, that->li_pos-wo_start, that->mlines_buflen))==(linescnt_t)-1 )
+		that->mlines_buflen = macro_addLine(that->macroIdx, mld, that->li_pos-wo_start, that->mlines_buflen);
+		if( that->mlines_buflen==(linescnt_t)-1 )
+		{
 			return false;
+		}
 	}
 
 	return true;
@@ -720,7 +766,9 @@ bool readMacroPar(sourcefile_t *that)
 
 	mac = macro_get(that->macroIdx);
 	if( !readMacroValues(that, &macVal) )
+	{
 		return false;
+	}
 
 	if( macVal_count!=mac->parameter_count )
 	{
@@ -737,7 +785,7 @@ bool readMacroPar(sourcefile_t *that)
 	}
 
 	/*
-	 * Add Macro to fifo
+	 * Add Macro to FIFO
 	 */
 	if( that->macfifo_count >= that->macfifo_buflen )
 	{
@@ -747,8 +795,11 @@ bool readMacroPar(sourcefile_t *that)
 			return false;
 		}
 
-		if( (newlen=that->macfifo_buflen<<1)<that->macfifo_buflen )
+		newlen = that->macfifo_buflen << 1U;
+		if( newlen<that->macfifo_buflen )
+		{
 			newlen=((macfifocnt_t)-1);
+		}
 		if( (newbuf=(mfifo_t*)(realloc(that->macfifo, newlen*sizeof(mfifo_t))))==NULL )
 		{
 			systemError(EM_OutOfMemory);
@@ -757,7 +808,8 @@ bool readMacroPar(sourcefile_t *that)
 		that->macfifo = newbuf;
 		that->macfifo_buflen = newlen;
 	}
-	(that->macfifo_last=that->macfifo+that->macfifo_count)->macroIdx = that->macroIdx;
+	that->macfifo_last = that->macfifo + that->macfifo_count;
+	that->macfifo_last->macroIdx = that->macroIdx;
 	++that->macfifo_count;
 	that->macfifo_last->mline=0;
 	that->macfifo_last->par=macVal;
@@ -780,7 +832,9 @@ bool readMacroPar(sourcefile_t *that)
 bool readRemMulti(sourcefile_t *that)
 {
 	while( *that->li_pos!='*' && *that->li_pos!='\n' && *that->li_pos!='\r' && that->li_pos<that->li_end )
+	{
 		++that->li_pos;
+	}
 	if( *that->li_pos=='*' && ++that->li_pos<that->li_end && *that->li_pos=='/' )
 	{
 		++that->li_pos;
@@ -852,7 +906,7 @@ bool readText(sourcefile_t *that)
 		wo_start = ++that->li_pos;
 		if( (wo_pos=readString(that))==NULL )
 			return false;
-		keylen = wo_pos-wo_start;
+		keylen = (size_t)(wo_pos - wo_start);
 
 		if( !addString(&that->lbuf, wo_start, (stringsize_t)keylen ) )
 			return false;
@@ -894,8 +948,8 @@ bool readText(sourcefile_t *that)
 				}
 				c = unescape(*(++that->li_pos) );
 			}
-			txtnum <<= 8;
-			txtnum |= c;
+			txtnum <<= 8U;
+			txtnum |= (uint32_t)c;
 			if( ++cnt0>4 )
 			{
 				scanError(EM_StringTooLong, that->fileidx, that->linenr);
@@ -969,7 +1023,7 @@ bool readText(sourcefile_t *that)
 			}
 			while( that->li_pos<that->li_end && (isalnum(*that->li_pos) || *that->li_pos=='_') );
 		}
-		keylen = that->li_pos-wo_start;
+		keylen = (size_t)(that->li_pos - wo_start);
 
 		/*   look for a pseudo opcode  */
 		ptrs.pscnt=psyopc;
@@ -1027,8 +1081,8 @@ bool readText(sourcefile_t *that)
 		for( cnt0=0; cnt0<arraysize(operator_key); cnt0++)
 			if( operand_len<(keylen=operator_keylen[cnt0]) && !strncasecmp(operator_key[cnt0], that->li_pos, keylen) )
 			{
-				operand_idx=cnt0;
-				operand_len=keylen;
+				operand_idx = cnt0;
+				operand_len = keylen;
 			}
 		if( operand_len )
 		{
@@ -1042,7 +1096,8 @@ bool readText(sourcefile_t *that)
 			while( ++that->li_pos<that->li_end && (isalnum(*that->li_pos) || *that->li_pos=='_') );
 			wo_pos = that->li_pos;
 			find=false;
-			if( (keylen=wo_pos-wo_start)==3 && isalpha(*wo_start) && isalpha(*(wo_start+1)) && isalnum(*(wo_start+2)) )
+			keylen = (size_t)(wo_pos - wo_start);
+			if( keylen==3 && isalpha(*wo_start) && isalpha(*(wo_start+1)) && isalnum(*(wo_start+2)) )
 			{
 				opcode_key = (toupper(*wo_start)&0x1f)|(toupper(*(wo_start+1))&0x1f)<<5|(toupper(*(wo_start+2))&0x3f)<<10;
 
@@ -1115,7 +1170,9 @@ char *readString(sourcefile_t *that)
 	}
 #endif
 	else
+	{
 		return cp;
+	}
 }
 
 
@@ -2188,7 +2245,7 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 			break;
 		case LE_CPUTYPE:
 			if( lelem->data.cputype<arraysize(cputype_name) ) {
-				fprintf(dfh, "<b>.%s</b> ",cputype_name[lelem->data.cputype].name);
+				fprintf(dfh, "<b>.%s</b> ",cputype_name[lelem->data.cputype].pcName);
 			}
 			else {
 				fprintf(dfh, "*** ILLEGAL CPUTYPE INDEX: %d ***", lelem->data.cputype);

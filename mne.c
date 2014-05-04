@@ -71,7 +71,8 @@ elength_t parse_mne(void)
 	lineelement_t nlelem;
 	uint32_t adrKeys=AK_NONE;		/* combination of multiple ADRESSKEY's */
 	ADRESSMODE adrMode;
-	VARIABLE var_numArg1, var_numArg2;
+	VARIABLE var_numArg1;
+	VARIABLE var_numArg2;
 	bool varSizeKnown = true;
 	const length_t length1 = { true, 1 };
 	elength_t length = { true, { false, 0 }};
@@ -84,29 +85,35 @@ elength_t parse_mne(void)
 	OPERAND op;
 
 
-	var_numArg1.defined = var_numArg2.defined = false;
-	var_numArg1.final = var_numArg2.final = false;
+	var_numArg1.defined = false;
+	var_numArg1.final   = false;
+	var_numArg2.defined = false;
+	var_numArg2.final   = false;
 
 	/* get the opcode */
 	mneelem = (lineelement_t*)pp_peek();
-	if( mneelem==NULL ) {
+	if( mneelem==NULL )
+	{
 		return length;
 	}
 	opc = mneelem->data.mne;
-	if( !pp_eat() ) {
+	if( !pp_eat() )
+	{
 		return length;
 	}
 
 	/* test for '#', '(' and '[' */
 	adrKeys |= scanAdrKeys(0, 3);
-	if( adrKeys==AK_ERROR ) {
+	if( adrKeys==AK_ERROR )
+	{
 		return length;
 	}
 
 	/* remember term's position */
 	linepos_term = pp_getPos();
 	termelem = (lineelement_t*)pp_peek();
-	if( termelem==NULL ) {
+	if( termelem==NULL )
+	{
 		return length;
 	}
 	switch( termelem->typ )
@@ -142,6 +149,7 @@ elength_t parse_mne(void)
 	case BE_nBYTE:
 		/* Should never happen */
 		assert( false );
+		break;
 
 	case LE_OPERAND:
 		/* ':' after an opcode is a soft-lineend */
@@ -209,7 +217,8 @@ elength_t parse_mne(void)
 	 * All further addresskeys start with an operand.
 	 * Ignore other lineelements, especially ':' which is soft_cr.
 	 */
-	if( !getNextOp(&op) ) {
+	if( !getNextOp(&op) )
+	{
 		return length;
 	}
 	if( op!=OP_Colon )
@@ -222,7 +231,8 @@ elength_t parse_mne(void)
 		if( op==OP_Comma )
 		{
 			lelem = pp_peek();
-			if( lelem==NULL ) {
+			if( lelem==NULL )
+			{
 				return length;
 			}
 			if( lelem->typ==LE_TEXT && *lelem->data.txt==1 )
@@ -267,7 +277,8 @@ elength_t parse_mne(void)
 		if( op==OP_Comma )
 		{
 			lelem = pp_peek();
-			if( lelem==NULL ) {
+			if( lelem==NULL )
+			{
 				return length;
 			}
 			if( lelem->typ==LE_TEXT && *lelem->data.txt==1 )
@@ -356,10 +367,12 @@ elength_t parse_mne(void)
 	 * patterns in the opcode table, AC_DIRECT is for the rest
 	 */
 	amode_offs = amode_offset[opc];
-	if( amode_offs.adressclass==AC_DIRECT ) {
+	if( amode_offs.adressclass==AC_DIRECT )
+	{
 		mne_byte = amode_offs.offset;
 	}
-	else {
+	else
+	{
 		mne_byte = amode_offs.offset^amode_offs_groups[amode_offs.adressclass*AM_length + adrMode];
 	}
 
@@ -378,8 +391,11 @@ elength_t parse_mne(void)
 		 */
 		if( var_numArg1.defined && segment_isPCDefined() )
 		{
-			if( (rel=adr2rel(var_numArg1.valt.value.num, segment_getPC()))==-1 )
+			rel = adr2rel(var_numArg1.valt.value.num, segment_getPC());
+			if( rel==-1 )
+			{
 				return length;
+			}
 			/*
 			 * The lineelement can't be modified directly here. A non-final
 			 * value is still a term.
@@ -401,14 +417,15 @@ elength_t parse_mne(void)
 	{
 		/*
 		 * Note: it does not matter if the value in 'var_numArg1' is final. Moving the PC
-		 * does not affect relative brances.
+		 * does not affect relative branches.
 		 */
 		if( var_numArg1.defined && segment_isPCDefined() )
 		{
-			if( (relLong=adr2relLong(var_numArg1.valt.value.num, segment_getPC()))==-1 )
+			relLong = adr2relLong(var_numArg1.valt.value.num, segment_getPC());
+			if( relLong==-1 )
 				return length;
 			/*
-			 * The lineelement can't be modified directly here. A non-final
+			 * The line element can't be modified directly here. A non-final
 			 * value is still a term.
 			 */
 			pp_delItems(linepos_term, linepos_term+1);
@@ -426,7 +443,7 @@ elength_t parse_mne(void)
 	}
 	else if( length.len.len>0 )
 	{
-		/* Modify length according to adressmode */
+		/* Modify length according to adress mode */
 		if( adrMode==AM_BrAbsBr && !checkJmpInd(&var_numArg1) )
 		{
 			termelem->typ = TE_JIADR;
@@ -434,7 +451,7 @@ elength_t parse_mne(void)
 		}
 		else if( var_numArg1.defined && var_numArg1.final )
 		{
-			/* set the size of the binary value to the correct size for the addressmode */
+			/* set the size of the binary value to the correct size for the address mode */
 			assert( termelem->typ==BE_1BYTE || termelem->typ==BE_2BYTE || termelem->typ==BE_3BYTE );
 			switch(length.len.len)
 			{
@@ -456,7 +473,7 @@ elength_t parse_mne(void)
 		{
 			/* length must be between 1 and 4 bytes */
 			assert( length.len.len>=1 && length.len.len<=4 );
-			/* set the size of the term to the correct size for the addressmode */
+			/* set the size of the term to the correct size for the address mode */
 			termelem->typ = (LINEELEMENT_TYP)(TE_1BYTE + (length.len.len-1));
 			allBytesResolved = false;
 		}
@@ -542,19 +559,21 @@ ADRESSMODE getAdrMode(uint32_t adrKeys, bool varSizeKnown, OPCODE opc)
 
 
 	/*
-	 * try find suitable addressmode
+	 * try find suitable address mode
 	 * is the variable's size unknown?
 	 */
-	if( varSizeKnown ) {
-		/* varsize is known, the addressmode must exist */
-		if( (adrMode=AdrKey2Mode(adrKeys))==AM_Error )
+	if( varSizeKnown )
+	{
+		/* varsize is known, the address mode must exist */
+		adrMode = AdrKey2Mode(adrKeys);
+		if( adrMode==AM_Error )
 		{
 			error(EM_UnknownAdressmode);
 			adrMode = AM_Error;
 		}
 		else
 		{
-			/* now just validate the addressmode */
+			/* now just validate the address mode */
 			adrMode = validateAddressmode(adrMode, validAdrModes);
 		}
 	}
@@ -578,21 +597,30 @@ ADRESSMODE getAdrMode(uint32_t adrKeys, bool varSizeKnown, OPCODE opc)
 			{
 				warning(WM_ForcedLabelSize, 8);
 			}
-			else {
+			else
+			{
 				/* now try long */
 				adrKeys &= ~(AK_NUMZP|AK_NUMABS|AK_NUMLONG);
 				adrKeys |= AK_NUMLONG;
 
-				if( (adrMode=AdrKey2Mode(adrKeys))==AM_Error ) {
+				adrMode = AdrKey2Mode(adrKeys);
+				if( adrMode==AM_Error )
+				{
 					error(EM_UnknownAdressmode);
 					adrMode = AM_Error;
 				}
-				else if( (adrMode=validateAddressmode(adrMode,validAdrModes))==AM_Error ) {
-					error(EM_IllAdressmodeForOpcode);
-					adrMode = AM_Error;
-				}
-				else {
-					warning(WM_ForcedLabelSize, 24);
+				else
+				{
+					adrMode = validateAddressmode(adrMode,validAdrModes);
+					if( adrMode==AM_Error )
+					{
+						error(EM_IllAdressmodeForOpcode);
+						adrMode = AM_Error;
+					}
+					else
+					{
+						warning(WM_ForcedLabelSize, 24);
+					}
 				}
 			}
 		}
@@ -608,21 +636,27 @@ ADRESSMODE validateAddressmode(ADRESSMODE adrMode, uint32_t validAdrModes)
 	uint8_t cnt0;
 
 
-	if( (validAdrModes&(1<<adrMode))==0 ) {
+	if( (validAdrModes&(1<<adrMode))==0 )
+	{
 		cnt0=0;
-		while( cnt0<arraysize(amode_replace) ) {
-			if( adrMode==amode_replace[cnt0].oldmode && (validAdrModes&(1<<amode_replace[cnt0].newmode))!=0 ) {
-				if( amode_replace[cnt0].warn ) {
+		while( cnt0<arraysize(amode_replace) )
+		{
+			if( adrMode==amode_replace[cnt0].oldmode && (validAdrModes&(1<<amode_replace[cnt0].newmode))!=0 )
+			{
+				if( amode_replace[cnt0].warn )
+				{
 					warning(WM_ByteToWordExpansion);
 				}
 				adrMode = amode_replace[cnt0].newmode;
 				break;
 			}
-			else {
+			else
+			{
 				cnt0++;
 			}
 		}
-		if( cnt0>=arraysize(amode_replace) ) {
+		if( cnt0>=arraysize(amode_replace) )
+		{
 			adrMode = AM_Error;
 		}
 	}
@@ -725,18 +759,23 @@ ADRESSKEY scanAdrKeys(uint8_t sidx, uint8_t eidx)
 
 
 	lelem = pp_peek();
-	if( lelem==NULL ) {
+	if( lelem==NULL )
+	{
 		return AK_ERROR;
 	}
 	if( lelem->typ==LE_OPERAND )
 	{
 		for(cnt0=sidx; cnt0<eidx; cnt0++)
+		{
 			if( lelem->data.op==operandToAdresskey[cnt0].operand )
 			{
 				adrKeys = operandToAdresskey[cnt0].adresskey;
 				if( !pp_eat() )
+				{
 					return AK_ERROR;
+				}
 			}
+		}
 	}
 
 	return adrKeys;
@@ -815,12 +854,16 @@ bool checkJmpInd(VARIABLE *param)
 			assert( param->valt.typ==VALTYP_NUM );
 
 			if( (param->valt.value.num&0x00ff)==0x00ff )
+			{
 				warning(WM_JmpIndAtFF_d, param->valt.value.num);
+			}
 		}
 		return true;
 	}
 	else
+	{
 		return false;
+	}
 }
 
 
@@ -832,31 +875,36 @@ CPUTYPE getCurrentCpu(void)
 	return currentCpu;
 }
 
+
+
 const char *getCurrentCpuName(void)
 {
-	return cputype_name[currentCpu].name;
+	return cputype_name[currentCpu].pcName;
 }
+
+
 
 CPUTYPE getCpuIdx(const char *cpuName)
 {
-	const cpuTypeNamePair_t *cc, *ce;
+	const cpuTypeNamePair_t *ptCnt;
+	const cpuTypeNamePair_t *ptEnd;
 	CPUTYPE cpuIdx;
 
 
-	cc = cputype_name;
-	ce = cc + arraysize(cputype_name);
+	ptCnt = cputype_name;
+	ptEnd = cputype_name + arraysize(cputype_name);
 	cpuIdx = CPUTYPE_UNKNOWN;
 
-	while( cc<ce )
+	while( ptCnt<ptEnd )
 	{
-		if( strcasecmp(cpuName, cc->name)==0 )
+		if( strcasecmp(cpuName, ptCnt->pcName)==0 )
 		{
-			cpuIdx = cc->id;
+			cpuIdx = ptCnt->tId;
 			break;
 		}
 		else
 		{
-			++cc;
+			++ptCnt;
 		}
 	}
 
@@ -873,7 +921,8 @@ void setCpuType(CPUTYPE cpuType)
 	 * set register sizes to 8
 	 * TODO: maybe it's better to remember last values from 65816 mode and restore here?
 	 */
-	regsize_a = regsize_xy = 8;
+	regsize_a  = 8;
+	regsize_xy = 8;
 
 	/* set valid mode table */
 	validModes = (cputype_name+cpuType)->validmodes;

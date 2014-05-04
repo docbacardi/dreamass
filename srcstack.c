@@ -57,21 +57,22 @@ void srcstack_cleanUp(void)
 
 bool srcstack_push(sourcefile_t *src)
 {
-	stackelem *se;
+	stackelem *ptStackElement;
+	bool fResult;
 
 
-	if( nalloc_size(&srcstack, srcstack.elemCount+1)==false ) {
-		return false;
+	fResult = nalloc_size(&srcstack, srcstack.elemCount+1);
+	if( fResult==true )
+	{
+		ptStackElement  = (stackelem*)srcstack.buf;
+		ptStackElement += srcstack.elemCount++;
+
+		ptStackElement->srcFile = src;
+		ptStackElement->phaseIdx = segment_getPhaseIdx();
+		ptStackElement->localBlockIdx = getLocalBlock();
 	}
 
-	se  = (stackelem*)srcstack.buf;
-	se += srcstack.elemCount++;
-
-	se->srcFile = src;
-	se->phaseIdx = segment_getPhaseIdx();
-	se->localBlockIdx = getLocalBlock();
-
-	return true;
+	return fResult;
 }
 
 
