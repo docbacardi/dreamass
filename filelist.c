@@ -22,6 +22,9 @@
 
 #include "globals.h"
 
+#include <stdlib.h>
+
+
 /*-----------------------------------*/
 /* locals                            */
 
@@ -45,14 +48,16 @@ bool filelist_init(filescnt_t nmemb)
 
 void filelist_cleanUp(void)
 {
-	SRCNAME_T *pc, *pe;
+	SRCNAME_T *ptCnt, *ptEnd;
 
 
 	/*   only free the names, the source files were created somewhere else  */
-	pc = (SRCNAME_T*)filelist.buf;
-	pe = pc + filelist.elemCount;
-	while(pc<pe) {
-		free((pc++)->name);
+	ptCnt = (SRCNAME_T*)filelist.buf;
+	ptEnd = ptCnt + filelist.elemCount;
+	while(ptCnt<ptEnd)
+	{
+		free(ptCnt->name);
+		++ptCnt;
 	}
 	nalloc_free(&filelist);
 }
@@ -61,21 +66,31 @@ void filelist_cleanUp(void)
 filescnt_t filelist_addFile(sourcefile_t *src, stringsize_t *filename)
 {
 	SRCNAME_T *ptSrcName;
+	bool fResult;
+	filescnt_t tResult;
 
 
-	if( nalloc_size(&filelist, filelist.elemCount+1)==false ) {
+
+	fResult = nalloc_size(&filelist, filelist.elemCount+1);
+	if( fResult==false )
+	{
 		return (filescnt_t)-1;
 	}
 
 	ptSrcName  = (SRCNAME_T*)(filelist.buf);
 	ptSrcName += filelist.elemCount;
-	if( (ptSrcName->name=stringClone(filename))==NULL ) {
+	ptSrcName->name = stringClone(filename);
+	if( ptSrcName->name==NULL )
+	{
 		return (filescnt_t)-1;
 	}
 
 	ptSrcName->src = src;
 
-	return filelist.elemCount++;
+	tResult = filelist.elemCount;
+	++filelist.elemCount;
+
+	return tResult;
 }
 
 
@@ -106,32 +121,43 @@ int filelist_ropen(const stringsize_t *name)
 	char *cbuf, *cpos;
 
 
+	/* Be pessimistic. */
+	fdes = -1;
+
 	namelen = *name;
-	if( (cbuf=(char*)malloc(includeMaxLen+namelen+1))==NULL ) {
-		systemError(EM_OutOfMemory);
-		return -1;
-	}
-	/* copy name to cbuf */
-	memcpy( cbuf+includeMaxLen, (const char*)(name+1), namelen );
-	/* terminate the string */
-	*(cbuf+includeMaxLen+namelen) = '\0';
-
-	if( (fdes=ropen(cbuf+includeMaxLen))!=-1 ) {
-		free(cbuf);
-		return fdes;
-	}
-
-	for( cnt0=0; cnt0<includePaths_count; ++cnt0 )
+	cbuf = (char*)malloc(includeMaxLen+namelen+1U);
+	if( cbuf==NULL )
 	{
-		cpos= cbuf+includeMaxLen-(inclen=*(*(includePaths+cnt0)));
-		memcpy( cpos, *(includePaths+cnt0)+1, inclen );
-		if( (fdes=ropen(cpos))!=-1 )
+		systemError(EM_OutOfMemory);
+	}
+	else
+	{
+		/* copy name to cbuf */
+		memcpy( cbuf+includeMaxLen, (const char*)(name+1), namelen );
+		/* terminate the string */
+		*(cbuf+includeMaxLen+namelen) = '\0';
+
+		fdes = ropen(cbuf+includeMaxLen);
+		if( fdes==-1 )
 		{
-			break;
+			for( cnt0=0; cnt0<includePaths_count; ++cnt0 )
+			{
+				inclen = *(*(includePaths+cnt0));
+				cpos= cbuf + includeMaxLen - inclen;
+				memcpy( cpos, *(includePaths+cnt0)+1, inclen );
+				fdes = ropen(cpos);
+				if( fdes!=-1 )
+				{
+					break;
+				}
+			}
 		}
 	}
 
-	free(cbuf);
+	if( cbuf!=NULL )
+	{
+		free(cbuf);
+	}
 	return fdes;
 }
 
