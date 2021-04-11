@@ -509,7 +509,7 @@ bool parseArgs(int argc, char **argv)
 				}
 				else
 				{
-					cfg_maxerrors = num;
+					cfg_maxerrors = (uint32_t)num;
 				}
 			}
 		}
@@ -534,7 +534,7 @@ bool parseArgs(int argc, char **argv)
 				}
 				else
 				{
-					cfg_maxwarnings = num;
+					cfg_maxwarnings = (uint32_t)num;
 				}
 			}
 		}

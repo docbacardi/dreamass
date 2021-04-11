@@ -622,7 +622,7 @@ bool resolvedSomething(void)
 uint8_t makeHash(const char* name, const stringsize_t namelen)
 {
 	/* no good hash function, but keeps all labels in sorted order -> no need to sort at label dump time */
-	return *name;
+	return ((uint8_t)(*name));
 }
 
 

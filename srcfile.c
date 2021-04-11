@@ -363,7 +363,7 @@ int readFileLine(sourcefile_t *that)
 				printString(debugLog, mac->sname);
 				fprintf(debugLog, "): \"");
 			}
-			fwrite(that->li_pos, that->li_end-that->li_pos, 1, debugLog);
+			fwrite(that->li_pos, (size_t)(that->li_end-that->li_pos), 1, debugLog);
 			fprintf(debugLog, "\"<br>\n");
 		}
 
@@ -508,7 +508,7 @@ bool readMacroHead(sourcefile_t *that)
 	while( ++that->li_pos<that->li_end && (isalnum(*that->li_pos) || *that->li_pos=='_') );
 //	wo_pos = that->li_pos;
 
-	that->macroIdx = macro_add(wo_start, that->li_pos-wo_start);
+	that->macroIdx = macro_add(wo_start, (linesize_t)(that->li_pos - wo_start));
 	if( that->macroIdx==(macro_cnt)-1 )
 	{
 		return false;
@@ -745,7 +745,7 @@ bool readMacroDef(sourcefile_t *that)
 	{
 /*  		*li_pos='\n';  */
 		mld.line = wo_start;
-		that->mlines_buflen = macro_addLine(that->macroIdx, mld, that->li_pos-wo_start, that->mlines_buflen);
+		that->mlines_buflen = macro_addLine(that->macroIdx, mld, (linesize_t)(that->li_pos-wo_start), that->mlines_buflen);
 		if( that->mlines_buflen==(linescnt_t)-1 )
 		{
 			return false;
@@ -795,7 +795,7 @@ bool readMacroPar(sourcefile_t *that)
 			return false;
 		}
 
-		newlen = that->macfifo_buflen << 1U;
+		newlen = (macfifocnt_t)(that->macfifo_buflen << 1U);
 		if( newlen<that->macfifo_buflen )
 		{
 			newlen=((macfifocnt_t)-1);
@@ -967,7 +967,7 @@ bool readText(sourcefile_t *that)
 			scanError(EM_EmptyString, that->fileidx, that->linenr);
 			return false;
 		}
-		if( !addTextNum(&that->lbuf, txtnum, cnt0-1 ) )
+		if( !addTextNum(&that->lbuf, txtnum, (uint8_t)(cnt0-1) ) )
 			return false;
 	}
 	else if( c==';' )
@@ -980,7 +980,7 @@ bool readText(sourcefile_t *that)
 		wo_start = ++that->li_pos;
 		while( that->li_pos<that->li_end && (isalpha(*that->li_pos) || *that->li_pos=='_') )
 			that->li_pos++;
-		keylen = that->li_pos-wo_start;
+		keylen = (size_t)(that->li_pos - wo_start);
 
 		ptrs.ppcnt=preproc;
 		while( ptrs.ppcnt<preproc+arraysize(preproc) )
@@ -1082,7 +1082,7 @@ bool readText(sourcefile_t *that)
 			if( operand_len<(keylen=operator_keylen[cnt0]) && !strncasecmp(operator_key[cnt0], that->li_pos, keylen) )
 			{
 				operand_idx = cnt0;
-				operand_len = keylen;
+				operand_len = operator_keylen[cnt0];
 			}
 		if( operand_len )
 		{
@@ -1157,7 +1157,7 @@ char *readString(sourcefile_t *that)
 		scanError(EM_NoEndingQuotes, that->fileidx, that->linenr);
 		return NULL;
 	}
-	else if( (keylen=cp-cs)==0 )
+	else if( (keylen=((size_t)(cp-cs)))==0 )
 	{
 		scanError(EM_EmptyString, that->fileidx, that->linenr);
 		return NULL;
@@ -1263,7 +1263,7 @@ bool getLine(sourcefile_t *that)
 			} while( ++that->plaintext_pos<that->plaintext_end && neol && ibuf<ebuf );
 
 			/*   size of read block. can be sbuf-ebuf for 'buffer full' or less if eol was found  */
-			lsize = ibuf-sbuf;
+			lsize = (linesize_t)(ibuf - sbuf);
 
 			/*   buffer must be expanded if no eol was found and output pointer is at end of buffer  */
 			if( neol && ibuf==ebuf )
@@ -1381,7 +1381,7 @@ char *getMacroLine(sourcefile_t *that, linesize_t *lsize)
 	 * If the line contained escaped chars, the buffer was too large.
 	 * resize it to the correct length
 	 */
-	if( (len=cp-line)<lsum && (cs=(char*)realloc(line,len))!=NULL )
+	if( (len=(linesize_t)(cp-line))<lsum && (cs=(char*)realloc(line,len))!=NULL )
 	{
 		line = cs;
 		lsum = len;
@@ -1447,11 +1447,11 @@ bool readMacroParameters(sourcefile_t *that, char ***buf)
 				}
 				wo_start = that->li_pos;
 				while( ++that->li_pos<that->li_end && (isalnum(*that->li_pos) || *that->li_pos=='_') );
-				slen = that->li_pos-wo_start;
+				slen = (size_t)(that->li_pos - wo_start);
 
 				if( macPar_count >= macPar_buflen )
 				{
-					if( macPar_buflen==((macroparam_cnt)-1) )
+					if( macPar_buflen==UINT8_MAX )
 					{
 						scanError(EM_TooManyParameters, that->fileidx, that->linenr);
 						return false;
@@ -1563,7 +1563,8 @@ bool readMacroValues(sourcefile_t *that, char ***buf)
 					scanError(EM_NoEndingQuotes, that->fileidx, that->linenr);
 					return false;
 				}
-				slen = (++that->li_pos)-wo_start;
+				++that->li_pos;
+				slen = (size_t)(that->li_pos - wo_start);
 			}
 			else
 			{
@@ -1576,7 +1577,7 @@ bool readMacroValues(sourcefile_t *that, char ***buf)
 					}
 					++that->li_pos;
 				}
-				slen = that->li_pos-wo_start;
+				slen = (size_t)(that->li_pos - wo_start);
 			}
 
 			if( macVal_count >= macVal_buflen )
@@ -1996,7 +1997,7 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 			pc_width = 8;
 			break;
 		}
-		pc_formatstring[4] = '0'|pc_width;
+		pc_formatstring[4] = (char)('0' | pc_width);
 		fprintf(dfh, pc_formatstring, pc);
 	}
 	else
@@ -2053,9 +2054,9 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 			{
 				/*   construct mne name from compressed mne_keys entry  */
 				mnePackedName = mne_keys[lelem->data.mne];
-				mneUnpackedName[0] = (mnePackedName&0x1f)|('A'-1);
-				mneUnpackedName[1] = ((mnePackedName>>5)&0x1f)|('A'-1);
-				mneUnpackedName[2] = (mnePackedName>>10)&0x3f;
+				mneUnpackedName[0] = (char)((mnePackedName&0x1f)|('A'-1));
+				mneUnpackedName[1] = (char)(((mnePackedName>>5)&0x1f)|('A'-1));
+				mneUnpackedName[2] = (char)((mnePackedName>>10) & 0x3f);
 				if( mneUnpackedName[2]<'0' )
 				{
 					mneUnpackedName[2] |= 'A'-1;

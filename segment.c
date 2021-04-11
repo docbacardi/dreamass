@@ -295,7 +295,7 @@ seglistsize_t segment_findSegment(const stringsize_t *name)
 		if( stringCmp(sc->name, name)==0 )
 		{
 			/* name matches -> found the requested segment! */
-			tSegIdx = sc-segment;
+			tSegIdx = (seglistsize_t)(sc-segment);
 			break;
 		}
 
@@ -664,7 +664,7 @@ bool memlist_dump(segment_t* seg)
 				return false;
 			}
 			if( memlist_cnt<memlist_end ) {
-				memmove( memlist_cnt+1, memlist_cnt, (memlist_end-memlist_cnt)*sizeof(memelem_t));
+				memmove( memlist_cnt+1, memlist_cnt, ((size_t)(memlist_end-memlist_cnt))*sizeof(memelem_t));
 			}
 
 			memlist_cnt->segelemidx = segelemcnt;
@@ -720,7 +720,7 @@ bool memlist_dump(segment_t* seg)
 			}
 			/* Yes, something found -> insert new element */
 			if( melem_bestfit<memlist_end ) {
-				memmove( melem_bestfit+1, melem_bestfit, (memlist_end-melem_bestfit)*sizeof(memelem_t));
+				memmove( melem_bestfit+1, melem_bestfit, ((size_t)(memlist_end-melem_bestfit))*sizeof(memelem_t));
 			}
 
 			melem_bestfit->segelemidx = segelemcnt;
@@ -741,7 +741,7 @@ bool memlist_dump(segment_t* seg)
 		}
 	}
 
-	seg->memlist_count = memlist_end-seg->memlist;
+	seg->memlist_count = (seglistsize_t)(memlist_end-seg->memlist);
 	if( seg->memlist_count==0 ) {
 		free(seg->memlist);
 		seg->memlist = NULL;
@@ -835,7 +835,7 @@ static bool memSort(memtab_t *memlist, memtab_t **memlist_end, seglistsize_t seg
 	}
 	/* if new element is not at the end of the list, move rest 1 up */
 	if( mc<*memlist_end ) {
-		memmove( mc+1, mc, (*memlist_end-mc)*sizeof(memtab_t));
+		memmove( mc+1, mc, ((size_t)(*memlist_end-mc))*sizeof(memtab_t));
 	}
 
 	/*   Fill new element with values  */
