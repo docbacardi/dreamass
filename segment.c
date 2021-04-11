@@ -427,7 +427,8 @@ void segment_enterSegElem(seglistsize_t segidx)
 		 * TODO: warning instead of this
 		 * something like "PC still phased at end of Segment!"
 		 */
-		assert(false);
+		//assert(false);
+		fprintf(stderr, "WARNING: PC still phased at end of segment.\n");
 	}
 	seg->next_segelem = segidx;
 }
