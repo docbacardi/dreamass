@@ -202,6 +202,7 @@ __error_exit:
 bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *parent)
 {
 	struct stat finfo;
+	size_t sizFile;
 	int infile;
 	char *cfilename;
 	bool fResult;
@@ -225,8 +226,10 @@ bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *pa
 		fstat(infile, &finfo)==0
 	  )
 	{
+		sizFile = (size_t)(finfo.st_size);
+
 		/*   alloc buffer for the plaintext file  */
-		that->plaintext_start = (char*)malloc(finfo.st_size);
+		that->plaintext_start = (char*)malloc(sizFile);
 		if( that->plaintext_start==NULL )
 		{
 			systemError(EM_OutOfMemory);
@@ -235,7 +238,7 @@ bool readSourcefile(sourcefile_t *that, stringsize_t *filename, sourcefile_t *pa
 		/*   set read and end counter  */
 		that->plaintext_end = (that->plaintext_pos=that->plaintext_start)+finfo.st_size;
 		/*   read complete file into mem  */
-		fResult = readFile(infile, that->plaintext_start, finfo.st_size);
+		fResult = readFile(infile, that->plaintext_start, sizFile);
 		if( fResult==false )
 		{
 			if( parent==NULL )
