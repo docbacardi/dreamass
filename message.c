@@ -192,7 +192,7 @@ void scanError(ERRORMSG msg, filescnt_t fileidx, linescnt_t linenr, ...)
 
 	++errorcnt;
 	printString(stdout, filelist_getName(fileidx));
-	fprintf(stdout, ":%u: error:", linenr);
+	fprintf(stdout, ":%lu: error:", linenr);
 	va_start(ap, linenr);
 	vfprintf(stdout, *(errorTexts+msg), ap);
 	va_end(ap);
@@ -207,7 +207,7 @@ void error(ERRORMSG msg, ...)
 
 	++errorcnt;
 	printString(stdout, filelist_getName(pp_getFileIdx()));
-	fprintf(stdout, ":%u: error:", pp_getLineNr());
+	fprintf(stdout, ":%lu: error:", pp_getLineNr());
 	va_start(ap, msg);
 	vfprintf(stdout, *(errorTexts+msg), ap);
 	va_end(ap);
@@ -227,7 +227,7 @@ void warning(WARNMSG msg, ...)
 	  )
 	{
 		printString(stdout, filelist_getName(pp_getFileIdx()));
-		fprintf(stdout, ":%u: warning:", pp_getLineNr());
+		fprintf(stdout, ":%lu: warning:", pp_getLineNr());
 		va_start(ap, msg);
 		vfprintf(stdout, *(warnTexts+msg), ap);
 		va_end(ap);

@@ -577,14 +577,14 @@ void segment_debug(FILE *dfh)
 	for(seg_cnt=0; seg_cnt<segment_count; seg_cnt++) {
 		seg=segment+seg_cnt;
 
-		fprintf(dfh, "<hr width=\"100%%\">\n<h2>Segment %u (", seg_cnt);
+		fprintf(dfh, "<hr width=\"100%%\">\n<h2>Segment %lu (", seg_cnt);
 		printString(dfh, seg->name);
-		fprintf(dfh, ")</h2>\nDump: %u SegElem%s\n", seg->seglist_count, (seg->seglist_count==1)?"":"s");
+		fprintf(dfh, ")</h2>\nDump: %lu SegElem%s\n", seg->seglist_count, (seg->seglist_count==1)?"":"s");
 
 		fprintf(dfh, "<table border=\"1\"><tbody>\n");
 		for(sl_cnt=0; sl_cnt<seg->seglist_count; sl_cnt++) {
 			sl = seg->seglist+sl_cnt;
-			fprintf(dfh, "<tr><td>%u</td><td>", sl_cnt);
+			fprintf(dfh, "<tr><td>%lu</td><td>", sl_cnt);
 			if( sl->fixed ) {
 				fprintf(dfh, "Fixed</td><td>Start: $%04x</td><td>End: ", sl->adr);
 				if( sl->pc_defined )
@@ -756,7 +756,7 @@ bool memlist_dump(segment_t* seg)
 	printf("' sorted MemElems:\n");
 	for( segelemcnt=0; segelemcnt<seg->memlist_count; ++segelemcnt ) {
 		memlist_cnt = seg->memlist+segelemcnt;
-		printf("%u : $%04x - $%04x, id: %u\n", segelemcnt, memlist_cnt->Start, memlist_cnt->End, memlist_cnt->segelemidx );
+		printf("%lu : $%04x - $%04x, id: %lu\n", segelemcnt, memlist_cnt->Start, memlist_cnt->End, memlist_cnt->segelemidx );
 	}
 
 
@@ -966,12 +966,12 @@ bool segment_writeFiles(const char *pcOutFileName)
 			/* write a startadress to this file? */
 			writesadr = oc->writesadr;
 			/* fillbyte for the gaps between the segments */
-			fillbyte = oc->fillbyte;
+			//fillbyte = oc->fillbyte;
 
 			/* show the info */
 			printf("outfile: %s\n", cname);
 			for( segcnt=0; segcnt<oc->segnames_count; ++segcnt ) {
-				printf("segment %u: \"", segcnt);
+				printf("segment %lu: \"", segcnt);
 				printString(stdout, *(oc->segnames+segcnt) );
 				printf("\"\n");
 			}

@@ -663,7 +663,7 @@ bool ppf_error(lineelement_t *selem)
 {
 	++errorcnt;
 	printString(stdout, filelist_getName(pp_getFileIdx()) );
-	fprintf(stdout, ":%u: error:", pp_getLineNr());
+	fprintf(stdout, ":%lu: error:", pp_getLineNr());
 	return output(false);
 }
 
@@ -959,7 +959,7 @@ bool ppf_print(lineelement_t *selem)
 	if( !dumpPass )
 	{
 		printString(stdout, filelist_getName(pp_getFileIdx()) );
-		fprintf(stdout, ":%u: print:", pp_getLineNr());
+		fprintf(stdout, ":%lu: print:", pp_getLineNr());
 	}
 	return output(dumpPass);
 }
@@ -1420,7 +1420,7 @@ bool ppf_warn(lineelement_t *selem)
 {
 	++warningcnt;
 	printString(stdout, filelist_getName(pp_getFileIdx()) );
-	fprintf(stdout, ":%u: warning:", pp_getLineNr());
+	fprintf(stdout, ":%lu: warning:", pp_getLineNr());
 	return output(false);
 }
 

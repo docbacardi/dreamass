@@ -350,11 +350,11 @@ int readFileLine(sourcefile_t *that)
 		{
 			if( that->macfifo_count==0 )
 			{
-				fprintf(debugLog, "<tt>L%04X</tt>: \"", that->linenr);
+				fprintf(debugLog, "<tt>L%04lX</tt>: \"", that->linenr);
 			}
 			else
 			{
-				fprintf(debugLog, "<tt>M%04X</tt>(", that->macfifo_last->mline);
+				fprintf(debugLog, "<tt>M%04lX</tt>(", that->macfifo_last->mline);
 				mac = macro_get(that->macfifo_last->macroIdx);
 				if( mac==NULL )
 				{
@@ -714,7 +714,7 @@ bool readMacroDef(sourcefile_t *that)
 					for(debug_cnt0=0; debug_cnt0<mac->mlines_count; ++debug_cnt0)
 					{
 						ml = mac->mlines+debug_cnt0;
-						fprintf(debugLog, "[%04d]", debug_cnt0);
+						fprintf(debugLog, "[%04ld]", debug_cnt0);
 						if( (len=ml->textLength)!=0 )
 						{
 							fprintf(debugLog, "'");
@@ -725,7 +725,7 @@ bool readMacroDef(sourcefile_t *that)
 						}
 						else
 						{
-							fprintf(debugLog, "Parameter %d", ml->data.pidx );
+							fprintf(debugLog, "Parameter %ld", ml->data.pidx );
 						}
 						fprintf(debugLog, "<br>\n");
 					}
@@ -1391,7 +1391,7 @@ char *getMacroLine(sourcefile_t *that, linesize_t *lsize)
 	{
 		cs = line;
 		cp = cs+lsum;
-		fprintf(debugLog, "Line (lsum %d):", lsum);
+		fprintf(debugLog, "Line (lsum %ld):", lsum);
 		while( cs<cp )
 			fprintf(debugLog, "%c", *cs++ );
 		fprintf(debugLog, "<br>\n");
@@ -1934,17 +1934,17 @@ void src_debug(sourcefile_t *that, FILE *dfh)
 	linebuffer_t *lbuf;
 
 
-	fprintf(dfh, "FileIdx: %d ", that->fileidx);
+	fprintf(dfh, "FileIdx: %ld ", that->fileidx);
 	filename = filelist_getName( that->fileidx);
 	printString(dfh, filename);
 	fprintf(dfh, "<br>\n");
 
-	fprintf(dfh, "Linebuffer Size:    %d<br>\n", that->linebuf_size );
+	fprintf(dfh, "Linebuffer Size:    %ld<br>\n", that->linebuf_size );
 
 	fprintf(dfh, "<tt>\n");
 	for(cnt0=0; cnt0<that->linebuf_size; cnt0++)
 	{
-		fprintf(dfh, "%04X:", cnt0);
+		fprintf(dfh, "%04lX:", cnt0);
 		lbuf = that->linebuf + cnt0;
 		src_debug_line(that, lbuf, dfh, true);
 	}
@@ -1971,7 +1971,7 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 	mneUnpackedName[3] = 0;
 
 	/* show the linenumber */
-	fprintf(dfh, "<tt>L%04X: ", lbuf->linenr);
+	fprintf(dfh, "<tt>L%04lX: ", lbuf->linenr);
 
 	/* if PC is final, show 'F' */
 	pc_formatstring[0] = ( segment_isPCFinal() ) ? 'F' : '.';
@@ -2178,7 +2178,7 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 				fprintf(dfh, "</tt><p>\n");
 				src_debug( filelist_getSrc(lelem->data.srcidx), dfh);
 	
-				fprintf(dfh, "<p>back to FileIdx: %d ", that->fileidx);
+				fprintf(dfh, "<p>back to FileIdx: %ld ", that->fileidx);
 				filename = filelist_getName( that->fileidx);
 				printString(dfh, filename);
 				fprintf(dfh, "<br>\n(continuing...) ");
@@ -2218,16 +2218,16 @@ void src_debug_line(sourcefile_t *that, linebuffer_t *lbuf, FILE *dfh, bool recu
 			}
 			break;
 		case LE_VARTERM:
-			fprintf(dfh, "<a href=\"#term%x_p%d\"><b>VARTERM</b></a> ", lelem->data.termidx, pass_cnt);
+			fprintf(dfh, "<a href=\"#term%lx_p%d\"><b>VARTERM</b></a> ", lelem->data.termidx, pass_cnt);
 			break;
 		case LE_SEGMENTENTER:
-			fprintf(dfh, "<b>SEGMENTENTER</b>($%08x) ", lelem->data.segmentidx);
+			fprintf(dfh, "<b>SEGMENTENTER</b>($%08lx) ", lelem->data.segmentidx);
 			break;
 		case LE_SEGELEMENTER:
-			fprintf(dfh, "<b>SEGELEMENTER</b>($%08x) ", lelem->data.segelemidx);
+			fprintf(dfh, "<b>SEGELEMENTER</b>($%08lx) ", lelem->data.segelemidx);
 			break;
 		case LE_LOCALBLOCK:
-			fprintf(dfh, "<b>BLOCKENTER</b>($%08x) ", lelem->data.blockidx);
+			fprintf(dfh, "<b>BLOCKENTER</b>($%08lx) ", lelem->data.blockidx);
 			break;
 		case LE_PHASE:
 			fprintf(dfh, "<b>PHASE</b>($%04x) ", lelem->data.phasepc);
