@@ -1102,7 +1102,11 @@ bool readText(sourcefile_t *that)
 			keylen = (size_t)(wo_pos - wo_start);
 			if( keylen==3 && isalpha(*wo_start) && isalpha(*(wo_start+1)) && isalnum(*(wo_start+2)) )
 			{
-				opcode_key = (toupper(*wo_start)&0x1f)|(toupper(*(wo_start+1))&0x1f)<<5|(toupper(*(wo_start+2))&0x3f)<<10;
+				opcode_key = (uint16_t)(
+					(toupper(wo_start[0]) & 0x1f) |
+					(toupper(wo_start[1]) & 0x1f) << 5 |
+					(toupper(wo_start[2]) & 0x3f) << 10
+				);
 
 				ptrs.mnecnt=mne_keys;
 				while( ptrs.mnecnt<mne_keys+arraysize(mne_keys) && opcode_key!=*ptrs.mnecnt )
