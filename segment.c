@@ -955,7 +955,7 @@ bool segment_writeFiles(const char *pcOutFileName)
 	}
 	else {
 		for( oe=(oc=outfile)+outfile_count; oc<oe; ++oc ) {
-			/* First get the filename in a uniform way (out beloved h-fields ;) */
+			/* First get the filename in a uniform way (our beloved h-fields ;) */
 			if( oc->filename!=NULL ) {
 				cname = string2cstr( oc->filename );
 			}
