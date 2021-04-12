@@ -473,16 +473,22 @@ uint32_t segment_getPC(void)
 {
 	segment_t *seg;
 	segelem_t *sl;
+	uint32_t ulPc;
+	uint8_t ucPhaseIdx;
 
 
-	seg = segment+act_segment;
-	sl = seg->seglist+seg->act_segelem;
-	if( sl->phaseidx>0 ) {
-		return sl->pc+*(sl->pcoffset+sl->phaseidx-1);
+	seg = segment + act_segment;
+	sl = seg->seglist + seg->act_segelem;
+	ucPhaseIdx = sl->phaseidx;
+	if( ucPhaseIdx>0 )
+	{
+		ulPc = sl->pc + sl->pcoffset[ucPhaseIdx-1];
 	}
-	else {
-		return sl->pc;
+	else
+	{
+		ulPc = sl->pc;
 	}
+	return ulPc;
 }
 
 
