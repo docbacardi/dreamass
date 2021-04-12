@@ -1439,7 +1439,9 @@ bool readMacroParameters(sourcefile_t *that, char ***buf)
 			/*
 			 * allocate array for parameters
 			 */
-			if( (macPar_buf=(char**)(malloc((macPar_buflen=16)*sizeof(char*))))==NULL )
+			macPar_buflen = 16;
+			macPar_buf = (char**)malloc(macPar_buflen*sizeof(char*));
+			if( macPar_buf==NULL )
 			{
 				systemError(EM_OutOfMemory);
 				return false;
@@ -1537,7 +1539,9 @@ bool readMacroValues(sourcefile_t *that, char ***buf)
 		/*
 		 * allocate array for parameters
 		 */
-		if( (macVal_buf=(char**)(malloc((macVal_buflen=16)*sizeof(char*))))==NULL )
+		macVal_buflen = 16;
+		macVal_buf = (char**)malloc(macVal_buflen*sizeof(char*));
+		if( macVal_buf==NULL )
 		{
 			systemError(EM_OutOfMemory);
 			return false;
