@@ -920,7 +920,7 @@ bool segment_writeFiles(const char *pcOutFileName)
 {
 	outfile_t *oc, *oe;
 	bool writesadr;
-	uint8_t fillbyte;
+	// uint8_t fillbyte;
 	seglistsize_t segcnt;
 	segment_t *segm;
 
